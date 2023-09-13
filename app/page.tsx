@@ -1,6 +1,9 @@
+import HeaderBar from "../components/HeaderBar"
+
 export default function Home() {
     return (
-        //home page
-        <>Test</>
+        <main>
+            <HeaderBar selectedBoard="Platform Launch" />
+        </main>
     )
 }
