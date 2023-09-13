@@ -16,7 +16,7 @@ export default function HeaderBar({ selectedBoard }: Props) {
                     <source
                         srcSet="kanban-app-logo-full.svg"
                         media="(min-width: 768px)"
-                        width="auto"
+                        width="152px"
                         height="auto"
                     />
                     <Image
