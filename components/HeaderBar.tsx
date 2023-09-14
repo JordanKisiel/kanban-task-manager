@@ -10,7 +10,7 @@ type Props = {
 
 export default function HeaderBar({ selectedBoard }: Props) {
     return (
-        <section className="bg-neutral-700 flex p-4 justify-between items-center">
+        <section className="bg-neutral-700 flex grow-0 p-4 justify-between items-center">
             <div className="flex gap-4 items-center">
                 <picture>
                     <source
