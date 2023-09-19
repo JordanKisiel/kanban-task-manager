@@ -1,0 +1,283 @@
+{
+    "user": "jordan.kisiel@gmail.com",
+    "boards": [
+        {
+            "title": "Platform Launch",
+            "columns": [
+                {
+                    "title": "Todo",
+                    "tasks": [
+                        {
+                            "title": "Build UI for onboarding flow",
+                            "description": "Description for onboarding flow",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 3",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Build UI for search",
+                            "description": "Description for search",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 3",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 4",
+                                    "isComplete": true
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Build settings UI",
+                            "description": "Description for settings",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": true
+                                }
+                            ]
+                        },
+                        {
+                            "title": "QA and test all major user journeys",
+                            "description": "Description for user journeys",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Doing",
+                    "tasks": [
+                        {
+                            "title": "Design settings and search pages",
+                            "description": "Description for settings and search",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 3",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Add account management",
+                            "description": "Description for account management",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 3",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 4",
+                                    "isComplete": true
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Design onboarding flow",
+                            "description": "Description for onboarding flow design",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": true
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Add search endpoints",
+                            "description": "Description for user journeys",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Add authentication endpoints",
+                            "description": "Description for user journeys",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Research pricing points of various competitors and trial different business models",
+                            "description": "Description for user journeys",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Done",
+                    "tasks": [
+                        {
+                            "title": "Conduct 5 wireframe tests",
+                            "description": "Description for conduct wireframe tests",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 3",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Create wireframe prototype",
+                            "description": "Description for create prototype",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 3",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 4",
+                                    "isComplete": true
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Review results of usability tests and iterate",
+                            "description": "Description for usability tests",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": true
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Create paper prototypes and conduct 10 usability tests with potential customers",
+                            "description": "Description for paper prototypes",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Market discovery",
+                            "description": "Description for market discovery",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Competitor analysis",
+                            "description": "Description for competitor analysis",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 3",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 4",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Research the market",
+                            "description": "Description for research the market",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
