@@ -17,7 +17,7 @@ export default function HeaderBar({
     handleShowSideBar,
 }: Props) {
     return (
-        <section className="bg-neutral-700 flex grow-0 p-4 justify-between items-center">
+        <section className="bg-neutral-700 flex grow-0 p-4 justify-between items-center fixed top-0 left-0 right-0">
             <div className="flex gap-4 items-center">
                 <picture className="mr-1">
                     <source

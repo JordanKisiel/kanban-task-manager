@@ -5,11 +5,34 @@ import { useState, useEffect } from "react"
 import HeaderBar from "../components/HeaderBar"
 import Board from "../components/Board"
 import SideBar from "../components/SideBar"
+import TaskModal from "../components/TaskModal"
+import { Task } from "../types"
 import mockBoardsData from "../data/mockData.json"
 
 export default function Home() {
     const searchParams = useSearchParams()
-    const selectedBoardIndex = Number(searchParams.get("board"))
+    const selectedBoardIndexParam = searchParams.get("board")
+    let selectedBoardIndex = 0
+
+    if (selectedBoardIndexParam !== null) {
+        selectedBoardIndex = Number(selectedBoardIndexParam)
+    }
+
+    let task: Task | null = null
+
+    const selectedTaskString = searchParams.get("task")
+
+    if (selectedTaskString !== null) {
+        const [columnIndexString, taskIndexString] =
+            selectedTaskString.split("_")
+
+        const columnIndex = Number(columnIndexString)
+        const taskIndex = Number(taskIndexString)
+
+        task =
+            mockBoardsData.boards[selectedBoardIndex].columns[columnIndex]
+                .tasks[taskIndex]
+    }
 
     const [showSideBar, setShowSideBar] = useState(false)
 
@@ -20,13 +43,10 @@ export default function Home() {
     const router = useRouter()
 
     useEffect(() => {
-        if (selectedBoardIndex === 0) {
+        if (selectedBoardIndexParam === null) {
             router.push("?board=0")
         }
-    }, [selectedBoardIndex])
-
-    //TODO: use board param to display correct board
-    const userBoards = ["Platform Launch", "Marketing Plan", "Roadmap"]
+    }, [selectedBoardIndexParam])
 
     function handleShowSideBar(event: PointerEvent) {
         setShowSideBar((prevValue) => !prevValue)
@@ -50,6 +70,7 @@ export default function Home() {
                     handleShowSideBar={handleShowSideBar}
                 />
             )}
+            {selectedTaskString !== null && <TaskModal task={task} />}
         </main>
     )
 }

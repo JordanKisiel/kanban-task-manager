@@ -13,17 +13,6 @@ type Props = {
 }
 
 export default function Board({ columns }: Props) {
-    //TODO: revist the board data
-    //        get shape of data correct (and import from separate file)
-    //          user -> boards -> columns -> tasks -> subtasks
-    //      move task display code to TaskCard component
-    //      also utilize Column component
-    //      add the ability to click a task card and view corresponding task modal
-
-    const [selectedTaskIndex, setSelectedTaskIndex] = useState<number | null>(
-        null
-    )
-
     const taskColumns = columns.map((column, index) => {
         return (
             <TaskColumn
@@ -34,10 +23,6 @@ export default function Board({ columns }: Props) {
             />
         )
     })
-
-    function handleTaskSelection(index: number) {
-        setSelectedTaskIndex(index)
-    }
 
     return (
         <>
@@ -59,7 +44,7 @@ export default function Board({ columns }: Props) {
                     </div>
                 </div>
             ) : (
-                <div className="grid grid-flow-col auto-cols-[16rem] px-4 py-7 overflow-scroll gap-6">
+                <div className="grid grid-flow-col auto-cols-[16rem] px-4 py-20 overflow-scroll gap-6">
                     {taskColumns}
                 </div>
             )}
