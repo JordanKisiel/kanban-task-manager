@@ -11,11 +11,6 @@ type Props = {
     handleShowSideBar: Function
 }
 
-//TODO:
-// add arrow icon next to selected board
-//   have it change to up arrow when sidebar is open
-//  hide at non-mobile sizes (md:hidden)
-
 export default function HeaderBar({
     selectedBoard,
     isSideBarShown,
