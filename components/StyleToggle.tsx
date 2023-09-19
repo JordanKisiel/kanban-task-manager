@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Toggle from "./Toggle"
-import lightModeIcon from "../public/light-mode-icon.png"
-import darkModeIcon from "../public/dark-mode-icon.png"
+import lightModeIcon from "../public/light-mode-icon.svg"
+import darkModeIcon from "../public/dark-mode-icon.svg"
 
 type Props = {
     isLight: boolean
