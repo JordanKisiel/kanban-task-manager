@@ -12,7 +12,6 @@ export default function Home() {
     const userBoards = ["Platform Launch", "Marketing Plan", "Roadmap"]
 
     function handleShowSideBar(event: PointerEvent) {
-        console.log(event)
         setShowSideBar((prevValue) => !prevValue)
     }
 
@@ -20,6 +19,7 @@ export default function Home() {
         <main className="flex flex-col min-h-screen">
             <HeaderBar
                 selectedBoard="Platform Launch"
+                isSideBarShown={showSideBar}
                 handleShowSideBar={handleShowSideBar}
             />
             <Board />
