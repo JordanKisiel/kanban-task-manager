@@ -8,8 +8,8 @@
                     "title": "Todo",
                     "tasks": [
                         {
-                            "title": "Build UI for onboarding flow",
-                            "description": "Description for onboarding flow",
+                            "title": "Build UI for onboarding flow and here's some more text so I can adjustment leading",
+                            "description": "Description for onboarding flow and here's some more text so I can make adjustments to leading and such",
                             "subtasks": [
                                 {
                                     "description": "Description of subtask 1",

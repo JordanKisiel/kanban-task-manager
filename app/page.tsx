@@ -19,6 +19,8 @@ export default function Home() {
     }
 
     let task: Task | null = null
+    let otherColumns: string[] = []
+    let currentColumn: string | null = null
 
     const selectedTaskString = searchParams.get("task")
 
@@ -32,6 +34,19 @@ export default function Home() {
         task =
             mockBoardsData.boards[selectedBoardIndex].columns[columnIndex]
                 .tasks[taskIndex]
+
+        const columnNames = mockBoardsData.boards[
+            selectedBoardIndex
+        ].columns.map((column) => {
+            return column.title
+        })
+
+        otherColumns = columnNames.filter((otherColumn, index) => {
+            return columnIndex !== index
+        })
+
+        currentColumn =
+            mockBoardsData.boards[selectedBoardIndex].columns[columnIndex].title
     }
 
     const [showSideBar, setShowSideBar] = useState(false)
@@ -70,7 +85,15 @@ export default function Home() {
                     handleShowSideBar={handleShowSideBar}
                 />
             )}
-            {selectedTaskString !== null && <TaskModal task={task} />}
+            {task !== null &&
+                otherColumns.length !== 0 &&
+                currentColumn !== null && (
+                    <TaskModal
+                        task={task}
+                        otherColumns={otherColumns}
+                        currentColumn={currentColumn}
+                    />
+                )}
         </main>
     )
 }

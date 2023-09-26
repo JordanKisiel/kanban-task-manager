@@ -1,4 +1,4 @@
-export type SubTask = {
+export type Subtask = {
     isComplete: boolean
     description: string
 }
@@ -6,7 +6,7 @@ export type SubTask = {
 export type Task = {
     title: string
     description: string
-    subtasks: SubTask[]
+    subtasks: Subtask[]
 }
 
 export type Column = {

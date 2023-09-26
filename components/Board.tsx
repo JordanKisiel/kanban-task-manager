@@ -44,7 +44,7 @@ export default function Board({ columns }: Props) {
                     </div>
                 </div>
             ) : (
-                <div className="grid grid-flow-col auto-cols-[16rem] px-4 py-20 overflow-scroll gap-6">
+                <div className="grid grid-flow-col auto-cols-[16rem] overflow-auto px-4 py-20 gap-6">
                     {taskColumns}
                 </div>
             )}
