@@ -68,7 +68,7 @@ export default function Home() {
     }
 
     function handleBackToBoard() {
-        router.push("?board=0")
+        router.push(`?board=${selectedBoardIndex}`)
     }
 
     return (
