@@ -9,12 +9,14 @@ type Props = {
     task: Task
     otherColumns: string[]
     currentColumn: string
+    handleBackToBoard: Function
 }
 
 export default function ViewTaskModal({
     task,
     otherColumns,
     currentColumn,
+    handleBackToBoard,
 }: Props) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const menuRef: any = useRef()
@@ -63,7 +65,10 @@ export default function ViewTaskModal({
             <button className="bg-neutral-600 w-full px-6 py-3 rounded text-neutral-100 text-xs text-[0.82rem] uppercase tracking-[0.12em] whitespace-nowrap">
                 Delete
             </button>
-            <button className="bg-neutral-600 w-full px-6 py-3 rounded text-neutral-100 text-xs text-[0.82rem] uppercase tracking-[0.12em] whitespace-nowrap">
+            <button
+                onClick={() => handleBackToBoard()}
+                className="bg-neutral-600 w-full px-6 py-3 rounded text-neutral-100 text-xs text-[0.82rem] uppercase tracking-[0.12em] whitespace-nowrap"
+            >
                 Close Task
             </button>
         </div>
@@ -81,7 +86,7 @@ export default function ViewTaskModal({
 
     return (
         <>
-            <div className="flex flex-row mb-6 gap-4">
+            <div className="flex flex-row mb-6 justify-between">
                 <h4 className="text-neutral-100 text-lg leading-6">
                     {task.title}
                 </h4>

@@ -67,6 +67,10 @@ export default function Home() {
         setShowSideBar((prevValue) => !prevValue)
     }
 
+    function handleBackToBoard() {
+        router.push("?board=0")
+    }
+
     return (
         <main className="flex flex-col min-h-screen">
             <HeaderBar
@@ -92,6 +96,7 @@ export default function Home() {
                         task={task}
                         otherColumns={otherColumns}
                         currentColumn={currentColumn}
+                        handleBackToBoard={handleBackToBoard}
                     />
                 )}
         </main>
