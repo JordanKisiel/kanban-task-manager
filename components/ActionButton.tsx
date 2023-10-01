@@ -3,6 +3,7 @@ type Props = {
     bgColor: string
     textColor: string
     textSize: string
+    handler: Function
     children: React.ReactNode
 }
 
@@ -11,10 +12,12 @@ export default function ActionButton({
     bgColor,
     textColor,
     textSize,
+    handler,
     children,
 }: Props) {
     return (
         <button
+            onClick={() => handler()}
             className={`py-2 px-4 rounded-full flex justify-center gap-1 items-center font-bold ${
                 isWidthFull && "w-full"
             } ${bgColor} ${textColor} ${textSize}`}
