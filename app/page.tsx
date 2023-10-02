@@ -5,9 +5,10 @@ import { useState, useEffect } from "react"
 import HeaderBar from "../components/HeaderBar"
 import Board from "../components/Board"
 import SideBar from "../components/SideBar"
-import TaskModal from "../components/TaskModal"
+import Modal from "../components/Modal"
 import { Task } from "../types"
 import mockBoardsData from "../data/mockData.json"
+import ViewTaskModal from "@/components/ViewTaskModal"
 
 export default function Home() {
     const searchParams = useSearchParams()
@@ -104,14 +105,14 @@ export default function Home() {
             {task !== null &&
                 otherColumns.length !== 0 &&
                 currentColumn !== null && (
-                    <TaskModal
-                        task={task}
-                        otherColumns={otherColumns}
-                        currentColumn={currentColumn}
-                        columnNames={columnNames}
-                        board={mockBoardsData.boards[selectedBoardIndex]}
-                        handleBackToBoard={handleBackToBoard}
-                    />
+                    <Modal handleBackToBoard={handleBackToBoard}>
+                        <ViewTaskModal
+                            task={task}
+                            otherColumns={otherColumns}
+                            currentColumn={currentColumn}
+                            handleBackToBoard={handleBackToBoard}
+                        />
+                    </Modal>
                 )}
         </main>
     )
