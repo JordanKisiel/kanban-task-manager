@@ -109,6 +109,7 @@ export default function Home() {
                         otherColumns={otherColumns}
                         currentColumn={currentColumn}
                         columnNames={columnNames}
+                        board={mockBoardsData.boards[selectedBoardIndex]}
                         handleBackToBoard={handleBackToBoard}
                     />
                 )}
