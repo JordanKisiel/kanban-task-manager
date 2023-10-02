@@ -3,9 +3,9 @@ import SubtaskInputList from "./SubtaskInputList"
 import { Task } from "../types"
 
 type Props = {
-    task: Task
+    task: Task | null
     otherColumns: string[]
-    currentColumn: string
+    currentColumn: string | null
 }
 
 const TITLE_PLACEHOLDER = "e.g. Take coffee break"
@@ -25,7 +25,7 @@ export default function EditTaskModal({
         return (
             <option
                 key={columnName}
-                value={columnName}
+                value={columnName ? columnName : ""}
             >
                 {columnName}
             </option>
@@ -50,7 +50,7 @@ export default function EditTaskModal({
                         id="title-input"
                         className="w-full bg-neutral-700 border-[1px] border-neutral-600 rounded text-sm text-neutral-100 px-4 py-3 outline-2 outline-purple-300 placeholder:text-neutral-500 placeholder:opacity-50"
                         placeholder={TITLE_PLACEHOLDER}
-                        value={task.title}
+                        value={task ? task.title : "No task selected"}
                     />
                 </div>
                 <div>
@@ -66,7 +66,7 @@ export default function EditTaskModal({
                         rows={4}
                         placeholder={DESCRIPTION_PLACEHOLDER}
                     >
-                        {task.description}
+                        {task ? task.description : "No task selected"}
                     </textarea>
                 </div>
                 <SubtaskInputList />

@@ -5,7 +5,6 @@ type Props = {
 
 export default function Modal({ handleBackToBoard, children }: Props) {
     //TODO:
-    //  -refactor modal to take children so it can be applied for task and board modals (and to avoid prop drilling)
     //  -add some logic that changes between different task modals (view, edit, delete)
     //  -have board modals pop up when appropriate buttons pressed
     //  -follow prisma tutorial

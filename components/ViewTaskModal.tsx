@@ -6,9 +6,10 @@ import { Task } from "../types"
 import SubtaskCard from "./SubtaskCard"
 
 type Props = {
-    task: Task
+    task: Task | null
     otherColumns: string[]
-    currentColumn: string
+    currentColumn: string | null
+    handleSwitchTaskModalMode: Function
     handleBackToBoard: Function
 }
 
@@ -16,17 +17,18 @@ export default function ViewTaskModal({
     task,
     otherColumns,
     currentColumn,
+    handleSwitchTaskModalMode,
     handleBackToBoard,
 }: Props) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const menuRef: any = useRef()
 
-    const numCompletedTasks = task.subtasks.reduce((accum, curr) => {
+    const numCompletedTasks = task?.subtasks.reduce((accum, curr) => {
         const valueToAdd = curr.isComplete ? 1 : 0
         return accum + valueToAdd
     }, 0)
 
-    const subtaskCards = task.subtasks.map((subtask) => {
+    const subtaskCards = task?.subtasks.map((subtask) => {
         return (
             <SubtaskCard
                 key={subtask.description}
@@ -46,23 +48,37 @@ export default function ViewTaskModal({
         )
     })
 
-    const currentColumnOption = (
-        <option
-            key={currentColumn}
-            value={currentColumn}
-        >
-            {currentColumn}
-        </option>
-    )
+    const currentColumnOption =
+        currentColumn !== null ? (
+            <option
+                key={currentColumn}
+                value={currentColumn}
+            >
+                {currentColumn}
+            </option>
+        ) : (
+            <option
+                key="Null Column"
+                value="No columns"
+            >
+                {"No columns"}
+            </option>
+        )
 
     const columnOptions = [currentColumnOption, ...otherColumnOptions]
 
     const taskMenu = (
         <div className="absolute bg-neutral-700 flex flex-col items-end px-3 py-4 gap-4 top-0 right-0 rounded shadow-[0_5px_10px_0_rgba(4,8,20,0.75)]">
-            <button className="bg-neutral-600 w-full px-6 py-3 rounded text-neutral-100 text-xs text-[0.82rem] uppercase tracking-[0.12em] whitespace-nowrap">
+            <button
+                onClick={() => handleSwitchTaskModalMode("edit")}
+                className="bg-neutral-600 w-full px-6 py-3 rounded text-neutral-100 text-xs text-[0.82rem] uppercase tracking-[0.12em] whitespace-nowrap"
+            >
                 Edit
             </button>
-            <button className="bg-neutral-600 w-full px-6 py-3 rounded text-neutral-100 text-xs text-[0.82rem] uppercase tracking-[0.12em] whitespace-nowrap">
+            <button
+                onClick={() => handleSwitchTaskModalMode("delete")}
+                className="bg-neutral-600 w-full px-6 py-3 rounded text-neutral-100 text-xs text-[0.82rem] uppercase tracking-[0.12em] whitespace-nowrap"
+            >
                 Delete
             </button>
             <button
@@ -88,7 +104,7 @@ export default function ViewTaskModal({
         <>
             <div className="flex flex-row mb-6 justify-between">
                 <h4 className="text-neutral-100 text-lg leading-6">
-                    {task.title}
+                    {task ? task.title : "No task selected"}
                 </h4>
                 <div
                     ref={menuRef}
@@ -104,10 +120,12 @@ export default function ViewTaskModal({
                 </div>
             </div>
             <p className="text-neutral-500 text-sm leading-6 mb-6">
-                {task.description}
+                {task ? task.description : "No task selected"}
             </p>
             <div className="mb-5">
-                <span className="text-neutral-100 text-xs block mb-4">{`Subtasks (${numCompletedTasks} of ${task.subtasks.length})`}</span>
+                <span className="text-neutral-100 text-xs block mb-4">{`Subtasks (${numCompletedTasks} of ${
+                    task ? task.subtasks.length : 0
+                })`}</span>
                 <ul className="flex flex-col gap-2">{subtaskCards}</ul>
             </div>
             <div>

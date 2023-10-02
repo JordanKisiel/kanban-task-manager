@@ -9,6 +9,10 @@ import Modal from "../components/Modal"
 import { Task } from "../types"
 import mockBoardsData from "../data/mockData.json"
 import ViewTaskModal from "@/components/ViewTaskModal"
+import EditTaskModal from "@/components/EditTaskModal"
+import DeleteModal from "@/components/DeleteModal"
+
+type TaskModalMode = "view" | "edit" | "delete"
 
 export default function Home() {
     const searchParams = useSearchParams()
@@ -25,6 +29,7 @@ export default function Home() {
     let columnNames: string[] = [""]
 
     const [showSideBar, setShowSideBar] = useState(false)
+    const [taskModalMode, setTaskModalMode] = useState<TaskModalMode>("view")
 
     const selectedTaskString = searchParams.get("task")
 
@@ -57,6 +62,33 @@ export default function Home() {
         return board.title
     })
 
+    let modalToShow = (
+        <ViewTaskModal
+            task={task}
+            otherColumns={otherColumns}
+            currentColumn={currentColumn}
+            handleSwitchTaskModalMode={handleSwitchTaskModalMode}
+            handleBackToBoard={handleBackToBoard}
+        />
+    )
+
+    if (taskModalMode === "edit") {
+        modalToShow = (
+            <EditTaskModal
+                task={task}
+                otherColumns={otherColumns}
+                currentColumn={currentColumn}
+            />
+        )
+    } else if (taskModalMode === "delete") {
+        modalToShow = (
+            <DeleteModal
+                isBoard={false}
+                itemToDelete={task}
+            />
+        )
+    }
+
     const router = useRouter()
 
     useEffect(() => {
@@ -84,6 +116,10 @@ export default function Home() {
         router.push(`?board=${selectedBoardIndex}`)
     }
 
+    function handleSwitchTaskModalMode(mode: TaskModalMode) {
+        setTaskModalMode(mode)
+    }
+
     return (
         <main className="flex flex-col min-h-screen">
             <HeaderBar
@@ -102,18 +138,11 @@ export default function Home() {
                     handleShowSideBar={handleShowSideBar}
                 />
             )}
-            {task !== null &&
-                otherColumns.length !== 0 &&
-                currentColumn !== null && (
-                    <Modal handleBackToBoard={handleBackToBoard}>
-                        <ViewTaskModal
-                            task={task}
-                            otherColumns={otherColumns}
-                            currentColumn={currentColumn}
-                            handleBackToBoard={handleBackToBoard}
-                        />
-                    </Modal>
-                )}
+            {task !== null && (
+                <Modal handleBackToBoard={handleBackToBoard}>
+                    {modalToShow}
+                </Modal>
+            )}
         </main>
     )
 }

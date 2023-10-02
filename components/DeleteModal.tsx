@@ -3,14 +3,20 @@ import { Board, Task } from "@/types"
 
 type Props = {
     isBoard: boolean
-    itemToDelete: Board | Task
+    itemToDelete: Board | Task | null
 }
 
+//TODO: fix this component so it can actually handle a null object
+
 export default function DeleteModal({ isBoard, itemToDelete }: Props) {
-    let userMessage = `Are you sure you want to delete the '${itemToDelete.title}' board? This action will remove all columns and tasks and cannot be reversed.`
+    let userMessage = `Are you sure you want to delete the '${
+        itemToDelete ? itemToDelete.title : "No board selected"
+    }' board? This action will remove all columns and tasks and cannot be reversed.`
 
     if (!isBoard) {
-        userMessage = `Are you sure you want to delete the '${itemToDelete.title}' task and its subtasks? This action cannot be reversed.`
+        userMessage = `Are you sure you want to delete the '${
+            itemToDelete ? itemToDelete.title : "No task selected"
+        }' task and its subtasks? This action cannot be reversed.`
     }
 
     return (
