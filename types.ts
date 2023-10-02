@@ -13,3 +13,8 @@ export type Column = {
     title: string
     tasks: Task[]
 }
+
+export type Board = {
+    title: string
+    columns: Column[]
+}
