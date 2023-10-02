@@ -46,7 +46,15 @@ export default function HeaderBar({
                 </div>
             </div>
             <div className="flex gap-4 items-center">
-                <ActionButton>
+                <ActionButton
+                    isWidthFull={false}
+                    bgColor="bg-purple-600"
+                    textColor="text-neutral-100"
+                    textSize="text-base"
+                    handler={() => {
+                        /* does nothing */
+                    }}
+                >
                     <Image
                         src={addIcon}
                         alt="add icon"

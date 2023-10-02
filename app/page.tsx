@@ -21,6 +21,9 @@ export default function Home() {
     let task: Task | null = null
     let otherColumns: string[] = []
     let currentColumn: string | null = null
+    let columnNames: string[] = [""]
+
+    const [showSideBar, setShowSideBar] = useState(false)
 
     const selectedTaskString = searchParams.get("task")
 
@@ -35,11 +38,11 @@ export default function Home() {
             mockBoardsData.boards[selectedBoardIndex].columns[columnIndex]
                 .tasks[taskIndex]
 
-        const columnNames = mockBoardsData.boards[
-            selectedBoardIndex
-        ].columns.map((column) => {
-            return column.title
-        })
+        columnNames = mockBoardsData.boards[selectedBoardIndex].columns.map(
+            (column) => {
+                return column.title
+            }
+        )
 
         otherColumns = columnNames.filter((otherColumn, index) => {
             return columnIndex !== index
@@ -48,8 +51,6 @@ export default function Home() {
         currentColumn =
             mockBoardsData.boards[selectedBoardIndex].columns[columnIndex].title
     }
-
-    const [showSideBar, setShowSideBar] = useState(false)
 
     const boardNames = mockBoardsData.boards.map((board) => {
         return board.title
@@ -63,6 +64,17 @@ export default function Home() {
         }
     }, [selectedBoardIndexParam])
 
+    //stop scrolling when modal is open
+    //more specifically in this case, when a task is selected
+    useEffect(() => {
+        if (task !== null) {
+            document.querySelector("body")?.classList.add("overflow-y-hidden")
+        } else {
+            document.querySelector("body")?.classList.add("overflow-scroll")
+        }
+    }, [task])
+
+    //should this be a pointer event? or just a mouse event
     function handleShowSideBar(event: PointerEvent) {
         setShowSideBar((prevValue) => !prevValue)
     }
@@ -96,6 +108,7 @@ export default function Home() {
                         task={task}
                         otherColumns={otherColumns}
                         currentColumn={currentColumn}
+                        columnNames={columnNames}
                         handleBackToBoard={handleBackToBoard}
                     />
                 )}

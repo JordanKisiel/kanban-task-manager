@@ -33,7 +33,15 @@ export default function Board({ columns }: Props) {
                             This board is empty. Create a new column to get
                             started.
                         </p>
-                        <ActionButton>
+                        <ActionButton
+                            isWidthFull={false}
+                            bgColor="bg-purple-600"
+                            textColor="text-neutral-100"
+                            textSize="text-base"
+                            handler={() => {
+                                /* Does nothing */
+                            }}
+                        >
                             <Image
                                 className="w-[5%] mt-[0.2rem]"
                                 src={addIcon}
@@ -44,7 +52,7 @@ export default function Board({ columns }: Props) {
                     </div>
                 </div>
             ) : (
-                <div className="grid grid-flow-col auto-cols-[16rem] overflow-auto px-4 py-20 gap-6">
+                <div className="grid grid-flow-col auto-cols-[16rem] px-4 py-20 gap-6 overflow-auto">
                     {taskColumns}
                 </div>
             )}
