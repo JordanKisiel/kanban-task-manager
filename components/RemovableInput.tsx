@@ -4,7 +4,7 @@ type Props = {
     handleRemoveInput: Function
 }
 
-export default function SubtaskInput({
+export default function RemovableInput({
     id,
     placeholderText,
     handleRemoveInput,

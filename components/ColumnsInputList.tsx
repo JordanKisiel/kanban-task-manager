@@ -6,26 +6,19 @@ import addIcon from "@/public/plus-icon-purple.svg"
 import RemovableInput from "./RemovableInput"
 import ActionButton from "./ActionButton"
 
-const SUBTASK_PLACEHOLDER_1 = "e.g. Make coffee"
-const SUBTASK_PLACEHOLDER_2 = "e.g. Drink coffee & smile"
-const SUBTASK_PLACEHOLDER_OTHER = "e.g. Another subtask"
+const COLUMN_PLACEHOLDER_1 = "e.g. Todo"
+const COLUMN_PLACEHOLDER_OTHER = "New Column"
 
 export default function SubtaskInputList() {
-    const [inputs, setInputs] = useState<string[]>([SUBTASK_PLACEHOLDER_1])
+    const [inputs, setInputs] = useState<string[]>([COLUMN_PLACEHOLDER_1])
 
     function handleAddInput() {
-        if (inputs.length === 0) {
-            setInputs((prevArray) => [...prevArray, SUBTASK_PLACEHOLDER_1])
-        } else if (inputs.length === 1) {
-            setInputs((prevArray) => [...prevArray, SUBTASK_PLACEHOLDER_2])
-        } else {
-            setInputs((prevArray) => [...prevArray, SUBTASK_PLACEHOLDER_OTHER])
-        }
+        setInputs((prevArray) => [...prevArray, COLUMN_PLACEHOLDER_OTHER])
     }
 
-    function handleRemoveInput(subtaskIndex: number) {
+    function handleRemoveInput(columnIndex: number) {
         setInputs((prevArray) => {
-            return prevArray.filter((input, index) => index !== subtaskIndex)
+            return prevArray.filter((input, index) => index !== columnIndex)
         })
     }
 
@@ -42,7 +35,7 @@ export default function SubtaskInputList() {
 
     return (
         <div className="flex flex-col gap-2">
-            <h4 className="text-neutral-100 text-xs block">Subtasks</h4>
+            <h4 className="text-neutral-100 text-xs block">Board Columns</h4>
             {inputList}
             <ActionButton
                 isWidthFull={true}
@@ -56,7 +49,7 @@ export default function SubtaskInputList() {
                     src={addIcon}
                     alt="Add icon"
                 />
-                Add New Subtask
+                Add New Column
             </ActionButton>
         </div>
     )
