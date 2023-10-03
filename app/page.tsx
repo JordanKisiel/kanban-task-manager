@@ -11,8 +11,18 @@ import mockBoardsData from "../data/mockData.json"
 import ViewTaskModal from "@/components/ViewTaskModal"
 import EditTaskModal from "@/components/EditTaskModal"
 import DeleteModal from "@/components/DeleteModal"
+import AddTaskModal from "@/components/AddTaskModal"
+import AddBoardModal from "@/components/AddBoardModal"
+import EditBoardModal from "@/components/EditBoardModal"
 
-type TaskModalMode = "view" | "edit" | "delete"
+type ModalMode =
+    | "viewTask"
+    | "editTask"
+    | "deleteTask"
+    | "addTask"
+    | "addBoard"
+    | "editBoard"
+    | "deleteBoard"
 
 export default function Home() {
     const searchParams = useSearchParams()
@@ -29,7 +39,8 @@ export default function Home() {
     let columnNames: string[] = [""]
 
     const [showSideBar, setShowSideBar] = useState(false)
-    const [taskModalMode, setTaskModalMode] = useState<TaskModalMode>("view")
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [modalMode, setModalMode] = useState<ModalMode>("viewTask")
 
     const selectedTaskString = searchParams.get("task")
 
@@ -67,12 +78,12 @@ export default function Home() {
             task={task}
             otherColumns={otherColumns}
             currentColumn={currentColumn}
-            handleSwitchTaskModalMode={handleSwitchTaskModalMode}
+            handleSwitchModalMode={handleSwitchModalMode}
             handleBackToBoard={handleBackToBoard}
         />
     )
 
-    if (taskModalMode === "edit") {
+    if (modalMode === "editTask") {
         modalToShow = (
             <EditTaskModal
                 task={task}
@@ -80,11 +91,26 @@ export default function Home() {
                 currentColumn={currentColumn}
             />
         )
-    } else if (taskModalMode === "delete") {
+    } else if (modalMode === "deleteTask") {
         modalToShow = (
             <DeleteModal
                 isBoard={false}
                 itemToDelete={task}
+            />
+        )
+    } else if (modalMode === "addTask") {
+        modalToShow = <AddTaskModal columnNames={columnNames} />
+    } else if (modalMode === "addBoard") {
+        modalToShow = <AddBoardModal />
+    } else if (modalMode === "editBoard") {
+        modalToShow = (
+            <EditBoardModal board={mockBoardsData.boards[selectedBoardIndex]} />
+        )
+    } else if (modalMode === "deleteBoard") {
+        modalToShow = (
+            <DeleteModal
+                isBoard={true}
+                itemToDelete={mockBoardsData.boards[selectedBoardIndex]}
             />
         )
     }
@@ -97,15 +123,24 @@ export default function Home() {
         }
     }, [selectedBoardIndexParam])
 
-    //stop scrolling when modal is open
-    //more specifically in this case, when a task is selected
     useEffect(() => {
         if (task !== null) {
+            setIsModalOpen(true)
+        } else {
+            setIsModalOpen(false)
+        }
+    }, [task])
+
+    //stop scrolling when modal is open
+    //more specifically in this case, when a task is selected
+    //also do this when board modal is open
+    useEffect(() => {
+        if (isModalOpen) {
             document.querySelector("body")?.classList.add("overflow-y-hidden")
         } else {
             document.querySelector("body")?.classList.add("overflow-scroll")
         }
-    }, [task])
+    }, [isModalOpen])
 
     //should this be a pointer event? or just a mouse event
     function handleShowSideBar(event: PointerEvent) {
@@ -114,10 +149,22 @@ export default function Home() {
 
     function handleBackToBoard() {
         router.push(`?board=${selectedBoardIndex}`)
+        setModalMode("viewTask")
+        setIsModalOpen(false)
     }
 
-    function handleSwitchTaskModalMode(mode: TaskModalMode) {
-        setTaskModalMode(mode)
+    function handleSwitchModalMode(mode: ModalMode) {
+        setModalMode(mode)
+    }
+
+    function handleShowAddTaskModal() {
+        setModalMode("addTask")
+        setIsModalOpen(true)
+    }
+
+    function handleShowAddBoardModal() {
+        setModalMode("addBoard")
+        setIsModalOpen(true)
     }
 
     return (
@@ -125,6 +172,7 @@ export default function Home() {
             <HeaderBar
                 selectedBoard={mockBoardsData.boards[selectedBoardIndex].title}
                 isSideBarShown={showSideBar}
+                handleShowAddTaskModal={handleShowAddTaskModal}
                 handleShowSideBar={handleShowSideBar}
             />
             <Board
@@ -138,7 +186,7 @@ export default function Home() {
                     handleShowSideBar={handleShowSideBar}
                 />
             )}
-            {task !== null && (
+            {isModalOpen && (
                 <Modal handleBackToBoard={handleBackToBoard}>
                     {modalToShow}
                 </Modal>
