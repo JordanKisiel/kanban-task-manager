@@ -132,13 +132,14 @@ export default function Home() {
     }, [task])
 
     //stop scrolling when modal is open
-    //more specifically in this case, when a task is selected
-    //also do this when board modal is open
     useEffect(() => {
         if (isModalOpen) {
             document.querySelector("body")?.classList.add("overflow-y-hidden")
         } else {
             document.querySelector("body")?.classList.add("overflow-scroll")
+            //also set state of modal mode back to viewTask
+            //this accounts for case when user uses browser back button and closes modal
+            setModalMode("viewTask")
         }
     }, [isModalOpen])
 
@@ -172,8 +173,10 @@ export default function Home() {
             <HeaderBar
                 selectedBoard={mockBoardsData.boards[selectedBoardIndex].title}
                 isSideBarShown={showSideBar}
+                setIsModalOpen={setIsModalOpen}
                 handleShowAddTaskModal={handleShowAddTaskModal}
                 handleShowSideBar={handleShowSideBar}
+                handleSwitchModalMode={handleSwitchModalMode}
             />
             <Board
                 columns={mockBoardsData.boards[selectedBoardIndex].columns}

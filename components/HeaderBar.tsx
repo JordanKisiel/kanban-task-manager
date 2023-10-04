@@ -1,21 +1,43 @@
 import Image from "next/image"
-import Link from "next/link"
 import ActionButton from "./ActionButton"
+import MenuButton from "./MenuButton"
 import smallLogo from "../public/kanban-app-logo.svg"
 import addIcon from "../public/plus-icon.svg"
-import optionsIcon from "../public/options-icon.svg"
 
 type Props = {
     selectedBoard: string
     isSideBarShown: boolean
+    setIsModalOpen: Function
+    handleShowAddTaskModal: Function
     handleShowSideBar: Function
+    handleSwitchModalMode: Function
 }
 
 export default function HeaderBar({
     selectedBoard,
     isSideBarShown,
+    setIsModalOpen,
+    handleShowAddTaskModal,
     handleShowSideBar,
+    handleSwitchModalMode,
 }: Props) {
+    const menuOptions = [
+        {
+            actionName: "Edit Board",
+            action: () => {
+                setIsModalOpen(true)
+                handleSwitchModalMode("editBoard")
+            },
+        },
+        {
+            actionName: "Delete Board",
+            action: () => {
+                setIsModalOpen(true)
+                handleSwitchModalMode("deleteBoard")
+            },
+        },
+    ]
+
     return (
         <section className="bg-neutral-700 flex grow-0 p-4 justify-between items-center fixed top-0 left-0 right-0">
             <div className="flex gap-4 items-center">
@@ -45,25 +67,20 @@ export default function HeaderBar({
                     ></button>
                 </div>
             </div>
-            <div className="flex gap-4 items-center">
+            <div className="flex items-center">
                 <ActionButton
                     isWidthFull={false}
                     bgColor="bg-purple-600"
                     textColor="text-neutral-100"
                     textSize="text-base"
-                    handler={() => {
-                        /* does nothing */
-                    }}
+                    handler={() => handleShowAddTaskModal()}
                 >
                     <Image
                         src={addIcon}
                         alt="add icon"
                     />
                 </ActionButton>
-                <Image
-                    src={optionsIcon}
-                    alt="options icon"
-                />
+                <MenuButton actions={menuOptions} />
             </div>
         </section>
     )

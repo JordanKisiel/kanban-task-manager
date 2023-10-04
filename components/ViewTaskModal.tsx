@@ -1,15 +1,12 @@
-"use client"
-
-import { useState, useRef } from "react"
-import { useOutsideClick } from "@/hooks/useOutsideClick"
 import { Task } from "../types"
 import SubtaskCard from "./SubtaskCard"
+import MenuButton from "./MenuButton"
 
 type Props = {
     task: Task | null
     otherColumns: string[]
     currentColumn: string | null
-    handleSwitchTaskModalMode: Function
+    handleSwitchModalMode: Function
     handleBackToBoard: Function
 }
 
@@ -17,12 +14,9 @@ export default function ViewTaskModal({
     task,
     otherColumns,
     currentColumn,
-    handleSwitchTaskModalMode,
+    handleSwitchModalMode,
     handleBackToBoard,
 }: Props) {
-    const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const menuRef: any = useRef()
-
     const numCompletedTasks = task?.subtasks.reduce((accum, curr) => {
         const valueToAdd = curr.isComplete ? 1 : 0
         return accum + valueToAdd
@@ -67,57 +61,28 @@ export default function ViewTaskModal({
 
     const columnOptions = [currentColumnOption, ...otherColumnOptions]
 
-    const taskMenu = (
-        <div className="absolute bg-neutral-700 flex flex-col items-end px-3 py-4 gap-4 top-0 right-0 rounded shadow-[0_5px_10px_0_rgba(4,8,20,0.75)]">
-            <button
-                onClick={() => handleSwitchTaskModalMode("edit")}
-                className="bg-neutral-600 w-full px-6 py-3 rounded text-neutral-100 text-xs text-[0.82rem] uppercase tracking-[0.12em] whitespace-nowrap"
-            >
-                Edit
-            </button>
-            <button
-                onClick={() => handleSwitchTaskModalMode("delete")}
-                className="bg-neutral-600 w-full px-6 py-3 rounded text-neutral-100 text-xs text-[0.82rem] uppercase tracking-[0.12em] whitespace-nowrap"
-            >
-                Delete
-            </button>
-            <button
-                onClick={() => handleBackToBoard()}
-                className="bg-neutral-600 w-full px-6 py-3 rounded text-neutral-100 text-xs text-[0.82rem] uppercase tracking-[0.12em] whitespace-nowrap"
-            >
-                Close Task
-            </button>
-        </div>
-    )
-
-    useOutsideClick(menuRef.current, handleCloseMenu)
-
-    function handleOpenMenu() {
-        setIsMenuOpen(true)
-    }
-
-    function handleCloseMenu() {
-        setIsMenuOpen(false)
-    }
+    const menuOptions = [
+        {
+            actionName: "Edit",
+            action: () => handleSwitchModalMode("editTask"),
+        },
+        {
+            actionName: "Delete",
+            action: () => handleSwitchModalMode("deleteTask"),
+        },
+        {
+            actionName: "Close",
+            action: () => handleBackToBoard(),
+        },
+    ]
 
     return (
         <>
-            <div className="flex flex-row mb-6 justify-between">
+            <div className="flex flex-row mb-6 justify-between items-center">
                 <h4 className="text-neutral-100 text-lg leading-6">
                     {task ? task.title : "No task selected"}
                 </h4>
-                <div
-                    ref={menuRef}
-                    onClick={() => {
-                        handleOpenMenu()
-                    }}
-                    className="relative"
-                >
-                    <button className="text-transparent bg-[url('../public/menu-icon.svg')] bg-no-repeat bg-right">
-                        Task Menu
-                    </button>
-                    {isMenuOpen && taskMenu}
-                </div>
+                <MenuButton actions={menuOptions} />
             </div>
             <p className="text-neutral-500 text-sm leading-6 mb-6">
                 {task ? task.description : "No task selected"}
