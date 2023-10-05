@@ -84,8 +84,7 @@ export default function Home() {
     )
 
     //TODO:
-    //  -create "add column" ghost column to right of last column in board
-    //    -have this open EditBoardModal
+    //
     //  -style for other screen sizes
     //  -add the ability to switch themes
     //  -follow prisma tutorial
@@ -202,6 +201,8 @@ export default function Home() {
             />
             <Board
                 columns={mockBoardsData.boards[selectedBoardIndex].columns}
+                handleSwitchModalMode={handleSwitchModalMode}
+                setIsModalOpen={setIsModalOpen}
             />
             {showSideBar && (
                 <SideBar

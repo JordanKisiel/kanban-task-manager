@@ -1,18 +1,20 @@
-"use client"
-
-import { useState } from "react"
 import Image from "next/image"
 import TaskColumn from "./TaskColumn"
 import ActionButton from "./ActionButton"
-import TaskCard from "./TaskCard"
 import addIcon from "../public/plus-icon.svg"
 import { Column } from "../types"
 
 type Props = {
     columns: Column[]
+    handleSwitchModalMode: Function
+    setIsModalOpen: Function
 }
 
-export default function Board({ columns }: Props) {
+export default function Board({
+    columns,
+    handleSwitchModalMode,
+    setIsModalOpen,
+}: Props) {
     const taskColumns = columns.map((column, index) => {
         return (
             <TaskColumn
@@ -39,7 +41,8 @@ export default function Board({ columns }: Props) {
                             textColor="text-neutral-100"
                             textSize="text-base"
                             handler={() => {
-                                /* Does nothing */
+                                handleSwitchModalMode("editBoard")
+                                setIsModalOpen(true)
                             }}
                         >
                             <Image
@@ -54,6 +57,22 @@ export default function Board({ columns }: Props) {
             ) : (
                 <div className="grid grid-flow-col auto-cols-[16rem] px-4 py-20 gap-6 overflow-auto">
                     {taskColumns}
+                    <div className="flex flex-col pt-[2.3rem] h-full rounded justify-center">
+                        <button
+                            onClick={() => {
+                                handleSwitchModalMode("editBoard")
+                                setIsModalOpen(true)
+                            }}
+                            className="flex flex-row text-neutral-400 bg-neutral-700/20 text-2xl font-bold items-center gap-2 w-full h-full justify-center"
+                        >
+                            <Image
+                                className="mt-[0.5rem] opacity-50"
+                                src={addIcon}
+                                alt="Add icon"
+                            />
+                            New Column
+                        </button>
+                    </div>
                 </div>
             )}
         </>
