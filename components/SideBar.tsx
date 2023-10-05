@@ -5,6 +5,7 @@ type Props = {
     numBoards: number
     boardNames: string[]
     selectedBoardIndex: number
+    handleShowAddBoardModal: Function
     handleShowSideBar: Function
 }
 
@@ -12,6 +13,7 @@ export default function SideBar({
     numBoards,
     boardNames,
     selectedBoardIndex,
+    handleShowAddBoardModal,
     handleShowSideBar,
 }: Props) {
     const boardsList = boardNames.map((boardName, index) => {
@@ -45,7 +47,13 @@ export default function SideBar({
                 <h2 className="uppercase text-neutral-500 text-[0.85rem] font-bold tracking-[0.12em] mb-4 pl-6">{`All Boards (${numBoards})`}</h2>
                 <ul className="text-neutral-500 font-bold flex flex-col mb-4">
                     {boardsList}
-                    <li className="font-bold py-3 pl-[3.4rem] mr-6 text-purple-600 bg-[url('../public/board-icon-purple.svg')] bg-no-repeat bg-[center_left_1.5rem]">
+                    <li
+                        onClick={(e) => {
+                            handleShowSideBar(e)
+                            handleShowAddBoardModal()
+                        }}
+                        className="font-bold py-3 pl-[3.4rem] mr-6 text-purple-600 bg-[url('../public/board-icon-purple.svg')] bg-no-repeat bg-[center_left_1.5rem]"
+                    >
                         + Create New Board
                     </li>
                 </ul>

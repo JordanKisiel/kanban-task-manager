@@ -1,17 +1,31 @@
 import ActionButton from "./ActionButton"
 import ColumnInputList from "./ColumnsInputList"
 import { Board } from "@/types"
+import MenuButton from "./MenuButton"
 
 type Props = {
     board: Board
+    handleBackToBoard: Function
 }
 
 const TITLE_PLACEHOLDER = "e.g. Web Design"
 
-export default function EditBoardModal({ board }: Props) {
+export default function EditBoardModal({ board, handleBackToBoard }: Props) {
+    const menuOptions = [
+        {
+            actionName: "Close",
+            action: () => handleBackToBoard(),
+        },
+    ]
+
     return (
         <div className="flex flex-col gap-6">
-            <h4 className="font-bold text-neutral-100 text-lg">Edit Board</h4>
+            <div className="flex flex-row justify-between">
+                <h4 className="font-bold text-neutral-100 text-lg">
+                    Edit Board
+                </h4>
+                <MenuButton actions={menuOptions} />
+            </div>
             <div>
                 <label
                     htmlFor="title-input"

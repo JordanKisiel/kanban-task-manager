@@ -1,15 +1,20 @@
 import ActionButton from "./ActionButton"
 import SubtaskInputList from "./SubtaskInputList"
+import MenuButton from "./MenuButton"
 
 type Props = {
     columnNames: string[]
+    handleBackToBoard: Function
 }
 
 const TITLE_PLACEHOLDER = "e.g. Take coffee break"
 const DESCRIPTION_PLACEHOLDER =
     "e.g. It's always good to take a break. This 15 minute break will charge the batteries a little."
 
-export default function AddTaskModal({ columnNames }: Props) {
+export default function AddTaskModal({
+    columnNames,
+    handleBackToBoard,
+}: Props) {
     const selectOptions = columnNames.map((columnName) => {
         return (
             <option
@@ -21,11 +26,21 @@ export default function AddTaskModal({ columnNames }: Props) {
         )
     })
 
+    const menuOptions = [
+        {
+            actionName: "Close",
+            action: () => handleBackToBoard(),
+        },
+    ]
+
     return (
         <>
-            <h4 className="text-neutral-100 text-lg leading-6 mb-6">
-                Add New Task
-            </h4>
+            <div className="flex flex-row justify-between">
+                <h4 className="text-neutral-100 text-lg leading-6 mb-6">
+                    Add New Task
+                </h4>
+                <MenuButton actions={menuOptions} />
+            </div>
             <form className="flex flex-col gap-6">
                 <div>
                     <label

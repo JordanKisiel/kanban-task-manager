@@ -4,13 +4,6 @@ type Props = {
 }
 
 export default function Modal({ handleBackToBoard, children }: Props) {
-    //TODO:
-    //  -parameterize MenuButton component to accept arrays of "actionNames" (string[]) and "actions" (Function[])
-    //  -have board modals pop up when appropriate buttons pressed
-    //  -style for other screen sizes
-    //  -follow prisma tutorial
-    //  -add CRUD operations for boards and tasks
-
     return (
         <div
             onClick={() => handleBackToBoard()}

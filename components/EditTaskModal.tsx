@@ -1,11 +1,14 @@
 import ActionButton from "./ActionButton"
 import SubtaskInputList from "./SubtaskInputList"
 import { Task } from "../types"
+import MenuButton from "./MenuButton"
 
 type Props = {
     task: Task | null
     otherColumns: string[]
     currentColumn: string | null
+    handleSwitchModalMode: Function
+    handleBackToBoard: Function
 }
 
 const TITLE_PLACEHOLDER = "e.g. Take coffee break"
@@ -18,6 +21,8 @@ export default function EditTaskModal({
     task,
     otherColumns,
     currentColumn,
+    handleSwitchModalMode,
+    handleBackToBoard,
 }: Props) {
     const columnNames = [currentColumn, ...otherColumns]
 
@@ -32,11 +37,29 @@ export default function EditTaskModal({
         )
     })
 
+    const menuOptions = [
+        {
+            actionName: "View",
+            action: () => handleSwitchModalMode("viewTask"),
+        },
+        {
+            actionName: "Delete",
+            action: () => handleSwitchModalMode("deleteTask"),
+        },
+        {
+            actionName: "Close",
+            action: () => handleBackToBoard(),
+        },
+    ]
+
     return (
         <>
-            <h4 className="text-neutral-100 text-lg leading-6 mb-6">
-                Edit Task
-            </h4>
+            <div className="flex flex-row justify-between">
+                <h4 className="text-neutral-100 text-lg leading-6 mb-6">
+                    Edit Task
+                </h4>
+                <MenuButton actions={menuOptions} />
+            </div>
             <form className="flex flex-col gap-6">
                 <div>
                     <label

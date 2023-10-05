@@ -83,12 +83,24 @@ export default function Home() {
         />
     )
 
+    //TODO:
+    //  -create "add column" ghost column to right of last column in board
+    //    -have this open EditBoardModal
+    //  -style for other screen sizes
+    //  -add the ability to switch themes
+    //  -follow prisma tutorial
+    //  -add CRUD operations for boards and tasks
+
+    //TODO: consider using a switch structure
+    // could polymorphism be applied here?
     if (modalMode === "editTask") {
         modalToShow = (
             <EditTaskModal
                 task={task}
                 otherColumns={otherColumns}
                 currentColumn={currentColumn}
+                handleSwitchModalMode={handleSwitchModalMode}
+                handleBackToBoard={handleBackToBoard}
             />
         )
     } else if (modalMode === "deleteTask") {
@@ -96,21 +108,31 @@ export default function Home() {
             <DeleteModal
                 isBoard={false}
                 itemToDelete={task}
+                handleBackToBoard={handleBackToBoard}
             />
         )
     } else if (modalMode === "addTask") {
-        modalToShow = <AddTaskModal columnNames={columnNames} />
+        modalToShow = (
+            <AddTaskModal
+                columnNames={columnNames}
+                handleBackToBoard={handleBackToBoard}
+            />
+        )
     } else if (modalMode === "addBoard") {
-        modalToShow = <AddBoardModal />
+        modalToShow = <AddBoardModal handleBackToBoard={handleBackToBoard} />
     } else if (modalMode === "editBoard") {
         modalToShow = (
-            <EditBoardModal board={mockBoardsData.boards[selectedBoardIndex]} />
+            <EditBoardModal
+                board={mockBoardsData.boards[selectedBoardIndex]}
+                handleBackToBoard={handleBackToBoard}
+            />
         )
     } else if (modalMode === "deleteBoard") {
         modalToShow = (
             <DeleteModal
                 isBoard={true}
                 itemToDelete={mockBoardsData.boards[selectedBoardIndex]}
+                handleBackToBoard={handleBackToBoard}
             />
         )
     }
@@ -186,6 +208,7 @@ export default function Home() {
                     numBoards={boardNames.length}
                     boardNames={boardNames}
                     selectedBoardIndex={selectedBoardIndex}
+                    handleShowAddBoardModal={handleShowAddBoardModal}
                     handleShowSideBar={handleShowSideBar}
                 />
             )}
