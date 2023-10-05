@@ -84,7 +84,6 @@ export default function Home() {
     )
 
     //TODO:
-    //
     //  -style for other screen sizes
     //  -add the ability to switch themes
     //  -follow prisma tutorial
@@ -156,8 +155,12 @@ export default function Home() {
     useEffect(() => {
         if (isModalOpen) {
             document.querySelector("body")?.classList.add("overflow-y-hidden")
+            document.querySelector("body")?.classList.remove("overflow-scroll")
         } else {
             document.querySelector("body")?.classList.add("overflow-scroll")
+            document
+                .querySelector("body")
+                ?.classList.remove("overflow-y-hidden")
             //also set state of modal mode back to viewTask
             //this accounts for case when user uses browser back button and closes modal
             setModalMode("viewTask")
