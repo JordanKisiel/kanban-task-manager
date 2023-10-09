@@ -2,9 +2,10 @@
 
 import { useSearchParams, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
+import Logo from "@/components/Logo"
 import HeaderBar from "../components/HeaderBar"
 import Board from "../components/Board"
-import SideBar from "../components/SideBar"
+import ModalSideBar from "../components/ModalSideBar"
 import Modal from "../components/Modal"
 import { Task } from "../types"
 import mockBoardsData from "../data/mockData.json"
@@ -14,6 +15,7 @@ import DeleteModal from "@/components/DeleteModal"
 import AddTaskModal from "@/components/AddTaskModal"
 import AddBoardModal from "@/components/AddBoardModal"
 import EditBoardModal from "@/components/EditBoardModal"
+import SideBar from "../components/SideBar"
 
 type ModalMode =
     | "viewTask"
@@ -192,23 +194,50 @@ export default function Home() {
         setIsModalOpen(true)
     }
 
+    //todo: figure out how to make scrolling only occur in one cell of a css grid
+
     return (
         <main className="flex flex-col min-h-screen">
-            <HeaderBar
-                selectedBoard={mockBoardsData.boards[selectedBoardIndex].title}
-                isSideBarShown={showSideBar}
-                setIsModalOpen={setIsModalOpen}
-                handleShowAddTaskModal={handleShowAddTaskModal}
-                handleShowSideBar={handleShowSideBar}
-                handleSwitchModalMode={handleSwitchModalMode}
-            />
-            <Board
-                columns={mockBoardsData.boards[selectedBoardIndex].columns}
-                handleSwitchModalMode={handleSwitchModalMode}
-                setIsModalOpen={setIsModalOpen}
-            />
+            <div className="flex md:grid md:grid-rows-[1fr_18fr] md:grid-cols-[2fr_5fr] md:h-full md:fixed">
+                <div className="hidden md:flex md:bg-neutral-700 md:pl-6 md:border-r-[1px] md:border-neutral-600">
+                    <Logo />
+                </div>
+                <div className="flex flex-row fixed top-0 left-0 right-0 bg-neutral-700 pl-3 md:relative md:border-b-[1px] md:border-neutral-600">
+                    <div className="flex flex-row justify-center items-center md:hidden">
+                        <Logo />
+                    </div>
+                    <HeaderBar
+                        selectedBoard={
+                            mockBoardsData.boards[selectedBoardIndex].title
+                        }
+                        isSideBarShown={showSideBar}
+                        setIsModalOpen={setIsModalOpen}
+                        handleShowAddTaskModal={handleShowAddTaskModal}
+                        handleShowSideBar={handleShowSideBar}
+                        handleSwitchModalMode={handleSwitchModalMode}
+                    />
+                </div>
+                <div className="hidden bg-neutral-700 md:block">
+                    <SideBar
+                        numBoards={boardNames.length}
+                        boardNames={boardNames}
+                        selectedBoardIndex={selectedBoardIndex}
+                        handleShowAddBoardModal={handleShowAddBoardModal}
+                        handleShowSideBar={handleShowSideBar}
+                    />
+                </div>
+                <div className="overflow-auto">
+                    <Board
+                        columns={
+                            mockBoardsData.boards[selectedBoardIndex].columns
+                        }
+                        handleSwitchModalMode={handleSwitchModalMode}
+                        setIsModalOpen={setIsModalOpen}
+                    />
+                </div>
+            </div>
             {showSideBar && (
-                <SideBar
+                <ModalSideBar
                     numBoards={boardNames.length}
                     boardNames={boardNames}
                     selectedBoardIndex={selectedBoardIndex}

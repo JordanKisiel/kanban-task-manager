@@ -55,7 +55,7 @@ export default function Board({
                     </div>
                 </div>
             ) : (
-                <div className="grid grid-flow-col auto-cols-[16rem] px-4 py-20 gap-6 overflow-auto">
+                <div className="grid grid-flow-col auto-cols-[16rem] px-4 py-20 gap-6 overflow-auto md:pt-5 md:pb-20">
                     {taskColumns}
                     <div className="flex flex-col pt-[2.3rem] h-full rounded justify-center">
                         <button

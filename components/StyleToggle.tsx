@@ -9,7 +9,7 @@ type Props = {
 
 export default function StyleToggle({ isLight }: Props) {
     return (
-        <div className="flex flex-row w-2/3 justify-center gap-6">
+        <div className="flex flex-row w-2/3 justify-center gap-6 items-center">
             <Image
                 src={lightModeIcon}
                 alt="light mode icon"

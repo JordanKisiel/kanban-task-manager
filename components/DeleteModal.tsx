@@ -30,7 +30,7 @@ export default function DeleteModal({
                 {`Delete this ${isBoard ? "board" : "task"}?`}
             </h4>
             <p className="text-sm text-neutral-500 leading-6">{userMessage}</p>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 md:flex-row">
                 <ActionButton
                     isWidthFull={true}
                     bgColor="bg-red-300"

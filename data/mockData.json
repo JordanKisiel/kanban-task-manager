@@ -70,6 +70,60 @@
                                     "isComplete": false
                                 }
                             ]
+                        },
+                        {
+                            "title": "Build UI for onboarding flow and here's some more text so I can adjustment leading",
+                            "description": "Description for onboarding flow and here's some more text so I can make adjustments to leading and such",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 3",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Build UI for onboarding flow and here's some more text so I can adjustment leading",
+                            "description": "Description for onboarding flow and here's some more text so I can make adjustments to leading and such",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 3",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Build UI for onboarding flow and here's some more text so I can adjustment leading",
+                            "description": "Description for onboarding flow and here's some more text so I can make adjustments to leading and such",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 3",
+                                    "isComplete": false
+                                }
+                            ]
                         }
                     ]
                 },
@@ -261,6 +315,26 @@
                                 },
                                 {
                                     "description": "Description of subtask 4",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Research the market",
+                            "description": "Description for research the market",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Research the market",
+                            "description": "Description for research the market",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
                                     "isComplete": false
                                 }
                             ]
@@ -626,6 +700,16 @@
                                     "isComplete": false
                                 }
                             ]
+                        },
+                        {
+                            "title": "QA and test all major user journeys",
+                            "description": "Description for user journeys",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                }
+                            ]
                         }
                     ]
                 },
@@ -698,6 +782,26 @@
                         },
                         {
                             "title": "Add authentication endpoints",
+                            "description": "Description for user journeys",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Research pricing points of various competitors and trial different business models",
+                            "description": "Description for user journeys",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Research pricing points of various competitors and trial different business models",
                             "description": "Description for user journeys",
                             "subtasks": [
                                 {
@@ -827,6 +931,62 @@
                             "subtasks": [
                                 {
                                     "description": "Description of subtask 1",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Create paper prototypes and conduct 10 usability tests with potential customers",
+                            "description": "Description for paper prototypes",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Create paper prototypes and conduct 10 usability tests with potential customers",
+                            "description": "Description for paper prototypes",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Build UI for onboarding flow and here's some more text so I can adjustment leading",
+                            "description": "Description for onboarding flow and here's some more text so I can make adjustments to leading and such",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 3",
+                                    "isComplete": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "Conduct 5 wireframe tests",
+                            "description": "Description for conduct wireframe tests",
+                            "subtasks": [
+                                {
+                                    "description": "Description of subtask 1",
+                                    "isComplete": false
+                                },
+                                {
+                                    "description": "Description of subtask 2",
+                                    "isComplete": true
+                                },
+                                {
+                                    "description": "Description of subtask 3",
                                     "isComplete": false
                                 }
                             ]

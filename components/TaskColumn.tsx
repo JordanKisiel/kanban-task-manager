@@ -13,7 +13,7 @@ export default function TaskColumn({ columnIndex, title, tasks }: Props) {
     const taskCards = tasks.map(({ title, subtasks }, index) => {
         return (
             <TaskCard
-                key={title}
+                key={`${columnIndex}_${index}`}
                 columnIndex={columnIndex}
                 taskIndex={index}
                 title={title}

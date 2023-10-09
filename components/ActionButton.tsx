@@ -21,7 +21,7 @@ export default function ActionButton({
                 handler()
                 e.preventDefault()
             }}
-            className={`py-2 px-4 rounded-full flex justify-center gap-1 items-center font-bold ${
+            className={`py-2 px-5 rounded-full flex justify-center gap-1 items-center font-bold ${
                 isWidthFull && "w-full"
             } ${bgColor} ${textColor} ${textSize}`}
         >

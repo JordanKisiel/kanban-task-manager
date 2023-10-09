@@ -24,10 +24,7 @@ export default function TaskCard({
         <Link
             href={`${pathname}?board=${selectedBoardIndex}&task=${columnIndex}_${taskIndex}`}
         >
-            <div
-                key={title}
-                className="bg-neutral-700 rounded py-5 px-4"
-            >
+            <div className="bg-neutral-700 rounded py-5 px-4">
                 <h4 className="font-bold text-neutral-100">{title}</h4>
                 <span className="text-xs font-bold text-neutral-500">{`0 of ${numSubtasks} subtasks`}</span>
             </div>

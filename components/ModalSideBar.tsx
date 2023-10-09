@@ -9,7 +9,7 @@ type Props = {
     handleShowSideBar: Function
 }
 
-export default function SideBar({
+export default function ModalSideBar({
     numBoards,
     boardNames,
     selectedBoardIndex,
@@ -37,10 +37,13 @@ export default function SideBar({
 
     return (
         <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-neutral-700 py-4 gap-3 w-full md:flex md:flex-col md:h-full md:border-r-[1px] md:border-neutral-600 md:justify-between"
+            onClick={(e) => handleShowSideBar(e)}
+            className="bg-neutral-900/70 absolute flex flex-col items-center inset-0 pt-[5rem] md:hidden"
         >
-            <div>
+            <div
+                onClick={(e) => e.stopPropagation()}
+                className="bg-neutral-700 py-4 w-3/4 gap-3 rounded-lg shadow-[0_10px_20px_0_rgba(54,78,126,0.25)]"
+            >
                 <h2 className="uppercase text-neutral-500 text-[0.85rem] font-bold tracking-[0.12em] mb-4 pl-6">{`All Boards (${numBoards})`}</h2>
                 <ul className="text-neutral-500 font-bold flex flex-col mb-4">
                     {boardsList}
@@ -54,9 +57,9 @@ export default function SideBar({
                         + Create New Board
                     </li>
                 </ul>
-            </div>
-            <div className="bg-neutral-800 rounded mx-3 flex flex-row justify-center py-3">
-                <StyleToggle isLight={false} />
+                <div className="bg-neutral-800 rounded mx-3 flex flex-row justify-center py-4">
+                    <StyleToggle isLight={false} />
+                </div>
             </div>
         </div>
     )
