@@ -198,7 +198,7 @@ export default function Home() {
 
     return (
         <main className="flex flex-col min-h-screen">
-            <div className="flex md:grid md:grid-rows-[1fr_18fr] md:grid-cols-[2fr_5fr] md:h-full md:fixed">
+            <div className="flex md:grid md:grid-rows-[1fr_18fr] md:grid-cols-[11fr_24fr] md:h-full md:fixed">
                 <div className="hidden md:flex md:bg-neutral-700 md:pl-6 md:border-r-[1px] md:border-neutral-600">
                     <Logo />
                 </div>
