@@ -11,7 +11,14 @@ export default function Modal({ handleBackToBoard, children }: Props) {
         >
             <div
                 onClick={(e) => e.stopPropagation()}
-                className="bg-neutral-700 px-6 pt-6 pb-6 w-full gap-3 rounded-lg shadow-[0_10px_20px_0_rgba(54,78,126,0.25)] overflow-auto overflow-y-scroll overscroll-contain md:w-2/3"
+                className="
+                    bg-neutral-700 
+                    px-6 pt-6 pb-6 
+                    w-full gap-3 
+                    rounded-lg shadow-[0_10px_20px_0_rgba(54,78,126,0.25)] 
+                    overflow-auto overflow-y-scroll overscroll-contain 
+                    md:w-2/3
+                    lg:w-2/5"
             >
                 {children}
             </div>

@@ -18,7 +18,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body
-                className={`${font.className} bg-neutral-800 min-h-screen m-0`}
+                className={`${font.className} bg-neutral-800 min-h-screen m-0 md:overflow-hidden`}
             >
                 {children}
             </body>

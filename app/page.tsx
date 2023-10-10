@@ -206,11 +206,12 @@ export default function Home() {
         setIsModalOpen(true)
     }
 
-    //todo: figure out how to make scrolling only occur in one cell of a css grid
+    //TODO: then desktop style
+    //      then double check styles for all sizes (mobile, tablet, laptop, desktop)
 
     return (
         <main className="flex flex-col min-h-screen">
-            <div className="flex md:grid md:grid-rows-[1fr_18fr] md:grid-cols-[11fr_24fr] md:h-full md:fixed">
+            <div className="flex w-full md:grid md:grid-rows-[1fr_18fr] md:grid-cols-[11fr_24fr] md:h-full md:fixed lg:grid-cols-[1fr_3fr] xl:grid-cols-[1fr_6fr]">
                 <div
                     className={`hidden md:flex md:bg-neutral-700 md:pl-6 md:border-r-[1px] md:border-neutral-600 ${
                         !showSideBar && "md:border-b-[1px]"
@@ -249,7 +250,7 @@ export default function Home() {
                 </div>
                 <div
                     className={`overflow-auto ${
-                        showSideBar ? "col-span-1" : "col-span-2"
+                        showSideBar ? "col-span-1" : "col-span-2 pl-6"
                     }`}
                 >
                     <Board
