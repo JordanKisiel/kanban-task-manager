@@ -17,7 +17,7 @@ export default function Modal({ handleBackToBoard, children }: Props) {
                     w-full gap-3 
                     rounded-lg shadow-[0_10px_20px_0_rgba(54,78,126,0.25)] 
                     overflow-auto overflow-y-scroll overscroll-contain 
-                    md:w-2/3
+                    md:w-1/2
                     lg:w-2/5
                     xl:w-1/4"
             >
