@@ -2,6 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import Logo from "@/components/Logo"
 import HeaderBar from "../components/HeaderBar"
 import Board from "../components/Board"
@@ -16,6 +17,7 @@ import AddTaskModal from "@/components/AddTaskModal"
 import AddBoardModal from "@/components/AddBoardModal"
 import EditBoardModal from "@/components/EditBoardModal"
 import SideBar from "../components/SideBar"
+import showIcon from "@/public/show-icon.svg"
 
 type ModalMode =
     | "viewTask"
@@ -40,7 +42,8 @@ export default function Home() {
     let currentColumn: string | null = null
     let columnNames: string[] = [""]
 
-    const [showSideBar, setShowSideBar] = useState(false)
+    const [showModalSideBar, setModalShowSideBar] = useState(false)
+    const [showSideBar, setShowSideBar] = useState(true)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalMode, setModalMode] = useState<ModalMode>("viewTask")
 
@@ -170,8 +173,17 @@ export default function Home() {
     }, [isModalOpen])
 
     //should this be a pointer event? or just a mouse event
-    function handleShowSideBar(event: PointerEvent) {
-        setShowSideBar((prevValue) => !prevValue)
+    function handleShowModalSideBar(event: PointerEvent) {
+        setModalShowSideBar((prevValue) => !prevValue)
+    }
+
+    function handleHideSideBar() {
+        console.log("hiding sidebar")
+        setShowSideBar(false)
+    }
+
+    function handleShowSideBar() {
+        setShowSideBar(true)
     }
 
     function handleBackToBoard() {
@@ -199,7 +211,11 @@ export default function Home() {
     return (
         <main className="flex flex-col min-h-screen">
             <div className="flex md:grid md:grid-rows-[1fr_18fr] md:grid-cols-[11fr_24fr] md:h-full md:fixed">
-                <div className="hidden md:flex md:bg-neutral-700 md:pl-6 md:border-r-[1px] md:border-neutral-600">
+                <div
+                    className={`hidden md:flex md:bg-neutral-700 md:pl-6 md:border-r-[1px] md:border-neutral-600 ${
+                        !showSideBar && "md:border-b-[1px]"
+                    }`}
+                >
                     <Logo />
                 </div>
                 <div className="flex flex-row fixed top-0 left-0 right-0 bg-neutral-700 pl-3 md:relative md:border-b-[1px] md:border-neutral-600">
@@ -210,23 +226,32 @@ export default function Home() {
                         selectedBoard={
                             mockBoardsData.boards[selectedBoardIndex].title
                         }
-                        isSideBarShown={showSideBar}
+                        isSideBarShown={showModalSideBar}
                         setIsModalOpen={setIsModalOpen}
                         handleShowAddTaskModal={handleShowAddTaskModal}
-                        handleShowSideBar={handleShowSideBar}
+                        handleShowModalSideBar={handleShowModalSideBar}
                         handleSwitchModalMode={handleSwitchModalMode}
                     />
                 </div>
-                <div className="hidden bg-neutral-700 md:block">
+                <div
+                    className={`hidden bg-neutral-700 md:block ${
+                        showSideBar ? "col-span-1" : "md:hidden"
+                    }`}
+                >
                     <SideBar
                         numBoards={boardNames.length}
                         boardNames={boardNames}
                         selectedBoardIndex={selectedBoardIndex}
                         handleShowAddBoardModal={handleShowAddBoardModal}
+                        handleHideSideBar={handleHideSideBar}
                         handleShowSideBar={handleShowSideBar}
                     />
                 </div>
-                <div className="overflow-auto">
+                <div
+                    className={`overflow-auto ${
+                        showSideBar ? "col-span-1" : "col-span-2"
+                    }`}
+                >
                     <Board
                         columns={
                             mockBoardsData.boards[selectedBoardIndex].columns
@@ -236,19 +261,30 @@ export default function Home() {
                     />
                 </div>
             </div>
-            {showSideBar && (
+            {showModalSideBar && (
                 <ModalSideBar
                     numBoards={boardNames.length}
                     boardNames={boardNames}
                     selectedBoardIndex={selectedBoardIndex}
                     handleShowAddBoardModal={handleShowAddBoardModal}
-                    handleShowSideBar={handleShowSideBar}
+                    handleShowModalSideBar={handleShowModalSideBar}
                 />
             )}
             {isModalOpen && (
                 <Modal handleBackToBoard={handleBackToBoard}>
                     {modalToShow}
                 </Modal>
+            )}
+            {!showSideBar && (
+                <button
+                    onClick={() => handleShowSideBar()}
+                    className="bg-purple-600 fixed bottom-12 rounded-r-full p-5"
+                >
+                    <Image
+                        src={showIcon}
+                        alt="Show Sidebar Icon"
+                    />
+                </button>
             )}
         </main>
     )

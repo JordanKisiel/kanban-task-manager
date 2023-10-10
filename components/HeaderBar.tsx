@@ -8,7 +8,7 @@ type Props = {
     isSideBarShown: boolean
     setIsModalOpen: Function
     handleShowAddTaskModal: Function
-    handleShowSideBar: Function
+    handleShowModalSideBar: Function
     handleSwitchModalMode: Function
 }
 
@@ -17,7 +17,7 @@ export default function HeaderBar({
     isSideBarShown,
     setIsModalOpen,
     handleShowAddTaskModal,
-    handleShowSideBar,
+    handleShowModalSideBar,
     handleSwitchModalMode,
 }: Props) {
     const menuOptions = [
@@ -44,7 +44,7 @@ export default function HeaderBar({
                     {selectedBoard}
                 </h1>
                 <button
-                    onClick={(e) => handleShowSideBar(e)}
+                    onClick={(e) => handleShowModalSideBar(e)}
                     className={`absolute w-full h-full top-0 bg-no-repeat bg-right ${
                         isSideBarShown
                             ? "bg-[url('../public/arrow-up.svg')]"

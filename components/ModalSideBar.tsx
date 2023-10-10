@@ -6,7 +6,7 @@ type Props = {
     boardNames: string[]
     selectedBoardIndex: number
     handleShowAddBoardModal: Function
-    handleShowSideBar: Function
+    handleShowModalSideBar: Function
 }
 
 export default function ModalSideBar({
@@ -14,7 +14,7 @@ export default function ModalSideBar({
     boardNames,
     selectedBoardIndex,
     handleShowAddBoardModal,
-    handleShowSideBar,
+    handleShowModalSideBar,
 }: Props) {
     const boardsList = boardNames.map((boardName, index) => {
         const isSelected = index === selectedBoardIndex
@@ -37,7 +37,7 @@ export default function ModalSideBar({
 
     return (
         <div
-            onClick={(e) => handleShowSideBar(e)}
+            onClick={(e) => handleShowModalSideBar(e)}
             className="bg-neutral-900/70 absolute flex flex-col items-center inset-0 pt-[5rem] md:hidden"
         >
             <div
@@ -49,7 +49,7 @@ export default function ModalSideBar({
                     {boardsList}
                     <li
                         onClick={(e) => {
-                            handleShowSideBar(e)
+                            handleShowModalSideBar(e)
                             handleShowAddBoardModal()
                         }}
                         className="font-bold py-3 pl-[3.4rem] mr-6 text-purple-600 bg-[url('../public/board-icon-purple.svg')] bg-no-repeat bg-[center_left_1.5rem]"
