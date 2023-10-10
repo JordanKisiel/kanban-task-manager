@@ -25,7 +25,7 @@ export default function DeleteModal({
     }
 
     return (
-        <div className="flex flex-col gap-6 bg-neutral-700">
+        <div className="flex flex-col gap-6 bg-neutral-100 dark:bg-neutral-700">
             <h4 className="font-bold text-red-300 text-lg">
                 {`Delete this ${isBoard ? "board" : "task"}?`}
             </h4>
@@ -44,7 +44,7 @@ export default function DeleteModal({
                 </ActionButton>
                 <ActionButton
                     isWidthFull={true}
-                    bgColor="bg-neutral-100"
+                    bgColor="bg-neutral-300 dark:bg-neutral-100"
                     textColor="text-purple-600"
                     textSize="text-sm"
                     handler={() => handleBackToBoard()}

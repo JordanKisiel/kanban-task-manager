@@ -16,7 +16,7 @@ export default function RemovableInput({
             <input
                 type="text"
                 placeholder={placeholderText}
-                className="w-full bg-neutral-700 border-[1px] border-neutral-600 rounded text-sm text-neutral-100 px-4 py-3 outline-2 outline-purple-300 placeholder:text-neutral-500 placeholder:opacity-50"
+                className="w-full bg-neutral-100 dark:bg-neutral-700 border-[1px] border-neutral-300 dark:border-neutral-600 rounded text-sm text-neutral-900 dark:text-neutral-100 px-4 py-3 outline-2 outline-purple-300 placeholder:text-neutral-500"
                 value={value ? value : ""}
             />
             <button

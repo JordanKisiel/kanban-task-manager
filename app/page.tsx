@@ -1,5 +1,6 @@
 "use client"
 
+import { useDarkMode } from "usehooks-ts"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import Image from "next/image"
@@ -47,6 +48,8 @@ export default function Home() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalMode, setModalMode] = useState<ModalMode>("viewTask")
 
+    const { isDarkMode, toggle, enable, disable } = useDarkMode()
+
     const selectedTaskString = searchParams.get("task")
 
     if (selectedTaskString !== null) {
@@ -87,12 +90,6 @@ export default function Home() {
             handleBackToBoard={handleBackToBoard}
         />
     )
-
-    //TODO:
-    //  -style for other screen sizes
-    //  -add the ability to switch themes
-    //  -follow prisma tutorial
-    //  -add CRUD operations for boards and tasks
 
     //TODO: consider using a switch structure
     // could polymorphism be applied here?
@@ -143,6 +140,14 @@ export default function Home() {
     const router = useRouter()
 
     useEffect(() => {
+        if (isDarkMode) {
+            document.querySelector("html")?.classList.add("dark")
+        } else {
+            document.querySelector("html")?.classList.remove("dark")
+        }
+    }, [isDarkMode])
+
+    useEffect(() => {
         if (selectedBoardIndexParam === null) {
             router.push("?board=0")
         }
@@ -178,7 +183,6 @@ export default function Home() {
     }
 
     function handleHideSideBar() {
-        console.log("hiding sidebar")
         setShowSideBar(false)
     }
 
@@ -206,22 +210,27 @@ export default function Home() {
         setIsModalOpen(true)
     }
 
-    //TODO: then desktop style
-    //      then double check styles for all sizes (mobile, tablet, laptop, desktop)
+    //TODO: -test dark mode and implement light mode
+    //      -get rid of flash of light mode when using dark mode (useLayoutEffect ?)
+    //      -componentize modals (headers, labels, etc)
+    //      follow tutorial about prisma
+    //      research proper way to represent data in relational database
+    //      follow tutorial on using prisma (with postgresql) and nextjs
+    //  -add CRUD operations for boards and tasks
 
     return (
         <main className="flex flex-col min-h-screen">
             <div className="flex w-full md:grid md:grid-rows-[1fr_18fr] md:grid-cols-[11fr_24fr] md:h-full md:fixed lg:grid-cols-[1fr_3fr] xl:grid-cols-[1fr_6fr]">
                 <div
-                    className={`hidden md:flex md:bg-neutral-700 md:pl-6 md:border-r-[1px] md:border-neutral-600 ${
+                    className={`hidden md:flex bg-neutral-100 md:dark:bg-neutral-700 md:pl-6 md:border-r-[1px] md:dark:border-neutral-600 md:border-neutral-300 ${
                         !showSideBar && "md:border-b-[1px]"
                     }`}
                 >
-                    <Logo />
+                    <Logo isDarkMode={isDarkMode} />
                 </div>
-                <div className="flex flex-row fixed top-0 left-0 right-0 bg-neutral-700 pl-3 md:relative md:border-b-[1px] md:border-neutral-600">
+                <div className="flex flex-row fixed top-0 left-0 right-0 bg-neutral-100 dark:bg-neutral-700 pl-3 md:relative md:border-b-[1px] md:dark:border-neutral-600 md:border-neutral-300">
                     <div className="flex flex-row justify-center items-center md:hidden">
-                        <Logo />
+                        <Logo isDarkMode={isDarkMode} />
                     </div>
                     <HeaderBar
                         selectedBoard={
@@ -235,7 +244,7 @@ export default function Home() {
                     />
                 </div>
                 <div
-                    className={`hidden bg-neutral-700 md:block ${
+                    className={`hidden bg-neutral-100 dark:bg-neutral-700 md:block ${
                         showSideBar ? "col-span-1" : "md:hidden"
                     }`}
                 >
@@ -246,6 +255,8 @@ export default function Home() {
                         handleShowAddBoardModal={handleShowAddBoardModal}
                         handleHideSideBar={handleHideSideBar}
                         handleShowSideBar={handleShowSideBar}
+                        isDarkMode={isDarkMode}
+                        toggleDarkMode={toggle}
                     />
                 </div>
                 <div
@@ -259,6 +270,7 @@ export default function Home() {
                         }
                         handleSwitchModalMode={handleSwitchModalMode}
                         setIsModalOpen={setIsModalOpen}
+                        isDarkMode={isDarkMode}
                     />
                 </div>
             </div>
@@ -269,6 +281,8 @@ export default function Home() {
                     selectedBoardIndex={selectedBoardIndex}
                     handleShowAddBoardModal={handleShowAddBoardModal}
                     handleShowModalSideBar={handleShowModalSideBar}
+                    isDarkMode={isDarkMode}
+                    toggleDarkMode={toggle}
                 />
             )}
             {isModalOpen && (

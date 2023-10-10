@@ -2,6 +2,8 @@ import ActionButton from "./ActionButton"
 import SubtaskInputList from "./SubtaskInputList"
 import { Task } from "../types"
 import MenuButton from "./MenuButton"
+import ModalHeader from "./ModalHeader"
+import ModalLabel from "./ModalLabel"
 
 type Props = {
     task: Task | null
@@ -55,37 +57,27 @@ export default function EditTaskModal({
     return (
         <>
             <div className="flex flex-row justify-between">
-                <h4 className="text-neutral-100 text-lg leading-6 mb-6">
-                    Edit Task
-                </h4>
+                <ModalHeader>Edit Task</ModalHeader>
                 <MenuButton actions={menuOptions} />
             </div>
             <form className="flex flex-col gap-6">
                 <div>
-                    <label
-                        htmlFor="title-input"
-                        className="text-neutral-100 text-xs block mb-2"
-                    >
-                        Title
-                    </label>
+                    <ModalLabel htmlFor="title-input">Title</ModalLabel>
                     <input
                         type="text"
                         id="title-input"
-                        className="w-full bg-neutral-700 border-[1px] border-neutral-600 rounded text-sm text-neutral-100 px-4 py-3 outline-2 outline-purple-300 placeholder:text-neutral-500 placeholder:opacity-50"
+                        className="w-full bg-neutral-100 dark:bg-neutral-700 border-[1px] border-neutral-300 dark:border-neutral-600 rounded text-sm text-neutral-900 dark:text-neutral-100 px-4 py-3 outline-2 outline-purple-300 placeholder:text-neutral-500 dark:placeholder:opacity-50"
                         placeholder={TITLE_PLACEHOLDER}
                         value={task ? task.title : "No task selected"}
                     />
                 </div>
                 <div>
-                    <label
-                        htmlFor="description-input"
-                        className="text-neutral-100 text-xs block mb-2"
-                    >
+                    <ModalLabel htmlFor="description-input">
                         Description
-                    </label>
+                    </ModalLabel>
                     <textarea
                         id="description-input"
-                        className="w-full bg-neutral-700 border-[1px] border-neutral-600 rounded text-sm text-neutral-100 px-4 py-3 outline-2 outline-purple-300 placeholder:text-neutral-500 placeholder:opacity-50"
+                        className="w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 rounded text-sm dark:text-neutral-100 px-4 py-3 outline-2 dark:outline-purple-300 placeholder-dark:text-neutral-500 placeholder-dark:opacity-50"
                         rows={4}
                         placeholder={DESCRIPTION_PLACEHOLDER}
                     >
@@ -94,14 +86,9 @@ export default function EditTaskModal({
                 </div>
                 <SubtaskInputList />
                 <div>
-                    <label
-                        htmlFor="status-select"
-                        className="text-neutral-100 text-xs block mb-2"
-                    >
-                        Status
-                    </label>
+                    <ModalLabel htmlFor="status-select">Status</ModalLabel>
                     <select
-                        className="appearance-none w-full bg-neutral-700 border-[1px] border-neutral-600 rounded text-sm text-neutral-100 px-4 py-3 outline-2 outline-purple-300 bg-[url('../public/arrow-down.svg')] bg-no-repeat bg-[center_right_1rem]"
+                        className="appearance-none w-full bg-neutral-100 dark:bg-neutral-700 border-[1px] border-neutral-300 dark:border-neutral-600 rounded text-sm text-neutral-900 dark:text-neutral-100 px-4 py-3 outline-2 outline-purple-300 bg-[url('../public/arrow-down.svg')] bg-no-repeat bg-[center_right_1rem]"
                         name="status"
                         id="status-select"
                     >

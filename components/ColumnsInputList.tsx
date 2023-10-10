@@ -62,17 +62,19 @@ export default function ColumnInputList({ existingColumns }: Props) {
 
     return (
         <div className="flex flex-col gap-2">
-            <h4 className="text-neutral-100 text-xs block">Board Columns</h4>
+            <h4 className="text-neutral-500 dark:text-neutral-100 text-xs block font-bold">
+                Board Columns
+            </h4>
             {inputList}
             <ActionButton
                 isWidthFull={true}
-                bgColor="bg-neutral-100"
+                bgColor="bg-neutral-300 dark:bg-neutral-100"
                 textColor="text-purple-600"
                 textSize="text-sm"
                 handler={handleAddInput}
             >
                 <Image
-                    className="w-[3%] mt-[0.25rem]"
+                    className="w-[3%] mt-[0.1rem]"
                     src={addIcon}
                     alt="Add icon"
                 />

@@ -1,6 +1,8 @@
 import ActionButton from "./ActionButton"
 import ColumnInputList from "./ColumnsInputList"
 import MenuButton from "./MenuButton"
+import ModalHeader from "./ModalHeader"
+import ModalLabel from "./ModalLabel"
 
 type Props = {
     handleBackToBoard: Function
@@ -21,22 +23,15 @@ export default function AddBoardModal({ handleBackToBoard }: Props) {
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-row justify-between">
-                <h4 className="font-bold text-neutral-100 text-lg">
-                    Add New Board
-                </h4>
+                <ModalHeader>Add New Board</ModalHeader>
                 <MenuButton actions={menuOptions} />
             </div>
             <div>
-                <label
-                    htmlFor="title-input"
-                    className="text-neutral-100 text-xs block mb-2"
-                >
-                    Board Name
-                </label>
+                <ModalLabel htmlFor="title-input">Board Name</ModalLabel>
                 <input
                     type="text"
                     id="title-input"
-                    className="w-full bg-neutral-700 border-[1px] border-neutral-600 rounded text-sm text-neutral-100 px-4 py-3 outline-2 outline-purple-300 placeholder:text-neutral-500 placeholder:opacity-50"
+                    className="w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 rounded text-sm dark:text-neutral-100 px-4 py-3 outline-2 dark:outline-purple-300 placeholder-dark:text-neutral-500 placeholder-dark:opacity-50"
                     placeholder={TITLE_PLACEHOLDER}
                 />
             </div>

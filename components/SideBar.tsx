@@ -8,6 +8,8 @@ type Props = {
     handleShowAddBoardModal: Function
     handleHideSideBar: Function
     handleShowSideBar: Function
+    isDarkMode: boolean
+    toggleDarkMode: Function
 }
 
 export default function SideBar({
@@ -17,13 +19,15 @@ export default function SideBar({
     handleShowAddBoardModal,
     handleHideSideBar,
     handleShowSideBar,
+    isDarkMode,
+    toggleDarkMode,
 }: Props) {
     const boardsList = boardNames.map((boardName, index) => {
         const isSelected = index === selectedBoardIndex
 
         const normalStyles = "bg-[url('../public/board-icon.svg')]"
         const selectedStyles =
-            "bg-purple-600 text-neutral-300 rounded-r-full block} bg-[url('../public/board-icon-white.svg')]"
+            "bg-purple-600 text-neutral-300 rounded-r-full block bg-[url('../public/board-icon-white.svg')]"
 
         return (
             <li
@@ -40,7 +44,7 @@ export default function SideBar({
     return (
         <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-neutral-700 py-4 gap-3 w-full md:flex md:flex-col md:h-full md:border-r-[1px] md:border-neutral-600 md:justify-between md:pb-12"
+            className="bg-neutral-100 dark:bg-neutral-700 py-4 gap-3 w-full md:flex md:flex-col md:h-full md:border-r-[1px] md:border-neutral-300 md:dark:border-neutral-600 md:justify-between md:pb-12"
         >
             <div>
                 <h2 className="uppercase text-neutral-500 text-[0.85rem] font-bold tracking-[0.12em] mb-4 pl-6">{`All Boards (${numBoards})`}</h2>
@@ -58,8 +62,11 @@ export default function SideBar({
                 </ul>
             </div>
             <div className="flex flex-col gap-5 items-start w-full px-5">
-                <div className="bg-neutral-800 rounded flex flex-row justify-center py-3 w-full">
-                    <StyleToggle isLight={false} />
+                <div className="bg-neutral-200 dark:bg-neutral-800 rounded flex flex-row justify-center py-3 w-full">
+                    <StyleToggle
+                        isLight={!isDarkMode}
+                        toggleDarkMode={toggleDarkMode}
+                    />
                 </div>
                 <button
                     onClick={() => handleHideSideBar()}

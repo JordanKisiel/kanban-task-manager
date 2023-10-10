@@ -1,6 +1,7 @@
 import ActionButton from "./ActionButton"
 import SubtaskInputList from "./SubtaskInputList"
 import MenuButton from "./MenuButton"
+import ModalHeader from "./ModalHeader"
 
 type Props = {
     columnNames: string[]
@@ -36,36 +37,34 @@ export default function AddTaskModal({
     return (
         <>
             <div className="flex flex-row justify-between">
-                <h4 className="text-neutral-100 text-lg leading-6 mb-6">
-                    Add New Task
-                </h4>
+                <ModalHeader>Add New Task</ModalHeader>
                 <MenuButton actions={menuOptions} />
             </div>
             <form className="flex flex-col gap-6">
                 <div>
                     <label
                         htmlFor="title-input"
-                        className="text-neutral-100 text-xs block mb-2"
+                        className="dark:text-neutral-100 text-xs block mb-2"
                     >
                         Title
                     </label>
                     <input
                         type="text"
                         id="title-input"
-                        className="w-full bg-neutral-700 border-[1px] border-neutral-600 rounded text-sm text-neutral-100 px-4 py-3 outline-2 outline-purple-300 placeholder:text-neutral-500 placeholder:opacity-50"
+                        className="w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 rounded text-sm dark:text-neutral-100 px-4 py-3 outline-2 dark:outline-purple-300 placeholder-dark:text-neutral-500 placeholder-dark:opacity-50"
                         placeholder={TITLE_PLACEHOLDER}
                     />
                 </div>
                 <div>
                     <label
                         htmlFor="description-input"
-                        className="text-neutral-100 text-xs block mb-2"
+                        className="dark:text-neutral-100 text-xs block mb-2"
                     >
                         Description
                     </label>
                     <textarea
                         id="description-input"
-                        className="w-full bg-neutral-700 border-[1px] border-neutral-600 rounded text-sm text-neutral-100 px-4 py-3 outline-2 outline-purple-300 placeholder:text-neutral-500 placeholder:opacity-50"
+                        className="w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 rounded text-sm dark:text-neutral-100 px-4 py-3 outline-2 dark:outline-purple-300 placeholder-dark:text-neutral-500 placeholder-dark:opacity-50"
                         rows={4}
                         placeholder={DESCRIPTION_PLACEHOLDER}
                     ></textarea>
@@ -74,12 +73,12 @@ export default function AddTaskModal({
                 <div>
                     <label
                         htmlFor="status-select"
-                        className="text-neutral-100 text-xs block mb-2"
+                        className="dark:text-neutral-100 text-xs block mb-2"
                     >
                         Status
                     </label>
                     <select
-                        className="appearance-none w-full bg-neutral-700 border-[1px] border-neutral-600 rounded text-sm text-neutral-100 px-4 py-3 outline-2 outline-purple-300 bg-[url('../public/arrow-down.svg')] bg-no-repeat bg-[center_right_1rem]"
+                        className="appearance-none w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 rounded text-sm dark:text-neutral-100 px-4 py-3 outline-2 dark:outline-purple-300 bg-[url('../public/arrow-down.svg')] bg-no-repeat bg-[center_right_1rem]"
                         name="status"
                         id="status-select"
                     >
@@ -88,8 +87,8 @@ export default function AddTaskModal({
                 </div>
                 <ActionButton
                     isWidthFull={true}
-                    bgColor="bg-purple-600"
-                    textColor="text-neutral-100"
+                    bgColor="dark:bg-purple-600"
+                    textColor="dark:text-neutral-100"
                     textSize="text-sm"
                     handler={() => {
                         /*does nothing*/

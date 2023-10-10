@@ -38,9 +38,9 @@ export default function HeaderBar({
     ]
 
     return (
-        <section className="bg-neutral-700 flex flex-row p-4 justify-between items-center w-full">
+        <section className="bg-neutral-100 dark:bg-neutral-700 flex flex-row p-4 justify-between items-center w-full">
             <div className="relative pr-4">
-                <h1 className="text-neutral-100 text-lg font-bold">
+                <h1 className="text-neutral-900 dark:text-neutral-100 text-lg font-bold">
                     {selectedBoard}
                 </h1>
                 <button
@@ -56,7 +56,7 @@ export default function HeaderBar({
                 <ActionButton
                     isWidthFull={false}
                     bgColor="bg-purple-600"
-                    textColor="text-neutral-100"
+                    textColor="text-neutral-100 dark:text-neutral-100"
                     textSize="text-base"
                     handler={() => handleShowAddTaskModal()}
                 >

@@ -1,6 +1,8 @@
 import { Task } from "../types"
 import SubtaskCard from "./SubtaskCard"
 import MenuButton from "./MenuButton"
+import ModalHeader from "./ModalHeader"
+import ModalLabel from "./ModalLabel"
 
 type Props = {
     task: Task | null
@@ -78,27 +80,25 @@ export default function ViewTaskModal({
 
     return (
         <>
-            <div className="flex flex-row mb-6 justify-between items-center">
-                <h4 className="text-neutral-100 text-lg leading-6">
+            <div className="flex flex-row mb-6 justify-between items-start">
+                <ModalHeader>
                     {task ? task.title : "No task selected"}
-                </h4>
+                </ModalHeader>
                 <MenuButton actions={menuOptions} />
             </div>
             <p className="text-neutral-500 text-sm leading-6 mb-6">
                 {task ? task.description : "No task selected"}
             </p>
             <div className="mb-5">
-                <span className="text-neutral-100 text-xs block mb-4">{`Subtasks (${numCompletedTasks} of ${
+                <span className="text-neutral-500 dark:text-neutral-100 text-xs font-bold block mb-4">{`Subtasks (${numCompletedTasks} of ${
                     task ? task.subtasks.length : 0
                 })`}</span>
                 <ul className="flex flex-col gap-2">{subtaskCards}</ul>
             </div>
             <div>
-                <span className="text-neutral-100 text-xs block mb-2">
-                    Current Status
-                </span>
+                <ModalLabel htmlFor="status-select">Current Status</ModalLabel>
                 <select
-                    className="appearance-none w-full bg-neutral-700 border-[1px] border-neutral-600 rounded text-sm text-neutral-100 px-4 py-3 outline-2 outline-purple-300 bg-[url('../public/arrow-down.svg')] bg-no-repeat bg-[center_right_1rem]"
+                    className="appearance-none w-full bg-neutral-100 dark:bg-neutral-700 border-[1px] border-neutral-300 dark:border-neutral-600 rounded text-sm text-neutral-900 dark:text-neutral-100 px-4 py-3 outline-2 dark:outline-purple-300 bg-[url('../public/arrow-down.svg')] bg-no-repeat bg-[center_right_1rem]"
                     name="status"
                     id="status-select"
                 >
