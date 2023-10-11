@@ -211,9 +211,6 @@ export default function Home() {
     }
 
     //TODO:
-    //      -get rid of flash of light mode when using dark mode (useLayoutEffect ?)
-    //      -make dark mode default
-    //      -componentize modals (headers, labels, etc)
     //      follow tutorial about prisma
     //      research proper way to represent data in relational database
     //      follow tutorial on using prisma (with postgresql) and nextjs
@@ -245,7 +242,7 @@ export default function Home() {
                     />
                 </div>
                 <div
-                    className={`hidden bg-neutral-100 dark:bg-neutral-700 md:block ${
+                    className={`hidden bg-neutral-100 dark:bg-neutral-700 md:block lg:min-w-[15rem] ${
                         showSideBar ? "col-span-1" : "md:hidden"
                     }`}
                 >
