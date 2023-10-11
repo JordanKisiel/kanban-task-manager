@@ -16,7 +16,10 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <html lang="en">
+        <html
+            lang="en"
+            className="dark"
+        >
             <body
                 className={`${font.className} bg-neutral-200 dark:bg-neutral-800 min-h-screen m-0 md:overflow-hidden`}
             >

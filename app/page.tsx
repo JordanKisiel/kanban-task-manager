@@ -48,7 +48,7 @@ export default function Home() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalMode, setModalMode] = useState<ModalMode>("viewTask")
 
-    const { isDarkMode, toggle, enable, disable } = useDarkMode()
+    const { isDarkMode, toggle, enable, disable } = useDarkMode(true)
 
     const selectedTaskString = searchParams.get("task")
 
@@ -210,8 +210,9 @@ export default function Home() {
         setIsModalOpen(true)
     }
 
-    //TODO: -test dark mode and implement light mode
+    //TODO:
     //      -get rid of flash of light mode when using dark mode (useLayoutEffect ?)
+    //      -make dark mode default
     //      -componentize modals (headers, labels, etc)
     //      follow tutorial about prisma
     //      research proper way to represent data in relational database
