@@ -212,7 +212,8 @@ export default function Home() {
 
     //TODO:
     //      follow tutorial about prisma
-    //      research proper way to represent data in relational database
+    //          -research if I have to use edge client with Nextjs or just regular prisma client
+    //             -probably want to use regular client?
     //      follow tutorial on using prisma (with postgresql) and nextjs
     //  -add CRUD operations for boards and tasks
 
