@@ -19,6 +19,7 @@ import AddBoardModal from "@/components/AddBoardModal"
 import EditBoardModal from "@/components/EditBoardModal"
 import SideBar from "../components/SideBar"
 import showIcon from "@/public/show-icon.svg"
+import NoSsr from "@/components/NoSsr"
 
 type ModalMode =
     | "viewTask"
@@ -211,11 +212,18 @@ export default function Home() {
     }
 
     //TODO:
-    //      follow tutorial about prisma
-    //          -research if I have to use edge client with Nextjs or just regular prisma client
-    //             -probably want to use regular client?
     //      follow tutorial on using prisma (with postgresql) and nextjs
+    //         -ideas:
+    //            -DONE:create wrapper around prisma client to make it a singleton
+    //              -helps with issues on dev server
+    //            -create utility functions that I can import and call from any file?
+    //         -inside server components I can fetch data directly
+    //         -inside clients components I can call a Route Handler
+    //            -this is recommended as Route Handlers run on the server and return data to the client
+    //               -protecting senstive data you don't want sent to the client and working closer to the database
     //  -add CRUD operations for boards and tasks
+    //   TODO: focus on adding the ability to READ data from database
+    //           -will need to use a Route Handler for this (GET)
 
     return (
         <main className="flex flex-col min-h-screen">
@@ -225,11 +233,15 @@ export default function Home() {
                         !showSideBar && "md:border-b-[1px]"
                     }`}
                 >
-                    <Logo isDarkMode={isDarkMode} />
+                    <NoSsr>
+                        <Logo isDarkMode={isDarkMode} />
+                    </NoSsr>
                 </div>
                 <div className="flex flex-row fixed top-0 left-0 right-0 bg-neutral-100 dark:bg-neutral-700 pl-3 md:relative md:border-b-[1px] md:dark:border-neutral-600 md:border-neutral-300">
                     <div className="flex flex-row justify-center items-center md:hidden">
-                        <Logo isDarkMode={isDarkMode} />
+                        <NoSsr>
+                            <Logo isDarkMode={isDarkMode} />
+                        </NoSsr>
                     </div>
                     <HeaderBar
                         selectedBoard={

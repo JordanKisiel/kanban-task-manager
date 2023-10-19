@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid"
 import StyleToggle from "./StyleToggle"
+import NoSsr from "./NoSsr"
 
 type Props = {
     numBoards: number
@@ -63,10 +64,12 @@ export default function SideBar({
             </div>
             <div className="flex flex-col gap-5 items-start w-full px-5">
                 <div className="bg-neutral-200 dark:bg-neutral-800 rounded flex flex-row justify-center py-3 w-full">
-                    <StyleToggle
-                        isLight={!isDarkMode}
-                        toggleDarkMode={toggleDarkMode}
-                    />
+                    <NoSsr>
+                        <StyleToggle
+                            isLight={!isDarkMode}
+                            toggleDarkMode={toggleDarkMode}
+                        />
+                    </NoSsr>
                 </div>
                 <button
                     onClick={() => handleHideSideBar()}
