@@ -1,6 +1,6 @@
 "use client"
 
-import { useDarkMode } from "usehooks-ts"
+import { useLocalStorage } from "@/hooks/useLocalStorage"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import Image from "next/image"
@@ -19,7 +19,6 @@ import AddBoardModal from "@/components/AddBoardModal"
 import EditBoardModal from "@/components/EditBoardModal"
 import SideBar from "../components/SideBar"
 import showIcon from "@/public/show-icon.svg"
-import NoSsr from "@/components/NoSsr"
 
 type ModalMode =
     | "viewTask"
@@ -45,11 +44,17 @@ export default function Home() {
     let columnNames: string[] = [""]
 
     const [showModalSideBar, setModalShowSideBar] = useState(false)
-    const [showSideBar, setShowSideBar] = useState(true)
+    const [showSideBar, setShowSideBar] = useLocalStorage(
+        "kanban-show-sidebar",
+        true
+    )
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalMode, setModalMode] = useState<ModalMode>("viewTask")
 
-    const { isDarkMode, toggle, enable, disable } = useDarkMode(true)
+    const [isDarkMode, setIsDarkMode] = useLocalStorage(
+        "kanban-isDarkMode",
+        true
+    )
 
     const selectedTaskString = searchParams.get("task")
 
@@ -94,6 +99,7 @@ export default function Home() {
 
     //TODO: consider using a switch structure
     // could polymorphism be applied here?
+    // or an object or map to hold the different options
     if (modalMode === "editTask") {
         modalToShow = (
             <EditTaskModal
@@ -211,12 +217,15 @@ export default function Home() {
         setIsModalOpen(true)
     }
 
+    function toggleDarkMode() {
+        setIsDarkMode((prevValue: boolean) => !prevValue)
+    }
+
     //TODO:
     //      follow tutorial on using prisma (with postgresql) and nextjs
     //         -ideas:
     //            -DONE:create wrapper around prisma client to make it a singleton
     //              -helps with issues on dev server
-    //            -create utility functions that I can import and call from any file?
     //         -inside server components I can fetch data directly
     //         -inside clients components I can call a Route Handler
     //            -this is recommended as Route Handlers run on the server and return data to the client
@@ -233,15 +242,11 @@ export default function Home() {
                         !showSideBar && "md:border-b-[1px]"
                     }`}
                 >
-                    <NoSsr>
-                        <Logo isDarkMode={isDarkMode} />
-                    </NoSsr>
+                    <Logo isDarkMode={isDarkMode} />
                 </div>
                 <div className="flex flex-row fixed top-0 left-0 right-0 bg-neutral-100 dark:bg-neutral-700 pl-3 md:relative md:border-b-[1px] md:dark:border-neutral-600 md:border-neutral-300">
                     <div className="flex flex-row justify-center items-center md:hidden">
-                        <NoSsr>
-                            <Logo isDarkMode={isDarkMode} />
-                        </NoSsr>
+                        <Logo isDarkMode={isDarkMode} />
                     </div>
                     <HeaderBar
                         selectedBoard={
@@ -267,7 +272,7 @@ export default function Home() {
                         handleHideSideBar={handleHideSideBar}
                         handleShowSideBar={handleShowSideBar}
                         isDarkMode={isDarkMode}
-                        toggleDarkMode={toggle}
+                        toggleDarkMode={toggleDarkMode}
                     />
                 </div>
                 <div
@@ -293,7 +298,7 @@ export default function Home() {
                     handleShowAddBoardModal={handleShowAddBoardModal}
                     handleShowModalSideBar={handleShowModalSideBar}
                     isDarkMode={isDarkMode}
-                    toggleDarkMode={toggle}
+                    toggleDarkMode={toggleDarkMode}
                 />
             )}
             {isModalOpen && (

@@ -1,7 +1,6 @@
 import Image from "next/image"
 import TaskColumn from "./TaskColumn"
 import ActionButton from "./ActionButton"
-import NoSsr from "./NoSsr"
 import addIconDark from "../public/plus-icon.svg"
 import addIconLight from "../public/plus-icon-gray.svg"
 import { Column } from "../types"
@@ -69,15 +68,11 @@ export default function Board({
                             }}
                             className="flex flex-row text-neutral-500 dark:text-neutral-400 bg-neutral-300/50 dark:bg-neutral-700/20 text-2xl font-bold items-center gap-2 w-full h-full justify-center rounded"
                         >
-                            <NoSsr>
-                                <Image
-                                    className="mt-[0.5rem] opacity-50"
-                                    src={
-                                        isDarkMode ? addIconDark : addIconLight
-                                    }
-                                    alt="Add icon"
-                                />
-                            </NoSsr>
+                            <Image
+                                className="mt-[0.5rem] opacity-50"
+                                src={isDarkMode ? addIconDark : addIconLight}
+                                alt="Add icon"
+                            />
                             New Column
                         </button>
                     </div>
