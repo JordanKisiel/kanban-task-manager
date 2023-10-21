@@ -17,16 +17,27 @@ export default function ActionButton({
     isSubmit,
     children,
 }: Props) {
+    const styles = `py-2 px-5 rounded-full flex justify-center gap-1 items-center font-bold ${
+        isWidthFull && "w-full"
+    } ${bgColor} ${textColor} ${textSize}`
+
+    if (isSubmit) {
+        return (
+            <button
+                type={isSubmit ? "submit" : "button"}
+                className={styles}
+            >
+                {children}
+            </button>
+        )
+    }
     return (
         <button
-            type={isSubmit ? "submit" : "button"}
             onClick={(e) => {
                 if (handler) handler()
                 e.preventDefault()
             }}
-            className={`py-2 px-5 rounded-full flex justify-center gap-1 items-center font-bold ${
-                isWidthFull && "w-full"
-            } ${bgColor} ${textColor} ${textSize}`}
+            className={styles}
         >
             {children}
         </button>

@@ -24,7 +24,20 @@ export async function GET(request: NextRequest) {
         },
     })
 
-    console.log(boards)
-
     return NextResponse.json(boards)
+}
+
+//create board
+export async function POST(request: NextRequest) {
+    const res = await request.json()
+    const { userId, title } = res
+
+    const result = await prisma.board.create({
+        data: {
+            userId,
+            title,
+        },
+    })
+
+    return NextResponse.json(result)
 }

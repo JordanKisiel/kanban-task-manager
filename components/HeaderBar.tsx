@@ -4,7 +4,7 @@ import MenuButton from "./MenuButton"
 import addIcon from "../public/plus-icon.svg"
 
 type Props = {
-    selectedBoard: string
+    selectedBoardTitle: string
     isSideBarShown: boolean
     setIsModalOpen: Function
     handleShowAddTaskModal: Function
@@ -13,7 +13,7 @@ type Props = {
 }
 
 export default function HeaderBar({
-    selectedBoard,
+    selectedBoardTitle,
     isSideBarShown,
     setIsModalOpen,
     handleShowAddTaskModal,
@@ -41,7 +41,7 @@ export default function HeaderBar({
         <section className="bg-neutral-100 dark:bg-neutral-700 flex flex-row p-4 justify-between items-center w-full">
             <div className="relative pr-4">
                 <h1 className="text-neutral-900 dark:text-neutral-100 text-lg font-bold">
-                    {selectedBoard}
+                    {selectedBoardTitle}
                 </h1>
                 <button
                     onClick={(e) => handleShowModalSideBar(e)}

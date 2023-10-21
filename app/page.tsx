@@ -11,7 +11,6 @@ import Board from "../components/Board"
 import ModalSideBar from "../components/ModalSideBar"
 import Modal from "../components/Modal"
 import { Task } from "../types"
-import mockBoardsData from "../data/mockData.json"
 import ViewTaskModal from "@/components/ViewTaskModal"
 import EditTaskModal from "@/components/EditTaskModal"
 import DeleteModal from "@/components/DeleteModal"
@@ -44,16 +43,17 @@ export default function Home() {
     let otherColumns: string[] = []
     let currentColumn: string | null = null
     let columnNames: string[] = [""]
+    let latestBoardIndex = 0
 
     const [boards, setBoards] = useState<BoardType[]>([])
+    const [isDataChanged, setIsDataChanged] = useState(false)
     const [showModalSideBar, setModalShowSideBar] = useState(false)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [modalMode, setModalMode] = useState<ModalMode>("viewTask")
     const [showSideBar, setShowSideBar] = useLocalStorage(
         "kanban-show-sidebar",
         true
     )
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [modalMode, setModalMode] = useState<ModalMode>("viewTask")
-
     const [isDarkMode, setIsDarkMode] = useLocalStorage(
         "kanban-isDarkMode",
         true
@@ -70,18 +70,9 @@ export default function Home() {
 
         task = boards[selectedBoardIndex].columns[columnIndex].tasks[taskIndex]
 
-        columnNames = mockBoardsData.boards[selectedBoardIndex].columns.map(
-            (column) => {
-                return column.title
-            }
-        )
-
         otherColumns = columnNames.filter((otherColumn, index) => {
             return columnIndex !== index
         })
-
-        currentColumn =
-            mockBoardsData.boards[selectedBoardIndex].columns[columnIndex].title
     }
 
     let modalToShow = (
@@ -123,7 +114,13 @@ export default function Home() {
             />
         )
     } else if (modalMode === "addBoard") {
-        modalToShow = <AddBoardModal handleBackToBoard={handleBackToBoard} />
+        modalToShow = (
+            <AddBoardModal
+                handleBackToBoard={handleBackToBoard}
+                fetchData={fetchData}
+                setIsDataChanged={setIsDataChanged}
+            />
+        )
     } else if (modalMode === "editBoard") {
         modalToShow = (
             <EditBoardModal
@@ -157,6 +154,13 @@ export default function Home() {
         fetchData()
     }, [])
 
+    useEffect(() => {
+        if (boards.length > 0 && isDataChanged) {
+            latestBoardIndex = boards.length - 1
+            changeSelectedBoard(latestBoardIndex)
+        }
+    }, [boards.length, isDataChanged])
+
     // useEffect(() => {
     //     if (boards.length > 0) {
     //         console.log(boards[0].columns)
@@ -173,7 +177,7 @@ export default function Home() {
 
     useEffect(() => {
         if (selectedBoardIndexParam === null) {
-            router.push("?board=0")
+            changeSelectedBoard(0)
         }
     }, [selectedBoardIndexParam])
 
@@ -215,7 +219,7 @@ export default function Home() {
     }
 
     function handleBackToBoard() {
-        router.push(`?board=${selectedBoardIndex}`)
+        changeSelectedBoard(selectedBoardIndex)
         setModalMode("viewTask")
         setIsModalOpen(false)
     }
@@ -236,6 +240,16 @@ export default function Home() {
 
     function toggleDarkMode() {
         setIsDarkMode((prevValue: boolean) => !prevValue)
+    }
+
+    async function fetchData(userId: string) {
+        const boards = await getBoards(userId)
+
+        setBoards(boards)
+    }
+
+    function changeSelectedBoard(index: number) {
+        router.push(`?board=${index}`)
     }
 
     //TODO:
@@ -275,8 +289,10 @@ export default function Home() {
                         <Logo isDarkMode={isDarkMode} />
                     </div>
                     <HeaderBar
-                        selectedBoard={
-                            mockBoardsData.boards[selectedBoardIndex].title
+                        selectedBoardTitle={
+                            boards.length > 0
+                                ? boards[selectedBoardIndex].title
+                                : ""
                         }
                         isSideBarShown={showModalSideBar}
                         setIsModalOpen={setIsModalOpen}

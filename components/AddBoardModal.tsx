@@ -11,12 +11,19 @@ import ModalLabel from "./ModalLabel"
 
 type Props = {
     handleBackToBoard: Function
+    fetchData: Function
+    setIsDataChanged: Function
 }
 
 const TITLE_PLACEHOLDER = "e.g. Web Design"
 
-export default function AddBoardModal({ handleBackToBoard }: Props) {
+export default function AddBoardModal({
+    handleBackToBoard,
+    fetchData,
+    setIsDataChanged,
+}: Props) {
     const [title, setTitle] = useState("")
+
     const router = useRouter()
 
     const menuOptions = [
@@ -38,12 +45,24 @@ export default function AddBoardModal({ handleBackToBoard }: Props) {
 
         await addBoard("be0fc8c3-496f-4ed8-9f27-32dcc66bba24", title)
 
-        router.refresh()
+        setIsDataChanged(true)
+
+        await fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
+
+        handleBackToBoard()
     }
+
+    //problems:
+    //   -new board screen (no columns) doesn't look right
+    //      -selected board is getting set
+    //   -no indication that data is being submitted to the user
+    //      -I need a loading state (maybe I should try using SWR? probably would have to research and learn to a certain extent)
 
     return (
         <form
-            onSubmit={(e) => handleSubmit(e)}
+            onSubmit={(e) => {
+                handleSubmit(e)
+            }}
             className="flex flex-col gap-6"
         >
             <div className="flex flex-row justify-between">
@@ -68,10 +87,10 @@ export default function AddBoardModal({ handleBackToBoard }: Props) {
             <ColumnInputList existingColumns={[]} />
             <div>
                 <ActionButton
-                    isWidthFull={true}
                     bgColor="bg-purple-600"
                     textColor="text-neutral-100"
                     textSize="text-sm"
+                    isWidthFull={true}
                     isSubmit={true}
                 >
                     Create New Board
