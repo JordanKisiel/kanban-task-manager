@@ -3,7 +3,8 @@ type Props = {
     bgColor: string
     textColor: string
     textSize: string
-    handler: Function
+    handler?: Function
+    isSubmit?: boolean
     children: React.ReactNode
 }
 
@@ -13,12 +14,14 @@ export default function ActionButton({
     textColor,
     textSize,
     handler,
+    isSubmit,
     children,
 }: Props) {
     return (
         <button
+            type={isSubmit ? "submit" : "button"}
             onClick={(e) => {
-                handler()
+                if (handler) handler()
                 e.preventDefault()
             }}
             className={`py-2 px-5 rounded-full flex justify-center gap-1 items-center font-bold ${

@@ -66,7 +66,10 @@ export default function Board({
                                 handleSwitchModalMode("editBoard")
                                 setIsModalOpen(true)
                             }}
-                            className="flex flex-row text-neutral-500 dark:text-neutral-400 bg-neutral-300/50 dark:bg-neutral-700/20 text-2xl font-bold items-center gap-2 w-full h-full justify-center rounded"
+                            className="
+                                flex flex-row text-neutral-500 dark:text-neutral-400 bg-neutral-300/50 
+                                dark:bg-neutral-700/20 text-2xl font-bold items-center gap-2 w-full h-full 
+                                justify-center rounded"
                         >
                             <Image
                                 className="mt-[0.5rem] opacity-50"

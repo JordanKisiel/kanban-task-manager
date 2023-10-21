@@ -51,7 +51,11 @@ export default function AddTaskModal({
                     <input
                         type="text"
                         id="title-input"
-                        className="w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 rounded text-sm dark:text-neutral-100 px-4 py-3 outline-2 dark:outline-purple-300 placeholder-dark:text-neutral-500 placeholder-dark:opacity-50"
+                        className="
+                            w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 
+                            rounded text-sm dark:text-neutral-100 px-4 py-3 outline-2 
+                            dark:outline-purple-300 placeholder-dark:text-neutral-500 
+                            placeholder-dark:opacity-50"
                         placeholder={TITLE_PLACEHOLDER}
                     />
                 </div>
@@ -64,7 +68,11 @@ export default function AddTaskModal({
                     </label>
                     <textarea
                         id="description-input"
-                        className="w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 rounded text-sm dark:text-neutral-100 px-4 py-3 outline-2 dark:outline-purple-300 placeholder-dark:text-neutral-500 placeholder-dark:opacity-50"
+                        className="
+                            w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 
+                            rounded text-sm dark:text-neutral-100 px-4 py-3 outline-2 
+                            dark:outline-purple-300 placeholder-dark:text-neutral-500 
+                            placeholder-dark:opacity-50"
                         rows={4}
                         placeholder={DESCRIPTION_PLACEHOLDER}
                     ></textarea>
@@ -78,7 +86,11 @@ export default function AddTaskModal({
                         Status
                     </label>
                     <select
-                        className="appearance-none w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 rounded text-sm dark:text-neutral-100 px-4 py-3 outline-2 dark:outline-purple-300 bg-[url('../public/arrow-down.svg')] bg-no-repeat bg-[center_right_1rem]"
+                        className="
+                            appearance-none w-full dark:bg-neutral-700 border-[1px] 
+                            dark:border-neutral-600 rounded text-sm dark:text-neutral-100 
+                            px-4 py-3 outline-2 dark:outline-purple-300 
+                            bg-[url('../public/arrow-down.svg')] bg-no-repeat bg-[center_right_1rem]"
                         name="status"
                         id="status-select"
                     >

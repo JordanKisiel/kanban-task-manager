@@ -28,7 +28,12 @@ export default function TaskColumn({ columnIndex, title, tasks }: Props) {
                 <div
                     className={`${columnColors[columnIndex]} w-[1rem] h-[1rem] rounded-full`}
                 ></div>
-                <h3 className="text-[0.82rem] uppercase tracking-[0.12em] text-neutral-500 font-bold">{`${title} (${tasks.length})`}</h3>
+                <h3
+                    className="
+                    text-[0.82rem] uppercase tracking-[0.12em] text-neutral-500 font-bold"
+                >
+                    {`${title} (${tasks.length})`}
+                </h3>
             </div>
             <div className="flex flex-col gap-6">{taskCards}</div>
         </div>

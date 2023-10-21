@@ -90,9 +90,14 @@ export default function ViewTaskModal({
                 {task ? task.description : "No task selected"}
             </p>
             <div className="mb-5">
-                <span className="text-neutral-500 dark:text-neutral-100 text-xs font-bold block mb-4">{`Subtasks (${numCompletedTasks} of ${
-                    task ? task.subTasks.length : 0
-                })`}</span>
+                <span
+                    className="
+                    text-neutral-500 dark:text-neutral-100 text-xs font-bold block mb-4"
+                >
+                    {`Subtasks (${numCompletedTasks} of ${
+                        task ? task.subTasks.length : 0
+                    })`}
+                </span>
                 <ul className="flex flex-col gap-2">{subtaskCards}</ul>
             </div>
             <div>

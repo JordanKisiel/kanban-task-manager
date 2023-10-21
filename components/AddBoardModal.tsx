@@ -1,3 +1,8 @@
+"use client"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { addBoard } from "@/lib/dataUtils"
 import ActionButton from "./ActionButton"
 import ColumnInputList from "./ColumnsInputList"
 import MenuButton from "./MenuButton"
@@ -11,6 +16,9 @@ type Props = {
 const TITLE_PLACEHOLDER = "e.g. Web Design"
 
 export default function AddBoardModal({ handleBackToBoard }: Props) {
+    const [title, setTitle] = useState("")
+    const router = useRouter()
+
     const menuOptions = [
         {
             actionName: "Close",
@@ -20,8 +28,24 @@ export default function AddBoardModal({ handleBackToBoard }: Props) {
         },
     ]
 
+    function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setTitle(event.target.value)
+    }
+
+    //hard-coding userId for now
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+
+        await addBoard("be0fc8c3-496f-4ed8-9f27-32dcc66bba24", title)
+
+        router.refresh()
+    }
+
     return (
-        <div className="flex flex-col gap-6">
+        <form
+            onSubmit={(e) => handleSubmit(e)}
+            className="flex flex-col gap-6"
+        >
             <div className="flex flex-row justify-between">
                 <ModalHeader>Add New Board</ModalHeader>
                 <MenuButton actions={menuOptions} />
@@ -29,10 +53,16 @@ export default function AddBoardModal({ handleBackToBoard }: Props) {
             <div>
                 <ModalLabel htmlFor="title-input">Board Name</ModalLabel>
                 <input
+                    onChange={(e) => handleTitleChange(e)}
                     type="text"
                     id="title-input"
-                    className="w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 rounded text-sm dark:text-neutral-100 px-4 py-3 outline-2 dark:outline-purple-300 placeholder-dark:text-neutral-500 placeholder-dark:opacity-50"
+                    className="
+                        w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 
+                        rounded text-sm dark:text-neutral-100 px-4 py-3 outline-2 
+                        dark:outline-purple-300 placeholder-dark:text-neutral-500 
+                        placeholder-dark:opacity-50"
                     placeholder={TITLE_PLACEHOLDER}
+                    value={title}
                 />
             </div>
             <ColumnInputList existingColumns={[]} />
@@ -42,13 +72,11 @@ export default function AddBoardModal({ handleBackToBoard }: Props) {
                     bgColor="bg-purple-600"
                     textColor="text-neutral-100"
                     textSize="text-sm"
-                    handler={() => {
-                        /* does nothing */
-                    }}
+                    isSubmit={true}
                 >
                     Create New Board
                 </ActionButton>
             </div>
-        </div>
+        </form>
     )
 }

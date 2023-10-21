@@ -248,20 +248,29 @@ export default function Home() {
     //            -this is recommended as Route Handlers run on the server and return data to the client
     //               -protecting senstive data you don't want sent to the client and working closer to the database
     //  -add CRUD operations for boards and tasks
-    //   !!!   TODO: focus on adding the ability to READ data from database  !!!!
-    //
+    //   !!!   TODO: focus on adding the ability to CREATE data in database  !!!!
+    //             -add abilty to create boards
 
     return (
         <main className="flex flex-col min-h-screen">
-            <div className="flex w-full md:grid md:grid-rows-[1fr_18fr] md:grid-cols-[11fr_24fr] md:h-full md:fixed lg:grid-cols-[1fr_3fr] xl:grid-cols-[1fr_6fr]">
+            <div
+                className="
+                flex w-full md:grid md:grid-rows-[1fr_18fr] md:grid-cols-[11fr_24fr] md:h-full md:fixed 
+                lg:grid-cols-[1fr_3fr] xl:grid-cols-[1fr_6fr]"
+            >
                 <div
-                    className={`hidden md:flex bg-neutral-100 md:dark:bg-neutral-700 md:pl-6 md:border-r-[1px] md:dark:border-neutral-600 md:border-neutral-300 ${
-                        !showSideBar && "md:border-b-[1px]"
-                    }`}
+                    className={`hidden md:flex bg-neutral-100 md:dark:bg-neutral-700 md:pl-6 md:border-r-[1px] 
+                        md:dark:border-neutral-600 md:border-neutral-300 ${
+                            !showSideBar && "md:border-b-[1px]"
+                        }`}
                 >
                     <Logo isDarkMode={isDarkMode} />
                 </div>
-                <div className="flex flex-row fixed top-0 left-0 right-0 bg-neutral-100 dark:bg-neutral-700 pl-3 md:relative md:border-b-[1px] md:dark:border-neutral-600 md:border-neutral-300">
+                <div
+                    className="
+                    flex flex-row fixed top-0 left-0 right-0 bg-neutral-100 dark:bg-neutral-700 pl-3 
+                    md:relative md:border-b-[1px] md:dark:border-neutral-600 md:border-neutral-300"
+                >
                     <div className="flex flex-row justify-center items-center md:hidden">
                         <Logo isDarkMode={isDarkMode} />
                     </div>
