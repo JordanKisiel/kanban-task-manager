@@ -3,6 +3,7 @@
 import { useLocalStorage } from "@/hooks/useLocalStorage"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
+import { getBoards } from "@/lib/dataUtils"
 import Image from "next/image"
 import Logo from "@/components/Logo"
 import HeaderBar from "../components/HeaderBar"
@@ -19,6 +20,7 @@ import AddBoardModal from "@/components/AddBoardModal"
 import EditBoardModal from "@/components/EditBoardModal"
 import SideBar from "../components/SideBar"
 import showIcon from "@/public/show-icon.svg"
+import { Board as BoardType } from "@/types"
 
 type ModalMode =
     | "viewTask"
@@ -43,6 +45,7 @@ export default function Home() {
     let currentColumn: string | null = null
     let columnNames: string[] = [""]
 
+    const [boards, setBoards] = useState<BoardType[]>([])
     const [showModalSideBar, setModalShowSideBar] = useState(false)
     const [showSideBar, setShowSideBar] = useLocalStorage(
         "kanban-show-sidebar",
@@ -58,16 +61,14 @@ export default function Home() {
 
     const selectedTaskString = searchParams.get("task")
 
-    if (selectedTaskString !== null) {
+    if (selectedTaskString !== null && boards.length > 0) {
         const [columnIndexString, taskIndexString] =
             selectedTaskString.split("_")
 
         const columnIndex = Number(columnIndexString)
         const taskIndex = Number(taskIndexString)
 
-        task =
-            mockBoardsData.boards[selectedBoardIndex].columns[columnIndex]
-                .tasks[taskIndex]
+        task = boards[selectedBoardIndex].columns[columnIndex].tasks[taskIndex]
 
         columnNames = mockBoardsData.boards[selectedBoardIndex].columns.map(
             (column) => {
@@ -82,10 +83,6 @@ export default function Home() {
         currentColumn =
             mockBoardsData.boards[selectedBoardIndex].columns[columnIndex].title
     }
-
-    const boardNames = mockBoardsData.boards.map((board) => {
-        return board.title
-    })
 
     let modalToShow = (
         <ViewTaskModal
@@ -130,7 +127,7 @@ export default function Home() {
     } else if (modalMode === "editBoard") {
         modalToShow = (
             <EditBoardModal
-                board={mockBoardsData.boards[selectedBoardIndex]}
+                board={boards[selectedBoardIndex]}
                 handleBackToBoard={handleBackToBoard}
             />
         )
@@ -138,13 +135,33 @@ export default function Home() {
         modalToShow = (
             <DeleteModal
                 isBoard={true}
-                itemToDelete={mockBoardsData.boards[selectedBoardIndex]}
+                itemToDelete={boards[selectedBoardIndex]}
                 handleBackToBoard={handleBackToBoard}
             />
         )
     }
 
     const router = useRouter()
+
+    //get boards data
+    //use hard-coded userId for now
+    useEffect(() => {
+        const fetchData = async () => {
+            const boards = await getBoards(
+                "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
+            )
+
+            setBoards(boards)
+        }
+
+        fetchData()
+    }, [])
+
+    // useEffect(() => {
+    //     if (boards.length > 0) {
+    //         console.log(boards[0].columns)
+    //     }
+    // }, [boards])
 
     useEffect(() => {
         if (isDarkMode) {
@@ -231,8 +248,8 @@ export default function Home() {
     //            -this is recommended as Route Handlers run on the server and return data to the client
     //               -protecting senstive data you don't want sent to the client and working closer to the database
     //  -add CRUD operations for boards and tasks
-    //   TODO: focus on adding the ability to READ data from database
-    //           -will need to use a Route Handler for this (GET)
+    //   !!!   TODO: focus on adding the ability to READ data from database  !!!!
+    //
 
     return (
         <main className="flex flex-col min-h-screen">
@@ -265,8 +282,8 @@ export default function Home() {
                     }`}
                 >
                     <SideBar
-                        numBoards={boardNames.length}
-                        boardNames={boardNames}
+                        numBoards={boards.length}
+                        boardNames={boards.map((board) => board.title)}
                         selectedBoardIndex={selectedBoardIndex}
                         handleShowAddBoardModal={handleShowAddBoardModal}
                         handleHideSideBar={handleHideSideBar}
@@ -282,7 +299,9 @@ export default function Home() {
                 >
                     <Board
                         columns={
-                            mockBoardsData.boards[selectedBoardIndex].columns
+                            boards.length > 0
+                                ? boards[selectedBoardIndex].columns
+                                : []
                         }
                         handleSwitchModalMode={handleSwitchModalMode}
                         setIsModalOpen={setIsModalOpen}
@@ -292,8 +311,8 @@ export default function Home() {
             </div>
             {showModalSideBar && (
                 <ModalSideBar
-                    numBoards={boardNames.length}
-                    boardNames={boardNames}
+                    numBoards={boards.length}
+                    boardNames={boards.map((board) => board.title)}
                     selectedBoardIndex={selectedBoardIndex}
                     handleShowAddBoardModal={handleShowAddBoardModal}
                     handleShowModalSideBar={handleShowModalSideBar}

@@ -19,16 +19,16 @@ export default function ViewTaskModal({
     handleSwitchModalMode,
     handleBackToBoard,
 }: Props) {
-    const numCompletedTasks = task?.subtasks.reduce((accum, curr) => {
+    const numCompletedTasks = task?.subTasks.reduce((accum, curr) => {
         const valueToAdd = curr.isComplete ? 1 : 0
         return accum + valueToAdd
     }, 0)
 
-    const subtaskCards = task?.subtasks.map((subtask) => {
+    const subtaskCards = task?.subTasks.map((subTask) => {
         return (
             <SubtaskCard
-                key={subtask.description}
-                subtask={subtask}
+                key={subTask.description}
+                subtask={subTask}
             />
         )
     })
@@ -91,7 +91,7 @@ export default function ViewTaskModal({
             </p>
             <div className="mb-5">
                 <span className="text-neutral-500 dark:text-neutral-100 text-xs font-bold block mb-4">{`Subtasks (${numCompletedTasks} of ${
-                    task ? task.subtasks.length : 0
+                    task ? task.subTasks.length : 0
                 })`}</span>
                 <ul className="flex flex-col gap-2">{subtaskCards}</ul>
             </div>

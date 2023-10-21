@@ -10,14 +10,14 @@ type Props = {
 export default function TaskColumn({ columnIndex, title, tasks }: Props) {
     const columnColors = ["bg-[#49C4E5]", "bg-[#8471F2]", "bg-[#67E2AE]"]
 
-    const taskCards = tasks.map(({ title, subtasks }, index) => {
+    const taskCards = tasks.map(({ title, subTasks }, index) => {
         return (
             <TaskCard
                 key={`${columnIndex}_${index}`}
                 columnIndex={columnIndex}
                 taskIndex={index}
                 title={title}
-                numSubtasks={subtasks.length}
+                numSubtasks={subTasks.length > 0 ? subTasks.length : 0}
             />
         )
     })
