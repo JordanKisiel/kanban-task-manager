@@ -6,7 +6,7 @@ export type Subtask = {
 export type Task = {
     title: string
     description: string
-    subtasks: Subtask[]
+    subTasks: Subtask[]
 }
 
 export type Column = {
