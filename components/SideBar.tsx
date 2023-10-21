@@ -1,4 +1,5 @@
 import { nanoid } from "nanoid"
+import Link from "next/link"
 import StyleToggle from "./StyleToggle"
 
 type Props = {
@@ -30,14 +31,18 @@ export default function SideBar({
             "bg-purple-600 text-neutral-300 rounded-r-full block bg-[url('../public/board-icon-white.svg')]"
 
         return (
-            <li
+            <Link
+                href={`?board=${index}`}
                 key={nanoid()}
-                className={`py-3 pl-[3.4rem] mr-6 bg-no-repeat bg-[center_left_1.5rem] ${
-                    isSelected ? selectedStyles : normalStyles
-                }`}
             >
-                {boardName}
-            </li>
+                <li
+                    className={`py-3 pl-[3.4rem] mr-6 bg-no-repeat bg-[center_left_1.5rem] ${
+                        isSelected ? selectedStyles : normalStyles
+                    }`}
+                >
+                    {boardName}
+                </li>
+            </Link>
         )
     })
 
@@ -47,18 +52,20 @@ export default function SideBar({
             className="bg-neutral-100 dark:bg-neutral-700 py-4 gap-3 w-full md:flex md:flex-col md:h-full md:border-r-[1px] md:border-neutral-300 md:dark:border-neutral-600 md:justify-between md:pb-12"
         >
             <div>
-                <h2 className="uppercase text-neutral-500 text-[0.85rem] font-bold tracking-[0.12em] mb-4 pl-6">{`All Boards (${numBoards})`}</h2>
-                <ul className="text-neutral-500 font-bold flex flex-col mb-4">
+                <h2 className="uppercase text-neutral-500 text-[0.85rem] font-bold tracking-[0.12em] mb-4 pl-6">
+                    {`All Boards (${numBoards})`}
+                </h2>
+                <ul className="text-neutral-500 font-bold flex flex-col mb-4 gap-1">
                     {boardsList}
-                    <li
+                    <button
                         onClick={(e) => {
                             handleShowSideBar(e)
                             handleShowAddBoardModal()
                         }}
-                        className="font-bold py-3 pl-[3.4rem] mr-6 text-purple-600 bg-[url('../public/board-icon-purple.svg')] bg-no-repeat bg-[center_left_1.5rem]"
+                        className="font-bold py-2 pl-[3rem] mr-6 text-purple-600 bg-[url('../public/board-icon-purple.svg')] bg-no-repeat bg-[center_left_1.5rem]"
                     >
                         + Create New Board
-                    </li>
+                    </button>
                 </ul>
             </div>
             <div className="flex flex-col gap-5 items-start w-full px-5">
