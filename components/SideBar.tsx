@@ -62,7 +62,7 @@ export default function SideBar({
                             handleShowSideBar(e)
                             handleShowAddBoardModal()
                         }}
-                        className="font-bold py-2 pl-[3rem] mr-6 text-purple-600 bg-[url('../public/board-icon-purple.svg')] bg-no-repeat bg-[center_left_1.5rem]"
+                        className="font-bold py-2 pl-[0.7rem] mr-6 text-purple-600 bg-[url('../public/board-icon-purple.svg')] bg-no-repeat bg-[center_left_1.5rem]"
                     >
                         + Create New Board
                     </button>
