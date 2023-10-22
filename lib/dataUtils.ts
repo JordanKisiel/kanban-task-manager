@@ -12,14 +12,24 @@ export async function getBoards(userId: string) {
     return res.json()
 }
 
-export async function addBoard(userId: string, title: string) {
+export async function addBoard(
+    userId: string,
+    title: string,
+    columnNames: string[]
+) {
+    const columns = columnNames.map((name) => {
+        return {
+            title: name,
+        }
+    })
+
     try {
         await fetch(`${BASE_URL}/api/boards`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ userId, title }),
+            body: JSON.stringify({ userId, title, columns }),
         })
     } catch (error) {
         console.error(error)

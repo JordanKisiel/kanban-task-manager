@@ -3,6 +3,7 @@ type Props = {
     placeholderText: string
     value?: string
     handleRemoveInput: Function
+    handleInputChange: Function
 }
 
 export default function RemovableInput({
@@ -10,11 +11,14 @@ export default function RemovableInput({
     placeholderText,
     value,
     handleRemoveInput,
+    handleInputChange,
 }: Props) {
     return (
         <div className="flex flex-row">
             <input
+                onChange={(e) => handleInputChange(e)}
                 type="text"
+                id={`${id}`}
                 placeholder={placeholderText}
                 className="
                     w-full bg-neutral-100 dark:bg-neutral-700 border-[1px] border-neutral-300 

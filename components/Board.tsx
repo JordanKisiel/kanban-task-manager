@@ -32,7 +32,7 @@ export default function Board({
     return (
         <>
             {columns.length === 0 ? (
-                <div className="flex flex-col grow items-center min-h-fit justify-center">
+                <div className="flex flex-col grow items-center min-h-fit justify-center w-full h-full">
                     <div className="flex flex-col items-center">
                         <p className="text-neutral-500 text-center w-[80%] text-lg font-bold leading-6 mb-6 -mt-12">
                             This board is empty. Create a new column to get

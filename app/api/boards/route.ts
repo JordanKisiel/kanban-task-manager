@@ -30,12 +30,20 @@ export async function GET(request: NextRequest) {
 //create board
 export async function POST(request: NextRequest) {
     const res = await request.json()
-    const { userId, title } = res
+    const { userId, title, columns } = res
 
     const result = await prisma.board.create({
         data: {
             userId,
             title,
+            columns: {
+                createMany: {
+                    data: columns,
+                },
+            },
+        },
+        include: {
+            columns: true,
         },
     })
 

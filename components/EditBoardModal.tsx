@@ -40,7 +40,9 @@ export default function EditBoardModal({ board, handleBackToBoard }: Props) {
                     value={board.title}
                 />
             </div>
-            <ColumnInputList existingColumns={board.columns} />
+            <ColumnInputList
+                columnNames={board.columns.map((column) => column.title)}
+            />
             <div>
                 <ActionButton
                     isWidthFull={true}

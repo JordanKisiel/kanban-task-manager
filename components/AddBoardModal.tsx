@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { addBoard } from "@/lib/dataUtils"
 import ActionButton from "./ActionButton"
 import ColumnInputList from "./ColumnsInputList"
@@ -23,8 +22,7 @@ export default function AddBoardModal({
     setIsDataChanged,
 }: Props) {
     const [title, setTitle] = useState("")
-
-    const router = useRouter()
+    const [columnNames, setColumnNames] = useState<string[]>([])
 
     const menuOptions = [
         {
@@ -35,6 +33,35 @@ export default function AddBoardModal({
         },
     ]
 
+    function handleAddColumn(colIndex: number) {
+        setColumnNames((prevCols) => [...prevCols, ""])
+    }
+
+    function handleChangeColumn(event: React.ChangeEvent<HTMLInputElement>) {
+        if (columnNames.length > 0) {
+            setColumnNames((prevColumns) => {
+                return prevColumns.map((column, index) => {
+                    if (`${index}` === event.target.id) {
+                        return event.target.value
+                    } else {
+                        return column
+                    }
+                })
+            })
+        } else {
+            console.log("fired")
+            setColumnNames([event.target.value])
+        }
+    }
+
+    function handleDeleteColumn(colIndex: number) {
+        setColumnNames((prevCols) => {
+            return prevCols.filter((column, index) => {
+                return colIndex !== index
+            })
+        })
+    }
+
     function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
         setTitle(event.target.value)
     }
@@ -43,7 +70,11 @@ export default function AddBoardModal({
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
-        await addBoard("be0fc8c3-496f-4ed8-9f27-32dcc66bba24", title)
+        await addBoard(
+            "be0fc8c3-496f-4ed8-9f27-32dcc66bba24",
+            title,
+            columnNames
+        )
 
         setIsDataChanged(true)
 
@@ -52,10 +83,10 @@ export default function AddBoardModal({
         handleBackToBoard()
     }
 
-    //problems:
-    //   -new board screen (no columns) doesn't look right
-    //      -selected board is getting set
-    //   -no indication that data is being submitted to the user
+    // -I need to able to add columns when creating a board
+    //      -review link about creating dynamic forms
+    // -figure out and fix issue where closing out AddBoard modal is creating new boards
+    // -no indication that data is being submitted to the user
     //      -I need a loading state (maybe I should try using SWR? probably would have to research and learn to a certain extent)
 
     return (
@@ -84,7 +115,12 @@ export default function AddBoardModal({
                     value={title}
                 />
             </div>
-            <ColumnInputList existingColumns={[]} />
+            <ColumnInputList
+                columnNames={columnNames}
+                handleAddColumn={handleAddColumn}
+                handleChangeColumn={handleChangeColumn}
+                handleDeleteColumn={handleDeleteColumn}
+            />
             <div>
                 <ActionButton
                     bgColor="bg-purple-600"
