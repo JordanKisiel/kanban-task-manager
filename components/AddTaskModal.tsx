@@ -16,6 +16,8 @@ export default function AddTaskModal({
     columnNames,
     handleBackToBoard,
 }: Props) {
+    const isNoColumns = columnNames.length === 0
+
     const selectOptions = columnNames.map((columnName) => {
         return (
             <option
@@ -33,6 +35,12 @@ export default function AddTaskModal({
             action: () => handleBackToBoard(),
         },
     ]
+
+    //  -add the ability to create a task in a board
+    //     -I think I need to provide database id of the currently selected board (NOT the selection index)
+    //         -I think this exists as a property on the boards state
+    // -no indication that data is being submitted to the user
+    //      -I need a loading state (maybe I should try using SWR? probably would have to research and learn to a certain extent)
 
     return (
         <>

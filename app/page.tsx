@@ -295,6 +295,10 @@ export default function Home() {
                                 : ""
                         }
                         isSideBarShown={showModalSideBar}
+                        isNoBoards={boards.length === 0}
+                        isNoColumns={
+                            boards[selectedBoardIndex].columns.length === 0
+                        }
                         setIsModalOpen={setIsModalOpen}
                         handleShowAddTaskModal={handleShowAddTaskModal}
                         handleShowModalSideBar={handleShowModalSideBar}

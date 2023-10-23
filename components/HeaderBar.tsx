@@ -6,6 +6,8 @@ import addIcon from "../public/plus-icon.svg"
 type Props = {
     selectedBoardTitle: string
     isSideBarShown: boolean
+    isNoBoards: boolean
+    isNoColumns: boolean
     setIsModalOpen: Function
     handleShowAddTaskModal: Function
     handleShowModalSideBar: Function
@@ -15,6 +17,8 @@ type Props = {
 export default function HeaderBar({
     selectedBoardTitle,
     isSideBarShown,
+    isNoBoards,
+    isNoColumns,
     setIsModalOpen,
     handleShowAddTaskModal,
     handleShowModalSideBar,
@@ -58,6 +62,7 @@ export default function HeaderBar({
                     bgColor="bg-purple-600"
                     textColor="text-neutral-100 dark:text-neutral-100"
                     textSize="text-base"
+                    isDisabled={isNoBoards || isNoColumns}
                     handler={() => handleShowAddTaskModal()}
                 >
                     <Image
