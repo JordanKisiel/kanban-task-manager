@@ -17,6 +17,7 @@ export default function MenuButton({ actions }: Props) {
     const taskMenu = actions.map((action) => {
         return (
             <button
+                type="button"
                 key={action.actionName}
                 onClick={() => action.action()}
                 className="
@@ -44,6 +45,7 @@ export default function MenuButton({ actions }: Props) {
             className="relative"
         >
             <button
+                type="button"
                 onClick={() => {
                     if (isMenuOpen) {
                         handleCloseMenu()

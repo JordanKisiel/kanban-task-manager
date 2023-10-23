@@ -83,9 +83,8 @@ export default function AddBoardModal({
         handleBackToBoard()
     }
 
-    // -I need to able to add columns when creating a board
-    //      -review link about creating dynamic forms
     // -figure out and fix issue where closing out AddBoard modal is creating new boards
+    //  -add the ability to create a task in a board
     // -no indication that data is being submitted to the user
     //      -I need a loading state (maybe I should try using SWR? probably would have to research and learn to a certain extent)
 

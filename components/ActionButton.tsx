@@ -24,7 +24,7 @@ export default function ActionButton({
     if (isSubmit) {
         return (
             <button
-                type={isSubmit ? "submit" : "button"}
+                type="submit"
                 className={styles}
             >
                 {children}
@@ -33,6 +33,7 @@ export default function ActionButton({
     }
     return (
         <button
+            type="button"
             onClick={(e) => {
                 if (handler) handler()
                 e.preventDefault()
