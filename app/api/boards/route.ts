@@ -49,3 +49,20 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result)
 }
+
+export async function DELETE(request: NextRequest) {
+    const res = await request.json()
+    console.log(`request data was: ${res}`)
+    //destructure data from res
+    let { boardId } = res
+
+    boardId = Number(boardId)
+
+    const result = await prisma.board.delete({
+        where: {
+            id: boardId,
+        },
+    })
+
+    return NextResponse.json(result)
+}

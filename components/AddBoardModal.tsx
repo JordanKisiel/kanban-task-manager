@@ -9,17 +9,19 @@ import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
 
 type Props = {
+    numBoards: number
     handleBackToBoard: Function
     fetchData: Function
-    setIsBoardAdded: Function
+    changeSelectedBoard: Function
 }
 
 const TITLE_PLACEHOLDER = "e.g. Web Design"
 
 export default function AddBoardModal({
+    numBoards,
     handleBackToBoard,
     fetchData,
-    setIsBoardAdded,
+    changeSelectedBoard,
 }: Props) {
     const [title, setTitle] = useState("")
     const [columnNames, setColumnNames] = useState<string[]>([])
@@ -65,15 +67,22 @@ export default function AddBoardModal({
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
-        await addBoard(
+        let fetchRes
+
+        const addRes = await addBoard(
             "be0fc8c3-496f-4ed8-9f27-32dcc66bba24",
             title,
             columnNames
         )
 
-        setIsBoardAdded(true)
+        if (addRes && addRes.ok) {
+            fetchRes = await fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
+        }
 
-        await fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
+        if (fetchRes) {
+            console.log(numBoards - 1)
+            changeSelectedBoard(numBoards - 1)
+        }
 
         handleBackToBoard()
     }

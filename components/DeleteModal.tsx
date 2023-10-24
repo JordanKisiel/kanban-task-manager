@@ -1,9 +1,13 @@
 import ActionButton from "./ActionButton"
+import { deleteBoard } from "@/lib/dataUtils"
 import { Board, Task } from "@/types"
 
 type Props = {
     isBoard: boolean
+    numBoards: number
     itemToDelete: Board | Task | null
+    changeSelectedBoard: Function
+    fetchData: Function
     handleBackToBoard: Function
 }
 
@@ -11,7 +15,10 @@ type Props = {
 
 export default function DeleteModal({
     isBoard,
+    numBoards,
     itemToDelete,
+    changeSelectedBoard,
+    fetchData,
     handleBackToBoard,
 }: Props) {
     let userMessage = `Are you sure you want to delete the '${
@@ -22,6 +29,26 @@ export default function DeleteModal({
         userMessage = `Are you sure you want to delete the '${
             itemToDelete ? itemToDelete.title : "No task selected"
         }' task and its subtasks? This action cannot be reversed.`
+    }
+
+    //hard-coding userId for now
+    async function handleDelete(isBoardItem: boolean) {
+        let deleteRes
+        let fetchRes
+
+        if (isBoardItem && itemToDelete) {
+            deleteRes = await deleteBoard(itemToDelete.id)
+        }
+
+        if (deleteRes && deleteRes.ok) {
+            fetchRes = await fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
+        }
+
+        if (fetchRes && fetchRes.ok) {
+            changeSelectedBoard(numBoards - 1)
+        }
+
+        handleBackToBoard()
     }
 
     return (
@@ -37,7 +64,7 @@ export default function DeleteModal({
                     textColor="text-neutral-100"
                     textSize="text-sm"
                     handler={() => {
-                        /* does nothing */
+                        handleDelete(isBoard)
                     }}
                 >
                     Delete

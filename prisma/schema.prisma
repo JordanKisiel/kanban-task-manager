@@ -26,7 +26,7 @@ model Board {
 
 model Column {
   id      Int    @id @default(autoincrement())
-  board   Board  @relation(fields: [boardId], references: [id])
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
   boardId Int
   title   String
   tasks   Task[]
@@ -34,7 +34,7 @@ model Column {
 
 model Task {
   id          Int       @id @default(autoincrement())
-  column      Column    @relation(fields: [columnId], references: [id])
+  column      Column    @relation(fields: [columnId], references: [id], onDelete: Cascade)
   columnId    Int
   title       String
   description String
@@ -43,7 +43,7 @@ model Task {
 
 model SubTask {
   id          Int     @id @default(autoincrement())
-  task        Task    @relation(fields: [taskId], references: [id])
+  task        Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
   taskId      Int
   description String
   isComplete  Boolean

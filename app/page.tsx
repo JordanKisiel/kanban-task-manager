@@ -31,22 +31,19 @@ type ModalMode =
     | "deleteBoard"
 
 export default function Home() {
+    const router = useRouter()
+
     const searchParams = useSearchParams()
     const selectedBoardIndexParam = searchParams.get("board")
-    let selectedBoardIndex = 0
-
-    if (selectedBoardIndexParam !== null) {
-        selectedBoardIndex = Number(selectedBoardIndexParam)
-    }
+    let selectedBoardIndex =
+        selectedBoardIndexParam !== null ? Number(selectedBoardIndexParam) : 0
 
     let task: Task | null = null
     let otherColumns: string[] = []
     let currentColumn: string | null = null
     let columnNames: string[] = [""]
-    let latestBoardIndex = 0
 
     const [boards, setBoards] = useState<BoardType[]>([])
-    const [isBoardAdded, setIsBoardAdded] = useState(false)
     const [showModalSideBar, setModalShowSideBar] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalMode, setModalMode] = useState<ModalMode>("viewTask")
@@ -102,7 +99,10 @@ export default function Home() {
         modalToShow = (
             <DeleteModal
                 isBoard={false}
+                numBoards={boards.length}
                 itemToDelete={task}
+                changeSelectedBoard={changeSelectedBoard}
+                fetchData={fetchData}
                 handleBackToBoard={handleBackToBoard}
             />
         )
@@ -117,9 +117,10 @@ export default function Home() {
     } else if (modalMode === "addBoard") {
         modalToShow = (
             <AddBoardModal
+                numBoards={boards.length}
                 handleBackToBoard={handleBackToBoard}
                 fetchData={fetchData}
-                setIsBoardAdded={setIsBoardAdded}
+                changeSelectedBoard={changeSelectedBoard}
             />
         )
     } else if (modalMode === "editBoard") {
@@ -133,34 +134,32 @@ export default function Home() {
         modalToShow = (
             <DeleteModal
                 isBoard={true}
+                numBoards={boards.length}
                 itemToDelete={boards[selectedBoardIndex]}
+                fetchData={fetchData}
+                changeSelectedBoard={changeSelectedBoard}
                 handleBackToBoard={handleBackToBoard}
             />
         )
     }
 
-    const router = useRouter()
+    useEffect(() => {
+        if (boards.length > 0) {
+            if (selectedBoardIndexParam === null) {
+                changeSelectedBoard(0)
+            } else if (!boards[selectedBoardIndex]) {
+                changeSelectedBoard(boards.length - 1)
+            } else {
+                changeSelectedBoard(selectedBoardIndex)
+            }
+        }
+    }, [boards, selectedBoardIndex, selectedBoardIndexParam])
 
     //get boards data
     //use hard-coded userId for now
     useEffect(() => {
-        const fetchData = async () => {
-            const boards = await getBoards(
-                "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
-            )
-
-            setBoards(boards)
-        }
-
-        fetchData()
+        fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
     }, [])
-
-    useEffect(() => {
-        if (boards.length > 0 && isBoardAdded) {
-            latestBoardIndex = boards.length - 1
-            changeSelectedBoard(latestBoardIndex)
-        }
-    }, [boards.length, isBoardAdded])
 
     useEffect(() => {
         if (isDarkMode) {
@@ -169,12 +168,6 @@ export default function Home() {
             document.querySelector("html")?.classList.remove("dark")
         }
     }, [isDarkMode])
-
-    useEffect(() => {
-        if (selectedBoardIndexParam === null) {
-            changeSelectedBoard(0)
-        }
-    }, [selectedBoardIndexParam])
 
     useEffect(() => {
         if (task !== null) {
@@ -238,12 +231,17 @@ export default function Home() {
     }
 
     async function fetchData(userId: string) {
-        const boards = await getBoards(userId)
+        const res = await getBoards(userId)
+        const boards = await res.json()
 
         setBoards(boards)
+
+        return res.ok
     }
 
     function changeSelectedBoard(index: number) {
+        console.log("fired")
+        console.log(index)
         router.push(`?board=${index}`)
     }
 
@@ -260,6 +258,9 @@ export default function Home() {
     //         -this is an UPDATE operation
     // -no indication that data is being submitted to the user
     //      -I need a loading state (maybe I should try using SWR? probably would have to research and learn to a certain extent)
+    // -review code (especially this page component) to see if what can be abstracted out and if the page can be made a server
+    //  component by moving hooks into child components
+
     return (
         <main className="flex flex-col min-h-screen">
             <div

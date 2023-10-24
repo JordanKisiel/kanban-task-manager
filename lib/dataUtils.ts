@@ -9,7 +9,7 @@ export async function getBoards(userId: string) {
         throw new Error("Failed to fetch data")
     }
 
-    return res.json()
+    return res
 }
 
 export async function addBoard(
@@ -17,6 +17,8 @@ export async function addBoard(
     title: string,
     columnNames: string[]
 ) {
+    let res
+
     const columns = columnNames.map((name) => {
         return {
             title: name,
@@ -24,7 +26,7 @@ export async function addBoard(
     })
 
     try {
-        await fetch(`${BASE_URL}/api/boards`, {
+        res = await fetch(`${BASE_URL}/api/boards`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -34,6 +36,8 @@ export async function addBoard(
     } catch (error) {
         console.error(error)
     }
+
+    return res
 }
 
 export async function addTask(formData: {
@@ -66,4 +70,22 @@ export async function addTask(formData: {
     } catch (error) {
         console.error(error)
     }
+}
+
+export async function deleteBoard(boardId: number) {
+    let res
+
+    try {
+        res = await fetch(`${BASE_URL}/api/boards`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ boardId }),
+        })
+    } catch (error) {
+        console.error(error)
+    }
+
+    return res
 }
