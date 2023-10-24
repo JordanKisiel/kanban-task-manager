@@ -1,11 +1,23 @@
+import { useState } from "react"
 import ActionButton from "./ActionButton"
-import SubtaskInputList from "./SubtaskInputList"
+import SubTaskInputList from "./SubTaskInputList"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
+import { addTask } from "@/lib/dataUtils"
+import { Column } from "@/types"
 
 type Props = {
-    columnNames: string[]
+    columns: Column[]
+    fetchData: Function
     handleBackToBoard: Function
+}
+
+type FormData = {
+    title: string
+    description: string
+    subTasks: string[]
+    selectedIndex: number
+    status: number
 }
 
 const TITLE_PLACEHOLDER = "e.g. Take coffee break"
@@ -13,18 +25,26 @@ const DESCRIPTION_PLACEHOLDER =
     "e.g. It's always good to take a break. This 15 minute break will charge the batteries a little."
 
 export default function AddTaskModal({
-    columnNames,
+    columns,
+    fetchData,
     handleBackToBoard,
 }: Props) {
-    const isNoColumns = columnNames.length === 0
+    const [formData, setFormData] = useState<FormData>({
+        title: "",
+        description: "",
+        subTasks: [],
+        selectedIndex: 0,
+        status: columns[0].id,
+    })
 
-    const selectOptions = columnNames.map((columnName) => {
+    const selectOptions = columns.map((column, index) => {
         return (
             <option
-                key={columnName}
-                value={columnName}
+                key={column.id}
+                id={`${column.id}`}
+                value={index}
             >
-                {columnName}
+                {column.title}
             </option>
         )
     })
@@ -36,11 +56,83 @@ export default function AddTaskModal({
         },
     ]
 
-    //  -add the ability to create a task in a board
-    //     -I think I need to provide database id of the currently selected board (NOT the selection index)
-    //         -I think this exists as a property on the boards state
-    // -no indication that data is being submitted to the user
-    //      -I need a loading state (maybe I should try using SWR? probably would have to research and learn to a certain extent)
+    function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                title: event.target.value,
+            }
+        })
+    }
+
+    function handleDescriptionChange(
+        event: React.ChangeEvent<HTMLTextAreaElement>
+    ) {
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                description: event.target.value,
+            }
+        })
+    }
+
+    function handleAddSubTask() {
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                subTasks: [...prevFormData.subTasks, ""],
+            }
+        })
+    }
+
+    function handleChangeSubTask(event: React.ChangeEvent<HTMLInputElement>) {
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                subTasks: prevFormData.subTasks.map((subTask, index) => {
+                    if (`${index}` === event.target.id) {
+                        return event.target.value
+                    } else {
+                        return subTask
+                    }
+                }),
+            }
+        })
+    }
+
+    function handleRemoveSubTask(subTaskIndex: number) {
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                subTasks: prevFormData.subTasks.filter((subTask, index) => {
+                    return index !== subTaskIndex
+                }),
+            }
+        })
+    }
+
+    function handleStatusChange(event: React.ChangeEvent<HTMLSelectElement>) {
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                selectedIndex: event.target.selectedIndex,
+                status: Number(
+                    event.target.options[event.target.selectedIndex].id
+                ),
+            }
+        })
+    }
+
+    //hard-coding userID for now
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+
+        await addTask(formData)
+
+        await fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
+
+        handleBackToBoard()
+    }
 
     return (
         <>
@@ -48,7 +140,12 @@ export default function AddTaskModal({
                 <ModalHeader>Add New Task</ModalHeader>
                 <MenuButton actions={menuOptions} />
             </div>
-            <form className="flex flex-col gap-6">
+            <form
+                onSubmit={(e) => {
+                    handleSubmit(e)
+                }}
+                className="flex flex-col gap-6"
+            >
                 <div>
                     <label
                         htmlFor="title-input"
@@ -57,6 +154,7 @@ export default function AddTaskModal({
                         Title
                     </label>
                     <input
+                        onChange={(e) => handleTitleChange(e)}
                         type="text"
                         id="title-input"
                         className="
@@ -65,6 +163,7 @@ export default function AddTaskModal({
                             dark:outline-purple-300 placeholder-dark:text-neutral-500 
                             placeholder-dark:opacity-50"
                         placeholder={TITLE_PLACEHOLDER}
+                        value={formData.title}
                     />
                 </div>
                 <div>
@@ -75,6 +174,7 @@ export default function AddTaskModal({
                         Description
                     </label>
                     <textarea
+                        onChange={(e) => handleDescriptionChange(e)}
                         id="description-input"
                         className="
                             w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 
@@ -83,9 +183,15 @@ export default function AddTaskModal({
                             placeholder-dark:opacity-50"
                         rows={4}
                         placeholder={DESCRIPTION_PLACEHOLDER}
+                        value={formData.description}
                     ></textarea>
                 </div>
-                <SubtaskInputList />
+                <SubTaskInputList
+                    subTasks={formData.subTasks}
+                    handleAddInput={handleAddSubTask}
+                    handleChangeInput={handleChangeSubTask}
+                    handleRemoveInput={handleRemoveSubTask}
+                />
                 <div>
                     <label
                         htmlFor="status-select"
@@ -94,13 +200,15 @@ export default function AddTaskModal({
                         Status
                     </label>
                     <select
+                        onChange={(e) => handleStatusChange(e)}
                         className="
                             appearance-none w-full dark:bg-neutral-700 border-[1px] 
                             dark:border-neutral-600 rounded text-sm dark:text-neutral-100 
-                            px-4 py-3 outline-2 dark:outline-purple-300 
-                            bg-[url('../public/arrow-down.svg')] bg-no-repeat bg-[center_right_1rem]"
+                            px-4 py-3 outline-1 bg-[url('../public/arrow-down.svg')] 
+                            bg-no-repeat bg-[center_right_1rem]"
                         name="status"
                         id="status-select"
+                        value={formData.selectedIndex}
                     >
                         {selectOptions}
                     </select>
@@ -110,9 +218,7 @@ export default function AddTaskModal({
                     bgColor="dark:bg-purple-600"
                     textColor="dark:text-neutral-100"
                     textSize="text-sm"
-                    handler={() => {
-                        /*does nothing*/
-                    }}
+                    isSubmit={true}
                 >
                     Create Task
                 </ActionButton>

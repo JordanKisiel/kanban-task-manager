@@ -35,3 +35,35 @@ export async function addBoard(
         console.error(error)
     }
 }
+
+export async function addTask(formData: {
+    title: string
+    description: string
+    subTasks: string[]
+    selectedIndex: number
+    status: number
+}) {
+    const task = {
+        title: formData.title,
+        description: formData.description,
+        subTasks: formData.subTasks.map((subTask) => {
+            return {
+                description: subTask,
+                isComplete: false,
+            }
+        }),
+        columnId: formData.status,
+    }
+
+    try {
+        await fetch(`${BASE_URL}/api/tasks`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(task),
+        })
+    } catch (error) {
+        console.error(error)
+    }
+}

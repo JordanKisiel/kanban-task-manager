@@ -27,7 +27,7 @@ export default function ColumnInputList({
                 value={columnNames[index]}
                 placeholderText={COLUMN_PLACEHOLDER_OTHER}
                 handleRemoveInput={handleDeleteColumn}
-                handleInputChange={handleChangeColumn}
+                handleChangeInput={handleChangeColumn}
             />
         )
     })

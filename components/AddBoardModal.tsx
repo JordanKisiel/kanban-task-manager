@@ -11,7 +11,7 @@ import ModalLabel from "./ModalLabel"
 type Props = {
     handleBackToBoard: Function
     fetchData: Function
-    setIsDataChanged: Function
+    setIsBoardAdded: Function
 }
 
 const TITLE_PLACEHOLDER = "e.g. Web Design"
@@ -19,7 +19,7 @@ const TITLE_PLACEHOLDER = "e.g. Web Design"
 export default function AddBoardModal({
     handleBackToBoard,
     fetchData,
-    setIsDataChanged,
+    setIsBoardAdded,
 }: Props) {
     const [title, setTitle] = useState("")
     const [columnNames, setColumnNames] = useState<string[]>([])
@@ -33,25 +33,20 @@ export default function AddBoardModal({
         },
     ]
 
-    function handleAddColumn(colIndex: number) {
+    function handleAddColumn() {
         setColumnNames((prevCols) => [...prevCols, ""])
     }
 
     function handleChangeColumn(event: React.ChangeEvent<HTMLInputElement>) {
-        if (columnNames.length > 0) {
-            setColumnNames((prevColumns) => {
-                return prevColumns.map((column, index) => {
-                    if (`${index}` === event.target.id) {
-                        return event.target.value
-                    } else {
-                        return column
-                    }
-                })
+        setColumnNames((prevColumns) => {
+            return prevColumns.map((column, index) => {
+                if (`${index}` === event.target.id) {
+                    return event.target.value
+                } else {
+                    return column
+                }
             })
-        } else {
-            console.log("fired")
-            setColumnNames([event.target.value])
-        }
+        })
     }
 
     function handleDeleteColumn(colIndex: number) {
@@ -76,7 +71,7 @@ export default function AddBoardModal({
             columnNames
         )
 
-        setIsDataChanged(true)
+        setIsBoardAdded(true)
 
         await fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
 

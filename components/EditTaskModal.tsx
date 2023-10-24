@@ -1,5 +1,5 @@
 import ActionButton from "./ActionButton"
-import SubtaskInputList from "./SubtaskInputList"
+import SubTaskInputList from "./SubTaskInputList"
 import { Task } from "../types"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
@@ -91,7 +91,7 @@ export default function EditTaskModal({
                         {task ? task.description : "No task selected"}
                     </textarea>
                 </div>
-                <SubtaskInputList />
+                <SubTaskInputList />
                 <div>
                     <ModalLabel htmlFor="status-select">Status</ModalLabel>
                     <select

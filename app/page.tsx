@@ -46,7 +46,7 @@ export default function Home() {
     let latestBoardIndex = 0
 
     const [boards, setBoards] = useState<BoardType[]>([])
-    const [isDataChanged, setIsDataChanged] = useState(false)
+    const [isBoardAdded, setIsBoardAdded] = useState(false)
     const [showModalSideBar, setModalShowSideBar] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalMode, setModalMode] = useState<ModalMode>("viewTask")
@@ -109,7 +109,8 @@ export default function Home() {
     } else if (modalMode === "addTask") {
         modalToShow = (
             <AddTaskModal
-                columnNames={columnNames}
+                columns={boards ? boards[selectedBoardIndex].columns : []}
+                fetchData={fetchData}
                 handleBackToBoard={handleBackToBoard}
             />
         )
@@ -118,7 +119,7 @@ export default function Home() {
             <AddBoardModal
                 handleBackToBoard={handleBackToBoard}
                 fetchData={fetchData}
-                setIsDataChanged={setIsDataChanged}
+                setIsBoardAdded={setIsBoardAdded}
             />
         )
     } else if (modalMode === "editBoard") {
@@ -155,17 +156,11 @@ export default function Home() {
     }, [])
 
     useEffect(() => {
-        if (boards.length > 0 && isDataChanged) {
+        if (boards.length > 0 && isBoardAdded) {
             latestBoardIndex = boards.length - 1
             changeSelectedBoard(latestBoardIndex)
         }
-    }, [boards.length, isDataChanged])
-
-    // useEffect(() => {
-    //     if (boards.length > 0) {
-    //         console.log(boards[0].columns)
-    //     }
-    // }, [boards])
+    }, [boards.length, isBoardAdded])
 
     useEffect(() => {
         if (isDarkMode) {
@@ -253,18 +248,18 @@ export default function Home() {
     }
 
     //TODO:
-    //      follow tutorial on using prisma (with postgresql) and nextjs
-    //         -ideas:
-    //            -DONE:create wrapper around prisma client to make it a singleton
-    //              -helps with issues on dev server
-    //         -inside server components I can fetch data directly
-    //         -inside clients components I can call a Route Handler
-    //            -this is recommended as Route Handlers run on the server and return data to the client
-    //               -protecting senstive data you don't want sent to the client and working closer to the database
     //  -add CRUD operations for boards and tasks
-    //   !!!   TODO: focus on adding the ability to CREATE data in database  !!!!
-    //             -add abilty to create boards
-
+    //     -add ability to DELETE boards
+    //       -remember that when you delete data (in this case a board), you need to delete all its child data,
+    //          in this case: columns, tasks, subTasks
+    //             -this is because these child pieces of data can't exist without their relations
+    //     -add ability to DELETE tasks
+    //          -this means I also need to delete all associated subTasks
+    //     -change ViewTaskModal so it doesn't get warning
+    //       -ViewTaskModal needs the ability to change subTask isComplete state
+    //         -this is an UPDATE operation
+    // -no indication that data is being submitted to the user
+    //      -I need a loading state (maybe I should try using SWR? probably would have to research and learn to a certain extent)
     return (
         <main className="flex flex-col min-h-screen">
             <div
@@ -297,6 +292,7 @@ export default function Home() {
                         isSideBarShown={showModalSideBar}
                         isNoBoards={boards.length === 0}
                         isNoColumns={
+                            boards.length > 0 &&
                             boards[selectedBoardIndex].columns.length === 0
                         }
                         setIsModalOpen={setIsModalOpen}

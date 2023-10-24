@@ -6,36 +6,32 @@ import addIcon from "@/public/plus-icon-purple.svg"
 import RemovableInput from "./RemovableInput"
 import ActionButton from "./ActionButton"
 
+type Props = {
+    subTasks: string[]
+    handleAddInput: Function
+    handleChangeInput: Function
+    handleRemoveInput: Function
+}
+
 const SUBTASK_PLACEHOLDER_1 = "e.g. Make coffee"
 const SUBTASK_PLACEHOLDER_2 = "e.g. Drink coffee & smile"
 const SUBTASK_PLACEHOLDER_OTHER = "e.g. Another subtask"
 
-export default function SubtaskInputList() {
-    const [inputs, setInputs] = useState<string[]>([SUBTASK_PLACEHOLDER_1])
-
-    function handleAddInput() {
-        if (inputs.length === 0) {
-            setInputs((prevArray) => [...prevArray, SUBTASK_PLACEHOLDER_1])
-        } else if (inputs.length === 1) {
-            setInputs((prevArray) => [...prevArray, SUBTASK_PLACEHOLDER_2])
-        } else {
-            setInputs((prevArray) => [...prevArray, SUBTASK_PLACEHOLDER_OTHER])
-        }
-    }
-
-    function handleRemoveInput(subtaskIndex: number) {
-        setInputs((prevArray) => {
-            return prevArray.filter((input, index) => index !== subtaskIndex)
-        })
-    }
-
-    const inputList = inputs.map((input, index) => {
+export default function SubTaskInputList({
+    subTasks,
+    handleAddInput,
+    handleChangeInput,
+    handleRemoveInput,
+}: Props) {
+    const inputList = subTasks.map((subTask, index) => {
         return (
             <RemovableInput
                 key={index}
                 id={index}
-                placeholderText={input}
+                placeholderText={SUBTASK_PLACEHOLDER_OTHER}
                 handleRemoveInput={handleRemoveInput}
+                handleChangeInput={handleChangeInput}
+                value={subTask}
             />
         )
     })
