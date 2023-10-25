@@ -43,6 +43,7 @@ export default function Home() {
     let currentColumn: string | null = null
     let columnNames: string[] = [""]
 
+    const [isBoardNewlyCreated, setIsBoardNewlyCreated] = useState(false)
     const [boards, setBoards] = useState<BoardType[]>([])
     const [showModalSideBar, setModalShowSideBar] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -57,6 +58,17 @@ export default function Home() {
     )
 
     const selectedTaskString = searchParams.get("task")
+
+    //check if there is a board at the selected index
+    //if not, change selected index to highest available
+    if (!boards[selectedBoardIndex]) {
+        if (boards.length > 0) {
+            selectedBoardIndex = boards.length - 1
+        } else {
+            //TODO:
+            //  --what should happen if the user has no boards?
+        }
+    }
 
     if (selectedTaskString !== null && boards.length > 0) {
         const [columnIndexString, taskIndexString] =
@@ -117,10 +129,9 @@ export default function Home() {
     } else if (modalMode === "addBoard") {
         modalToShow = (
             <AddBoardModal
-                numBoards={boards.length}
+                setIsBoardNewlyCreated={setIsBoardNewlyCreated}
                 handleBackToBoard={handleBackToBoard}
                 fetchData={fetchData}
-                changeSelectedBoard={changeSelectedBoard}
             />
         )
     } else if (modalMode === "editBoard") {
@@ -143,23 +154,22 @@ export default function Home() {
         )
     }
 
-    useEffect(() => {
-        if (boards.length > 0) {
-            if (selectedBoardIndexParam === null) {
-                changeSelectedBoard(0)
-            } else if (!boards[selectedBoardIndex]) {
-                changeSelectedBoard(boards.length - 1)
-            } else {
-                changeSelectedBoard(selectedBoardIndex)
-            }
-        }
-    }, [boards, selectedBoardIndex, selectedBoardIndexParam])
-
     //get boards data
     //use hard-coded userId for now
     useEffect(() => {
         fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
     }, [])
+
+    useEffect(() => {
+        if (boards.length > 0 && isBoardNewlyCreated) {
+            changeSelectedBoard(boards.length - 1)
+            setIsBoardNewlyCreated(false)
+        }
+    }, [boards, isBoardNewlyCreated])
+
+    useEffect(() => {
+        changeSelectedBoard(selectedBoardIndex)
+    }, [selectedBoardIndex])
 
     useEffect(() => {
         if (isDarkMode) {
@@ -240,17 +250,11 @@ export default function Home() {
     }
 
     function changeSelectedBoard(index: number) {
-        console.log("fired")
-        console.log(index)
         router.push(`?board=${index}`)
     }
 
     //TODO:
     //  -add CRUD operations for boards and tasks
-    //     -add ability to DELETE boards
-    //       -remember that when you delete data (in this case a board), you need to delete all its child data,
-    //          in this case: columns, tasks, subTasks
-    //             -this is because these child pieces of data can't exist without their relations
     //     -add ability to DELETE tasks
     //          -this means I also need to delete all associated subTasks
     //     -change ViewTaskModal so it doesn't get warning

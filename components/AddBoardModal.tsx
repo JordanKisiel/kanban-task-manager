@@ -9,19 +9,17 @@ import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
 
 type Props = {
-    numBoards: number
+    setIsBoardNewlyCreated: Function
     handleBackToBoard: Function
     fetchData: Function
-    changeSelectedBoard: Function
 }
 
 const TITLE_PLACEHOLDER = "e.g. Web Design"
 
 export default function AddBoardModal({
-    numBoards,
+    setIsBoardNewlyCreated,
     handleBackToBoard,
     fetchData,
-    changeSelectedBoard,
 }: Props) {
     const [title, setTitle] = useState("")
     const [columnNames, setColumnNames] = useState<string[]>([])
@@ -77,14 +75,12 @@ export default function AddBoardModal({
 
         if (addRes && addRes.ok) {
             fetchRes = await fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
-        }
-
-        if (fetchRes) {
-            console.log(numBoards - 1)
-            changeSelectedBoard(numBoards - 1)
+            setIsBoardNewlyCreated(true)
         }
 
         handleBackToBoard()
+
+        return fetchRes
     }
 
     return (

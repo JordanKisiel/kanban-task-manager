@@ -42,9 +42,6 @@ export default function DeleteModal({
 
         if (deleteRes && deleteRes.ok) {
             fetchRes = await fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
-        }
-
-        if (fetchRes && fetchRes.ok) {
             changeSelectedBoard(numBoards - 1)
         }
 
