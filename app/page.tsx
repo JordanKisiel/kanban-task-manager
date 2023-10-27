@@ -41,7 +41,6 @@ export default function Home() {
     let task: Task | null = null
     let otherColumns: string[] = []
     let currentColumn: string | null = null
-    let columnNames: string[] = [""]
 
     const [isBoardNewlyCreated, setIsBoardNewlyCreated] = useState(false)
     const [boards, setBoards] = useState<BoardType[]>([])
@@ -79,7 +78,13 @@ export default function Home() {
 
         task = boards[selectedBoardIndex].columns[columnIndex].tasks[taskIndex]
 
-        otherColumns = columnNames.filter((otherColumn, index) => {
+        const columnTitles = boards[selectedBoardIndex].columns.map(
+            (column) => column.title
+        )
+
+        currentColumn = columnTitles[columnIndex]
+
+        otherColumns = columnTitles.filter((column, index) => {
             return columnIndex !== index
         })
     }
