@@ -259,9 +259,6 @@ export default function Home() {
     }
 
     //TODO:
-    //  -add CRUD operations for boards and tasks
-    //     -add ability to DELETE tasks
-    //          -this means I also need to delete all associated subTasks
     //     -change ViewTaskModal so it doesn't get warning
     //       -ViewTaskModal needs the ability to change subTask isComplete state
     //         -this is an UPDATE operation

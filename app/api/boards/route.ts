@@ -52,7 +52,6 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
     const res = await request.json()
-    //destructure data from res
     let { boardId } = res
 
     boardId = Number(boardId)

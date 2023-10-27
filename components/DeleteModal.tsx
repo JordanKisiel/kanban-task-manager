@@ -1,5 +1,5 @@
 import ActionButton from "./ActionButton"
-import { deleteBoard } from "@/lib/dataUtils"
+import { deleteBoard, deleteTask } from "@/lib/dataUtils"
 import { Board, Task } from "@/types"
 
 type Props = {
@@ -40,9 +40,12 @@ export default function DeleteModal({
             deleteRes = await deleteBoard(itemToDelete.id)
         }
 
+        if (!isBoardItem && itemToDelete) {
+            deleteRes = await deleteTask(itemToDelete.id)
+        }
+
         if (deleteRes && deleteRes.ok) {
             fetchRes = await fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
-            changeSelectedBoard(numBoards - 1)
         }
 
         handleBackToBoard()

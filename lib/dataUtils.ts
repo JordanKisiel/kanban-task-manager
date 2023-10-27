@@ -40,6 +40,24 @@ export async function addBoard(
     return res
 }
 
+export async function deleteBoard(boardId: number) {
+    let res
+
+    try {
+        res = await fetch(`${BASE_URL}/api/boards`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ boardId }),
+        })
+    } catch (error) {
+        console.error(error)
+    }
+
+    return res
+}
+
 export async function addTask(formData: {
     title: string
     description: string
@@ -72,19 +90,19 @@ export async function addTask(formData: {
     }
 }
 
-export async function deleteBoard(boardId: number) {
+export async function deleteTask(taskId: number) {
     let res
 
     try {
-        res = await fetch(`${BASE_URL}/api/boards`, {
+        res = await fetch(`${BASE_URL}/api/tasks`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ boardId }),
+            body: JSON.stringify({ taskId }),
         })
     } catch (error) {
-        console.error(error)
+        console.log(error)
     }
 
     return res

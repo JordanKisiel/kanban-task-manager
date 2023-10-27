@@ -24,3 +24,18 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result)
 }
+
+export async function DELETE(request: NextRequest) {
+    const res = await request.json()
+    let { taskId } = res
+
+    taskId = Number(taskId)
+
+    const result = await prisma.task.delete({
+        where: {
+            id: taskId,
+        },
+    })
+
+    return NextResponse.json(result)
+}
