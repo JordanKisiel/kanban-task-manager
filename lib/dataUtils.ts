@@ -1,15 +1,24 @@
+import useSWR, { BareFetcher } from "swr"
 import { config } from "./baseURL"
+import { Board } from "@/types"
 
 const BASE_URL = config.url
 
-export async function getBoards(userId: string) {
-    const res = await fetch(`${BASE_URL}/api/boards?user=${userId}`)
+const boardFetcher: BareFetcher<Board[]> = (url: string) =>
+    fetch(url).then((r) => r.json())
 
-    if (!res.ok) {
-        throw new Error("Failed to fetch data")
+export function useBoards(userId: string) {
+    const { data, error, isLoading, mutate } = useSWR<Board[]>(
+        `${BASE_URL}/api/boards?user=${userId}`,
+        boardFetcher
+    )
+
+    return {
+        boards: !data ? [] : data,
+        isLoading,
+        isError: error,
+        mutate,
     }
-
-    return res
 }
 
 export async function addBoard(
