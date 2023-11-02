@@ -21,6 +21,8 @@ export default function Logo({ isDarkMode }: Props) {
             <Image
                 src={smallLogo}
                 alt="kanban app logo"
+                width={24}
+                height={25}
             />
         </picture>
     )

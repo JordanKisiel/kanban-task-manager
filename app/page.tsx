@@ -3,7 +3,7 @@
 import { useLocalStorage } from "@/hooks/useLocalStorage"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
-import { getBoards } from "@/lib/dataUtils"
+import { useBoards } from "@/lib/dataUtils"
 import Image from "next/image"
 import Logo from "@/components/Logo"
 import HeaderBar from "../components/HeaderBar"
@@ -259,9 +259,14 @@ export default function Home() {
     }
 
     //TODO:
+    //     -Start integrating SWR data fetching hook (useBoards)
+    //        -making INCREMENTAL changes and test to make sure app still functions
+    //     -go through hooks ONE BY ONE and see if I can remove them from this page so that it can be a server component
+    //         -INCREMENTAL THIS TIME -> TEST AND GET EACH CHANGE WORKING FIRST
     //     -change ViewTaskModal so it doesn't get warning
     //       -ViewTaskModal needs the ability to change subTask isComplete state
     //         -this is an UPDATE operation
+    //
     // -no indication that data is being submitted to the user
     //      -I need a loading state (maybe I should try using SWR? probably would have to research and learn to a certain extent)
     // -review code (especially this page component) to see if what can be abstracted out and if the page can be made a server
@@ -365,6 +370,8 @@ export default function Home() {
                     <Image
                         src={showIcon}
                         alt="Show Sidebar Icon"
+                        width={16}
+                        height={11}
                     />
                 </button>
             )}

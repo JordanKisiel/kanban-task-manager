@@ -17,11 +17,15 @@ export default function StyleToggle({ isLight, toggleDarkMode }: Props) {
             <Image
                 src={lightModeIcon}
                 alt="light mode icon"
+                width={19}
+                height={19}
             />
             <Toggle isOff={isLight} />
             <Image
                 src={darkModeIcon}
                 alt="dark mode icon"
+                width={16}
+                height={16}
             />
         </div>
     )

@@ -53,6 +53,8 @@ export default function SubTaskInputList({
                     className="w-[3%] mt-[0.25rem]"
                     src={addIcon}
                     alt="Add icon"
+                    width={12}
+                    height={12}
                 />
                 Add New Subtask
             </ActionButton>

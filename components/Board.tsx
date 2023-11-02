@@ -52,6 +52,8 @@ export default function Board({
                                 className="w-[5%] mt-[0.2rem]"
                                 src={isDarkMode ? addIconDark : addIconLight}
                                 alt="Add icon"
+                                width={12}
+                                height={12}
                             />
                             <span>Add New Column</span>
                         </ActionButton>
@@ -75,6 +77,8 @@ export default function Board({
                                 className="mt-[0.5rem] opacity-50"
                                 src={isDarkMode ? addIconDark : addIconLight}
                                 alt="Add icon"
+                                width={12}
+                                height={12}
                             />
                             New Column
                         </button>

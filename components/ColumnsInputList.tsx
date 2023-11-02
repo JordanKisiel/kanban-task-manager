@@ -49,6 +49,8 @@ export default function ColumnInputList({
                     className="w-[3%] mt-[0.1rem]"
                     src={addIcon}
                     alt="Add icon"
+                    width={12}
+                    height={12}
                 />
                 Add New Column
             </ActionButton>

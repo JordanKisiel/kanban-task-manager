@@ -69,6 +69,8 @@ export default function HeaderBar({
                         className="md:w-[0.65rem] md:mt-[0.2rem]"
                         src={addIcon}
                         alt="add icon"
+                        width={12}
+                        height={12}
                     />
                     <span className="hidden md:inline-block">Add New Task</span>
                 </ActionButton>
