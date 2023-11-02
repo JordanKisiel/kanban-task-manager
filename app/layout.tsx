@@ -21,7 +21,7 @@ export default function RootLayout({
             className="dark"
         >
             <body
-                className={`${font.className} bg-neutral-200 dark:bg-neutral-800 min-h-screen m-0 md:overflow-hidden`}
+                className={`${font.className} antialiased bg-neutral-200 dark:bg-neutral-800 min-h-screen m-0 md:overflow-hidden`}
             >
                 {children}
             </body>
