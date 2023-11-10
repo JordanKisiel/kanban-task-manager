@@ -3,28 +3,36 @@ import SubtaskCard from "./SubtaskCard"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
+import { useBoards } from "@/lib/dataUtils"
 
 type Props = {
-    task: Task | null
-    otherColumns: string[]
-    currentColumn: string | null
+    selectedBoardIndex: number
+    columnIndex: number
+    taskIndex: number
     handleSwitchModalMode: Function
     handleBackToBoard: Function
 }
 
 export default function ViewTaskModal({
-    task,
-    otherColumns,
-    currentColumn,
+    selectedBoardIndex,
+    columnIndex,
+    taskIndex,
     handleSwitchModalMode,
     handleBackToBoard,
 }: Props) {
-    const numCompletedTasks = task?.subTasks.reduce((accum, curr) => {
+    const { boards, isLoading, isError, mutate } = useBoards(
+        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
+    )
+
+    const task =
+        boards[selectedBoardIndex].columns[columnIndex].tasks[taskIndex]
+
+    const numCompletedTasks = task.subTasks.reduce((accum, curr) => {
         const valueToAdd = curr.isComplete ? 1 : 0
         return accum + valueToAdd
     }, 0)
 
-    const subtaskCards = task?.subTasks.map((subTask) => {
+    const subtaskCards = task.subTasks.map((subTask) => {
         return (
             <SubtaskCard
                 key={subTask.description}
@@ -33,33 +41,27 @@ export default function ViewTaskModal({
         )
     })
 
-    const otherColumnOptions = otherColumns.map((column) => {
+    const currentColumn = boards[selectedBoardIndex].columns[columnIndex].title
+    const otherColumns = boards[selectedBoardIndex].columns.filter(
+        (column, index) => {
+            return index !== columnIndex
+        }
+    )
+
+    const currentColumnOption = (
+        <option value={currentColumn}>{currentColumn}</option>
+    )
+
+    const otherColumnOptions = otherColumns.map((column, index) => {
         return (
             <option
-                key={column}
-                value={column}
+                key={index}
+                value={column.title}
             >
-                {column}
+                {column.title}
             </option>
         )
     })
-
-    const currentColumnOption =
-        currentColumn !== null ? (
-            <option
-                key={currentColumn}
-                value={currentColumn}
-            >
-                {currentColumn}
-            </option>
-        ) : (
-            <option
-                key="Null Column"
-                value="No columns"
-            >
-                {"No columns"}
-            </option>
-        )
 
     const columnOptions = [currentColumnOption, ...otherColumnOptions]
 

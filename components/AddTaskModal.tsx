@@ -8,7 +8,6 @@ import { Column } from "@/types"
 
 type Props = {
     columns: Column[]
-    fetchData: Function
     handleBackToBoard: Function
 }
 
@@ -24,11 +23,7 @@ const TITLE_PLACEHOLDER = "e.g. Take coffee break"
 const DESCRIPTION_PLACEHOLDER =
     "e.g. It's always good to take a break. This 15 minute break will charge the batteries a little."
 
-export default function AddTaskModal({
-    columns,
-    fetchData,
-    handleBackToBoard,
-}: Props) {
+export default function AddTaskModal({ columns, handleBackToBoard }: Props) {
     const [formData, setFormData] = useState<FormData>({
         title: "",
         description: "",
@@ -128,8 +123,6 @@ export default function AddTaskModal({
         event.preventDefault()
 
         await addTask(formData)
-
-        await fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
 
         handleBackToBoard()
     }

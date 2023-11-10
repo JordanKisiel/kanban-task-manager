@@ -4,11 +4,12 @@ import { Task } from "../types"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
+import { useBoards } from "@/lib/dataUtils"
 
 type Props = {
-    task: Task | null
-    otherColumns: string[]
-    currentColumn: string | null
+    selectedBoardIndex: number
+    columnIndex: number
+    taskIndex: number
     handleSwitchModalMode: Function
     handleBackToBoard: Function
 }
@@ -20,12 +21,27 @@ const DESCRIPTION_PLACEHOLDER =
 //TODO: add the ability to pass subtasks array into SubtaskInputList and have it render those out automatically (if they exist)
 
 export default function EditTaskModal({
-    task,
-    otherColumns,
-    currentColumn,
+    selectedBoardIndex,
+    columnIndex,
+    taskIndex,
     handleSwitchModalMode,
     handleBackToBoard,
 }: Props) {
+    const { boards, isLoading, isError, mutate } = useBoards(
+        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
+    )
+
+    const task =
+        boards[selectedBoardIndex].columns[columnIndex].tasks[taskIndex]
+
+    const currentColumn = boards[selectedBoardIndex].columns[columnIndex].title
+
+    const otherColumns = boards[selectedBoardIndex].columns
+        .filter((column, index) => {
+            return index !== columnIndex
+        })
+        .map((column) => column.title)
+
     const columnNames = [currentColumn, ...otherColumns]
 
     const selectOptions = columnNames.map((columnName) => {
@@ -91,7 +107,11 @@ export default function EditTaskModal({
                         {task ? task.description : "No task selected"}
                     </textarea>
                 </div>
-                <SubTaskInputList />
+                <SubTaskInputList
+                    subTasks={task.subTasks.map(
+                        (subTask) => subTask.description
+                    )}
+                />
                 <div>
                     <ModalLabel htmlFor="status-select">Status</ModalLabel>
                     <select

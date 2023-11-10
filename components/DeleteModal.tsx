@@ -1,13 +1,13 @@
 import ActionButton from "./ActionButton"
 import { deleteBoard, deleteTask } from "@/lib/dataUtils"
 import { Board, Task } from "@/types"
+import { useBoards } from "@/lib/dataUtils"
 
 type Props = {
     isBoard: boolean
-    numBoards: number
-    itemToDelete: Board | Task | null
-    changeSelectedBoard: Function
-    fetchData: Function
+    selectedBoardIndex: number
+    columnIndex: number
+    taskIndex: number
     handleBackToBoard: Function
 }
 
@@ -15,12 +15,24 @@ type Props = {
 
 export default function DeleteModal({
     isBoard,
-    numBoards,
-    itemToDelete,
-    changeSelectedBoard,
-    fetchData,
+    selectedBoardIndex,
+    columnIndex,
+    taskIndex,
     handleBackToBoard,
 }: Props) {
+    const { boards, isLoading, isError, mutate } = useBoards(
+        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
+    )
+
+    let itemToDelete: Board | Task | null = null
+
+    if (isBoard) {
+        itemToDelete = boards[selectedBoardIndex]
+    } else {
+        itemToDelete =
+            boards[selectedBoardIndex].columns[columnIndex].tasks[taskIndex]
+    }
+
     let userMessage = `Are you sure you want to delete the '${
         itemToDelete ? itemToDelete.title : "No board selected"
     }' board? This action will remove all columns and tasks and cannot be reversed.`
@@ -34,7 +46,6 @@ export default function DeleteModal({
     //hard-coding userId for now
     async function handleDelete(isBoardItem: boolean) {
         let deleteRes
-        let fetchRes
 
         if (isBoardItem && itemToDelete) {
             deleteRes = await deleteBoard(itemToDelete.id)
@@ -42,10 +53,6 @@ export default function DeleteModal({
 
         if (!isBoardItem && itemToDelete) {
             deleteRes = await deleteTask(itemToDelete.id)
-        }
-
-        if (deleteRes && deleteRes.ok) {
-            fetchRes = await fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
         }
 
         handleBackToBoard()

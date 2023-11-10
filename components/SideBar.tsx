@@ -1,10 +1,9 @@
 import { nanoid } from "nanoid"
 import Link from "next/link"
 import StyleToggle from "./StyleToggle"
+import { useBoards } from "@/lib/dataUtils"
 
 type Props = {
-    numBoards: number
-    boardNames: string[]
     selectedBoardIndex: number
     handleShowAddBoardModal: Function
     handleHideSideBar: Function
@@ -14,8 +13,6 @@ type Props = {
 }
 
 export default function SideBar({
-    numBoards,
-    boardNames,
     selectedBoardIndex,
     handleShowAddBoardModal,
     handleHideSideBar,
@@ -23,6 +20,14 @@ export default function SideBar({
     isDarkMode,
     toggleDarkMode,
 }: Props) {
+    const { boards, isLoading, isError, mutate } = useBoards(
+        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
+    )
+
+    const numBoards = isLoading ? 0 : boards.length
+
+    const boardNames = isLoading ? [] : boards.map((board) => board.title)
+
     const boardsList = boardNames.map((boardName, index) => {
         const isSelected = index === selectedBoardIndex
 

@@ -2,12 +2,11 @@ import Image from "next/image"
 import ActionButton from "./ActionButton"
 import MenuButton from "./MenuButton"
 import addIcon from "../public/plus-icon.svg"
+import { useBoards } from "@/lib/dataUtils"
 
 type Props = {
-    selectedBoardTitle: string
+    selectedBoardIndex: number
     isSideBarShown: boolean
-    isNoBoards: boolean
-    isNoColumns: boolean
     setIsModalOpen: Function
     handleShowAddTaskModal: Function
     handleShowModalSideBar: Function
@@ -15,15 +14,25 @@ type Props = {
 }
 
 export default function HeaderBar({
-    selectedBoardTitle,
+    selectedBoardIndex,
     isSideBarShown,
-    isNoBoards,
-    isNoColumns,
     setIsModalOpen,
     handleShowAddTaskModal,
     handleShowModalSideBar,
     handleSwitchModalMode,
 }: Props) {
+    const { boards, isLoading, isError, mutate } = useBoards(
+        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
+    )
+
+    const selectedBoardTitle = isLoading
+        ? "Loading title"
+        : boards[selectedBoardIndex].title
+
+    const isNoBoards = boards.length === 0
+    const isNoColumns =
+        isNoBoards || boards[selectedBoardIndex].columns.length === 0
+
     const menuOptions = [
         {
             actionName: "Edit Board",

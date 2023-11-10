@@ -4,20 +4,27 @@ import ActionButton from "./ActionButton"
 import addIconDark from "../public/plus-icon.svg"
 import addIconLight from "../public/plus-icon-gray.svg"
 import { Column } from "../types"
+import { useBoards } from "@/lib/dataUtils"
 
 type Props = {
-    columns: Column[]
+    selectedBoardIndex: number
     handleSwitchModalMode: Function
     setIsModalOpen: Function
     isDarkMode: boolean
 }
 
 export default function Board({
-    columns,
+    selectedBoardIndex,
     handleSwitchModalMode,
     setIsModalOpen,
     isDarkMode,
 }: Props) {
+    const { boards, isLoading, isError, mutate } = useBoards(
+        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
+    )
+
+    const columns = isLoading ? [] : boards[selectedBoardIndex].columns
+
     const taskColumns = columns.map((column, index) => {
         return (
             <TaskColumn
@@ -60,7 +67,7 @@ export default function Board({
                     </div>
                 </div>
             ) : (
-                <div className="grid grid-flow-col auto-cols-[16rem] px-4 py-20 gap-6 overflow-auto md:pt-5 md:pb-20">
+                <div className="grid grid-flow-col auto-cols-[16rem] px-6 py-20 gap-6 overflow-auto md:pt-5 md:pb-20">
                     {taskColumns}
                     <div className="flex flex-col pt-[2.3rem] h-full justify-center">
                         <button

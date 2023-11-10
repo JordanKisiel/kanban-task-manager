@@ -39,11 +39,16 @@ export default function Home() {
         selectedBoardIndexParam !== null ? Number(selectedBoardIndexParam) : 0
 
     let task: Task | null = null
+    let columnIndex = 0
+    let taskIndex = 0
     let otherColumns: string[] = []
     let currentColumn: string | null = null
 
     const [isBoardNewlyCreated, setIsBoardNewlyCreated] = useState(false)
-    const [boards, setBoards] = useState<BoardType[]>([])
+    //hard-coding userid for now
+    const { boards, isLoading, isError, mutate } = useBoards(
+        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
+    )
     const [showModalSideBar, setModalShowSideBar] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalMode, setModalMode] = useState<ModalMode>("viewTask")
@@ -73,8 +78,8 @@ export default function Home() {
         const [columnIndexString, taskIndexString] =
             selectedTaskString.split("_")
 
-        const columnIndex = Number(columnIndexString)
-        const taskIndex = Number(taskIndexString)
+        columnIndex = Number(columnIndexString)
+        taskIndex = Number(taskIndexString)
 
         task = boards[selectedBoardIndex].columns[columnIndex].tasks[taskIndex]
 
@@ -91,9 +96,9 @@ export default function Home() {
 
     let modalToShow = (
         <ViewTaskModal
-            task={task}
-            otherColumns={otherColumns}
-            currentColumn={currentColumn}
+            selectedBoardIndex={selectedBoardIndex}
+            columnIndex={columnIndex}
+            taskIndex={taskIndex}
             handleSwitchModalMode={handleSwitchModalMode}
             handleBackToBoard={handleBackToBoard}
         />
@@ -105,9 +110,9 @@ export default function Home() {
     if (modalMode === "editTask") {
         modalToShow = (
             <EditTaskModal
-                task={task}
-                otherColumns={otherColumns}
-                currentColumn={currentColumn}
+                selectedBoardIndex={selectedBoardIndex}
+                columnIndex={columnIndex}
+                taskIndex={taskIndex}
                 handleSwitchModalMode={handleSwitchModalMode}
                 handleBackToBoard={handleBackToBoard}
             />
@@ -116,10 +121,9 @@ export default function Home() {
         modalToShow = (
             <DeleteModal
                 isBoard={false}
-                numBoards={boards.length}
-                itemToDelete={task}
-                changeSelectedBoard={changeSelectedBoard}
-                fetchData={fetchData}
+                selectedBoardIndex={selectedBoardIndex}
+                columnIndex={columnIndex}
+                taskIndex={taskIndex}
                 handleBackToBoard={handleBackToBoard}
             />
         )
@@ -127,7 +131,6 @@ export default function Home() {
         modalToShow = (
             <AddTaskModal
                 columns={boards ? boards[selectedBoardIndex].columns : []}
-                fetchData={fetchData}
                 handleBackToBoard={handleBackToBoard}
             />
         )
@@ -136,7 +139,6 @@ export default function Home() {
             <AddBoardModal
                 setIsBoardNewlyCreated={setIsBoardNewlyCreated}
                 handleBackToBoard={handleBackToBoard}
-                fetchData={fetchData}
             />
         )
     } else if (modalMode === "editBoard") {
@@ -150,20 +152,13 @@ export default function Home() {
         modalToShow = (
             <DeleteModal
                 isBoard={true}
-                numBoards={boards.length}
-                itemToDelete={boards[selectedBoardIndex]}
-                fetchData={fetchData}
-                changeSelectedBoard={changeSelectedBoard}
+                selectedBoardIndex={selectedBoardIndex}
+                columnIndex={columnIndex}
+                taskIndex={taskIndex}
                 handleBackToBoard={handleBackToBoard}
             />
         )
     }
-
-    //get boards data
-    //use hard-coded userId for now
-    useEffect(() => {
-        fetchData("be0fc8c3-496f-4ed8-9f27-32dcc66bba24")
-    }, [])
 
     useEffect(() => {
         if (boards.length > 0 && isBoardNewlyCreated) {
@@ -245,22 +240,25 @@ export default function Home() {
         setIsDarkMode((prevValue: boolean) => !prevValue)
     }
 
-    async function fetchData(userId: string) {
-        const res = await getBoards(userId)
-        const boards = await res.json()
-
-        setBoards(boards)
-
-        return res.ok
-    }
-
     function changeSelectedBoard(index: number) {
         router.push(`?board=${index}`)
     }
 
     //TODO:
-    //     -Start integrating SWR data fetching hook (useBoards)
-    //        -making INCREMENTAL changes and test to make sure app still functions
+    //      -re-think the structure of my application based upon what I've learned in the nextjs course
+    //        -specifically:
+    //           -fetching data in components that need them and fetching data on the server side if at all possible
+    //             -using Suspense and fallback skeletons for components that fetch data
+    //           -write my data fetching functions to be more granualar
+    //           -structure my components folder closer to what was in the course
+    //           -instead of using an API layer, try using server actions instead
+    //              -if I HAVE to fetch data on the client, then I should be using an API layer
+    //           -think about my route structure (use the userId as a dynamic route to access the associated boards?)
+    //           -use noStore or force-dynamic using segment config options
+    //           -simulate slow data fetch to see what the experience is and make sure it works write
+    //           -simulate and handle errors
+    //     -in general, it's a good practice to move data fetching down into the components that need it and wrapping them in
+    //       Suspense
     //     -go through hooks ONE BY ONE and see if I can remove them from this page so that it can be a server component
     //         -INCREMENTAL THIS TIME -> TEST AND GET EACH CHANGE WORKING FIRST
     //     -change ViewTaskModal so it doesn't get warning
@@ -296,17 +294,8 @@ export default function Home() {
                         <Logo isDarkMode={isDarkMode} />
                     </div>
                     <HeaderBar
-                        selectedBoardTitle={
-                            boards.length > 0
-                                ? boards[selectedBoardIndex].title
-                                : ""
-                        }
+                        selectedBoardIndex={selectedBoardIndex}
                         isSideBarShown={showModalSideBar}
-                        isNoBoards={boards.length === 0}
-                        isNoColumns={
-                            boards.length > 0 &&
-                            boards[selectedBoardIndex].columns.length === 0
-                        }
                         setIsModalOpen={setIsModalOpen}
                         handleShowAddTaskModal={handleShowAddTaskModal}
                         handleShowModalSideBar={handleShowModalSideBar}
@@ -319,8 +308,6 @@ export default function Home() {
                     }`}
                 >
                     <SideBar
-                        numBoards={boards.length}
-                        boardNames={boards.map((board) => board.title)}
                         selectedBoardIndex={selectedBoardIndex}
                         handleShowAddBoardModal={handleShowAddBoardModal}
                         handleHideSideBar={handleHideSideBar}
@@ -335,11 +322,7 @@ export default function Home() {
                     }`}
                 >
                     <Board
-                        columns={
-                            boards.length > 0
-                                ? boards[selectedBoardIndex].columns
-                                : []
-                        }
+                        selectedBoardIndex={selectedBoardIndex}
                         handleSwitchModalMode={handleSwitchModalMode}
                         setIsModalOpen={setIsModalOpen}
                         isDarkMode={isDarkMode}
@@ -348,8 +331,6 @@ export default function Home() {
             </div>
             {showModalSideBar && (
                 <ModalSideBar
-                    numBoards={boards.length}
-                    boardNames={boards.map((board) => board.title)}
                     selectedBoardIndex={selectedBoardIndex}
                     handleShowAddBoardModal={handleShowAddBoardModal}
                     handleShowModalSideBar={handleShowModalSideBar}
