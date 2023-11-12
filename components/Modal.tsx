@@ -1,15 +1,26 @@
+import { useRouter } from "next/navigation"
+
 type Props = {
-    handleBackToBoard: Function
+    selectedBoardIndex: number
+    setIsModalOpen: Function
     children: React.ReactNode
 }
 
-//TODO: continue light styling modals
+export default function Modal({
+    selectedBoardIndex,
+    setIsModalOpen,
+    children,
+}: Props) {
+    const router = useRouter()
 
-export default function Modal({ handleBackToBoard, children }: Props) {
     return (
         <div
-            onClick={() => handleBackToBoard()}
-            className="bg-neutral-900/50 dark:bg-neutral-900/90 absolute flex flex-col items-center inset-0 justify-center px-4 py-12"
+            onClick={() => {
+                setIsModalOpen(false)
+                console.log(selectedBoardIndex)
+                router.push(`/?board=${selectedBoardIndex}`)
+            }}
+            className="bg-neutral-900/50 dark:bg-neutral-900/90 fixed flex flex-col items-center inset-0 justify-center px-4 py-12 z-10"
         >
             <div
                 onClick={(e) => e.stopPropagation()}

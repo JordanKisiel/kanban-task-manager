@@ -4,11 +4,11 @@ import SubTaskInputList from "./SubTaskInputList"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import { addTask } from "@/lib/dataUtils"
-import { Column } from "@/types"
+import { useBoards } from "@/lib/dataUtils"
 
 type Props = {
-    columns: Column[]
-    handleBackToBoard: Function
+    selectedBoardIndex: number
+    setIsModalOpen: Function
 }
 
 type FormData = {
@@ -23,7 +23,16 @@ const TITLE_PLACEHOLDER = "e.g. Take coffee break"
 const DESCRIPTION_PLACEHOLDER =
     "e.g. It's always good to take a break. This 15 minute break will charge the batteries a little."
 
-export default function AddTaskModal({ columns, handleBackToBoard }: Props) {
+export default function AddTaskModal({
+    selectedBoardIndex,
+    setIsModalOpen,
+}: Props) {
+    const { boards, isLoading, isError, mutate } = useBoards(
+        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
+    )
+
+    const columns = boards[selectedBoardIndex].columns
+
     const [formData, setFormData] = useState<FormData>({
         title: "",
         description: "",
@@ -47,7 +56,7 @@ export default function AddTaskModal({ columns, handleBackToBoard }: Props) {
     const menuOptions = [
         {
             actionName: "Close",
-            action: () => handleBackToBoard(),
+            action: () => setIsModalOpen(),
         },
     ]
 
@@ -124,7 +133,7 @@ export default function AddTaskModal({ columns, handleBackToBoard }: Props) {
 
         await addTask(formData)
 
-        handleBackToBoard()
+        setIsModalOpen()
     }
 
     return (

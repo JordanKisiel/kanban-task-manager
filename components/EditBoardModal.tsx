@@ -4,19 +4,29 @@ import { Board } from "@/types"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
+import { useBoards } from "@/lib/dataUtils"
 
 type Props = {
-    board: Board
-    handleBackToBoard: Function
+    selectedBoardIndex: number
+    setIsModalOpen: Function
 }
 
 const TITLE_PLACEHOLDER = "e.g. Web Design"
 
-export default function EditBoardModal({ board, handleBackToBoard }: Props) {
+export default function EditBoardModal({
+    selectedBoardIndex,
+    setIsModalOpen,
+}: Props) {
+    const { boards, isLoading, isError, mutate } = useBoards(
+        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
+    )
+
+    const board = boards[selectedBoardIndex]
+
     const menuOptions = [
         {
             actionName: "Close",
-            action: () => handleBackToBoard(),
+            action: () => setIsModalOpen(),
         },
     ]
 

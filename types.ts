@@ -22,3 +22,12 @@ export type Board = {
     title: string
     columns: Column[]
 }
+
+export type ModalMode =
+    | "viewTask"
+    | "editTask"
+    | "deleteTask"
+    | "addTask"
+    | "addBoard"
+    | "editBoard"
+    | "deleteBoard"

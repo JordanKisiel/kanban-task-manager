@@ -2,18 +2,25 @@ import { Task } from "../types"
 import TaskCard from "./TaskCard"
 
 type Props = {
+    selectedBoardIndex: number
     columnIndex: number
     title: string
     tasks: Task[]
 }
 
-export default function TaskColumn({ columnIndex, title, tasks }: Props) {
+export default function TaskColumn({
+    selectedBoardIndex,
+    columnIndex,
+    title,
+    tasks,
+}: Props) {
     const columnColors = ["bg-[#49C4E5]", "bg-[#8471F2]", "bg-[#67E2AE]"]
 
     const taskCards = tasks.map(({ title, subTasks }, index) => {
         return (
             <TaskCard
                 key={`${columnIndex}_${index}`}
+                selectedBoardIndex={selectedBoardIndex}
                 columnIndex={columnIndex}
                 taskIndex={index}
                 title={title}

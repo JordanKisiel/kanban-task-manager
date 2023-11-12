@@ -10,8 +10,8 @@ type Props = {
     selectedBoardIndex: number
     columnIndex: number
     taskIndex: number
-    handleSwitchModalMode: Function
-    handleBackToBoard: Function
+    setModalMode: Function
+    setIsModalOpen: Function
 }
 
 const TITLE_PLACEHOLDER = "e.g. Take coffee break"
@@ -24,8 +24,8 @@ export default function EditTaskModal({
     selectedBoardIndex,
     columnIndex,
     taskIndex,
-    handleSwitchModalMode,
-    handleBackToBoard,
+    setModalMode,
+    setIsModalOpen,
 }: Props) {
     const { boards, isLoading, isError, mutate } = useBoards(
         "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
@@ -58,15 +58,15 @@ export default function EditTaskModal({
     const menuOptions = [
         {
             actionName: "View",
-            action: () => handleSwitchModalMode("viewTask"),
+            action: () => setModalMode("viewTask"),
         },
         {
             actionName: "Delete",
-            action: () => handleSwitchModalMode("deleteTask"),
+            action: () => setModalMode("deleteTask"),
         },
         {
             actionName: "Close",
-            action: () => handleBackToBoard(),
+            action: () => setIsModalOpen(),
         },
     ]
 

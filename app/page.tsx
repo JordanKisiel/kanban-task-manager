@@ -99,8 +99,8 @@ export default function Home() {
             selectedBoardIndex={selectedBoardIndex}
             columnIndex={columnIndex}
             taskIndex={taskIndex}
-            handleSwitchModalMode={handleSwitchModalMode}
-            handleBackToBoard={handleBackToBoard}
+            setModalMode={setModalMode}
+            setIsModalOpen={setIsModalOpen}
         />
     )
 
@@ -135,12 +135,7 @@ export default function Home() {
             />
         )
     } else if (modalMode === "addBoard") {
-        modalToShow = (
-            <AddBoardModal
-                setIsBoardNewlyCreated={setIsBoardNewlyCreated}
-                handleBackToBoard={handleBackToBoard}
-            />
-        )
+        modalToShow = <AddBoardModal setIsModalOpen={setIsModalOpen} />
     } else if (modalMode === "editBoard") {
         modalToShow = (
             <EditBoardModal
@@ -178,14 +173,6 @@ export default function Home() {
             document.querySelector("html")?.classList.remove("dark")
         }
     }, [isDarkMode])
-
-    useEffect(() => {
-        if (task !== null) {
-            setIsModalOpen(true)
-        } else {
-            setIsModalOpen(false)
-        }
-    }, [task])
 
     //stop scrolling when modal is open
     useEffect(() => {
@@ -296,10 +283,7 @@ export default function Home() {
                     <HeaderBar
                         selectedBoardIndex={selectedBoardIndex}
                         isSideBarShown={showModalSideBar}
-                        setIsModalOpen={setIsModalOpen}
-                        handleShowAddTaskModal={handleShowAddTaskModal}
                         handleShowModalSideBar={handleShowModalSideBar}
-                        handleSwitchModalMode={handleSwitchModalMode}
                     />
                 </div>
                 <div
@@ -309,7 +293,6 @@ export default function Home() {
                 >
                     <SideBar
                         selectedBoardIndex={selectedBoardIndex}
-                        handleShowAddBoardModal={handleShowAddBoardModal}
                         handleHideSideBar={handleHideSideBar}
                         handleShowSideBar={handleShowSideBar}
                         isDarkMode={isDarkMode}
@@ -323,8 +306,6 @@ export default function Home() {
                 >
                     <Board
                         selectedBoardIndex={selectedBoardIndex}
-                        handleSwitchModalMode={handleSwitchModalMode}
-                        setIsModalOpen={setIsModalOpen}
                         isDarkMode={isDarkMode}
                     />
                 </div>
@@ -332,14 +313,16 @@ export default function Home() {
             {showModalSideBar && (
                 <ModalSideBar
                     selectedBoardIndex={selectedBoardIndex}
-                    handleShowAddBoardModal={handleShowAddBoardModal}
                     handleShowModalSideBar={handleShowModalSideBar}
                     isDarkMode={isDarkMode}
                     toggleDarkMode={toggleDarkMode}
                 />
             )}
             {isModalOpen && (
-                <Modal handleBackToBoard={handleBackToBoard}>
+                <Modal
+                    selectedBoardIndex={selectedBoardIndex}
+                    setIsModalOpen={setIsModalOpen}
+                >
                     {modalToShow}
                 </Modal>
             )}

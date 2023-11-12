@@ -1,27 +1,27 @@
+import { useState } from "react"
 import Image from "next/image"
 import TaskColumn from "./TaskColumn"
+import Modal from "./Modal"
+import ModalContent from "./ModalContent"
 import ActionButton from "./ActionButton"
 import addIconDark from "../public/plus-icon.svg"
 import addIconLight from "../public/plus-icon-gray.svg"
-import { Column } from "../types"
 import { useBoards } from "@/lib/dataUtils"
+import { ModalMode } from "@/types"
 
 type Props = {
     selectedBoardIndex: number
-    handleSwitchModalMode: Function
-    setIsModalOpen: Function
     isDarkMode: boolean
 }
 
-export default function Board({
-    selectedBoardIndex,
-    handleSwitchModalMode,
-    setIsModalOpen,
-    isDarkMode,
-}: Props) {
+export default function Board({ selectedBoardIndex, isDarkMode }: Props) {
     const { boards, isLoading, isError, mutate } = useBoards(
         "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
     )
+
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [modalMode, setModalMode] =
+        useState<Extract<ModalMode, "editBoard">>("editBoard")
 
     const columns = isLoading ? [] : boards[selectedBoardIndex].columns
 
@@ -29,6 +29,7 @@ export default function Board({
         return (
             <TaskColumn
                 key={column.title}
+                selectedBoardIndex={selectedBoardIndex}
                 columnIndex={index}
                 title={column.title}
                 tasks={column.tasks}
@@ -51,8 +52,8 @@ export default function Board({
                             textColor="text-neutral-100"
                             textSize="text-base"
                             handler={() => {
-                                handleSwitchModalMode("editBoard")
                                 setIsModalOpen(true)
+                                setModalMode("editBoard")
                             }}
                         >
                             <Image
@@ -72,8 +73,8 @@ export default function Board({
                     <div className="flex flex-col pt-[2.3rem] h-full justify-center">
                         <button
                             onClick={() => {
-                                handleSwitchModalMode("editBoard")
                                 setIsModalOpen(true)
+                                setModalMode("editBoard")
                             }}
                             className="
                                 flex flex-row text-neutral-500 dark:text-neutral-400 bg-neutral-300/50 
@@ -91,6 +92,18 @@ export default function Board({
                         </button>
                     </div>
                 </div>
+            )}
+            {isModalOpen && (
+                <Modal
+                    selectedBoardIndex={selectedBoardIndex}
+                    setIsModalOpen={setIsModalOpen}
+                >
+                    <ModalContent
+                        mode={modalMode}
+                        selectedBoardIndex={selectedBoardIndex}
+                        setIsModalOpen={setIsModalOpen}
+                    />
+                </Modal>
             )}
         </>
     )

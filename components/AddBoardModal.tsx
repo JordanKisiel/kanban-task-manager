@@ -9,16 +9,12 @@ import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
 
 type Props = {
-    setIsBoardNewlyCreated: Function
-    handleBackToBoard: Function
+    setIsModalOpen: Function
 }
 
 const TITLE_PLACEHOLDER = "e.g. Web Design"
 
-export default function AddBoardModal({
-    setIsBoardNewlyCreated,
-    handleBackToBoard,
-}: Props) {
+export default function AddBoardModal({ setIsModalOpen }: Props) {
     const [title, setTitle] = useState("")
     const [columnNames, setColumnNames] = useState<string[]>([])
 
@@ -26,7 +22,7 @@ export default function AddBoardModal({
         {
             actionName: "Close",
             action: () => {
-                handleBackToBoard()
+                setIsModalOpen()
             },
         },
     ]
@@ -71,11 +67,7 @@ export default function AddBoardModal({
             columnNames
         )
 
-        if (addRes && addRes.ok) {
-            setIsBoardNewlyCreated(true)
-        }
-
-        handleBackToBoard()
+        setIsModalOpen()
 
         return fetchRes
     }

@@ -1,96 +1,136 @@
-import { useState } from "react"
 import ViewTaskModal from "./ViewTaskModal"
 import EditTaskModal from "./EditTaskModal"
 import DeleteModal from "./DeleteModal"
 import AddTaskModal from "./AddTaskModal"
 import AddBoardModal from "./AddBoardModal"
 import EditBoardModal from "./EditBoardModal"
-import { Task } from "@/types"
 
-type ModalMode =
-    | "viewTask"
-    | "editTask"
-    | "deleteTask"
-    | "addTask"
-    | "addBoard"
-    | "editBoard"
-    | "deleteBoard"
-
-type Props = {
-    mode: ModalMode
-    selectedBoardIndex?: number
-    task?: Task
-    currentColumn?: string | null
-    otherColumns?: string[]
+type ViewTaskProps = {
+    mode: "viewTask"
+    selectedBoardIndex: number
+    columnIndex: number
+    taskIndex: number
+    setModalMode: Function
+    setIsModalOpen: Function
 }
 
-export default function ModalContent({
-    mode,
-    selectedBoardIndex,
-    task,
-    currentColumn,
-    otherColumns,
-}: Props) {
-    const [modalMode, setModalMode] = useState<ModalMode>(mode)
+type AddTaskProps = {
+    mode: "addTask"
+    selectedBoardIndex: number
+    setIsModalOpen: Function
+}
 
-    function handleBackToBoard() {
-        setModalMode("viewTask")
-        setIsModalOpen(false)
+type EditTaskProps = {
+    mode: "editTask"
+    selectedBoardIndex: number
+    columnIndex: number
+    taskIndex: number
+    setModalMode: Function
+    setIsModalOpen: Function
+}
+
+type DeleteTaskProps = {
+    mode: "deleteTask"
+    selectedBoardIndex: number
+    columnIndex: number
+    taskIndex: number
+    setIsModalOpen: Function
+}
+
+type AddBoardProps = {
+    mode: "addBoard"
+    setIsModalOpen: Function
+}
+
+type EditBoardProps = {
+    mode: "editBoard"
+    selectedBoardIndex: number
+    setIsModalOpen: Function
+}
+
+type DeleteBoardProps = {
+    mode: "deleteBoard"
+    selectedBoardIndex: number
+    setIsModalOpen: Function
+}
+
+type Props =
+    | ViewTaskProps
+    | EditTaskProps
+    | AddTaskProps
+    | DeleteTaskProps
+    | AddBoardProps
+    | EditBoardProps
+    | DeleteBoardProps
+
+export default function ModalContent(props: Props) {
+    let modalContent: JSX.Element
+
+    switch (props.mode) {
+        case "viewTask":
+            modalContent = (
+                <ViewTaskModal
+                    selectedBoardIndex={props.selectedBoardIndex}
+                    columnIndex={props.columnIndex}
+                    taskIndex={props.taskIndex}
+                    setModalMode={props.setModalMode}
+                    setIsModalOpen={props.setIsModalOpen}
+                />
+            )
+            break
+        case "addTask":
+            modalContent = (
+                <AddTaskModal
+                    selectedBoardIndex={props.selectedBoardIndex}
+                    setIsModalOpen={props.setIsModalOpen}
+                />
+            )
+            break
+        case "editTask":
+            modalContent = (
+                <EditTaskModal
+                    selectedBoardIndex={props.selectedBoardIndex}
+                    columnIndex={props.columnIndex}
+                    taskIndex={props.taskIndex}
+                    setModalMode={props.setModalMode}
+                    setIsModalOpen={props.setIsModalOpen}
+                />
+            )
+            break
+        case "deleteTask":
+            modalContent = (
+                <DeleteModal
+                    isBoard={false}
+                    selectedBoardIndex={props.selectedBoardIndex}
+                    columnIndex={props.columnIndex}
+                    taskIndex={props.taskIndex}
+                    setIsModalOpen={props.setIsModalOpen}
+                />
+            )
+            break
+        case "addBoard":
+            modalContent = (
+                <AddBoardModal setIsModalOpen={props.setIsModalOpen} />
+            )
+            break
+        case "editBoard":
+            modalContent = (
+                <EditBoardModal
+                    selectedBoardIndex={props.selectedBoardIndex}
+                    setIsModalOpen={props.setIsModalOpen}
+                />
+            )
+            break
+        case "deleteBoard":
+            modalContent = (
+                <DeleteModal
+                    isBoard={true}
+                    selectedBoardIndex={props.selectedBoardIndex}
+                    setIsModalOpen={props.setIsModalOpen}
+                />
+            )
+            break
     }
 
-    const content: Map<ModalMode, JSX.Element> = new Map([
-        [
-            "viewTask",
-            <ViewTaskModal
-                task={task ? task : null}
-                otherColumns={otherColumns ? otherColumns : []}
-                currentColumn={currentColumn ? currentColumn : null}
-                setModalMode={setModalMode}
-                handleBackToBoard={handleBackToBoard}
-            />,
-        ],
-        [
-            "addTask",
-            <AddTaskModal
-                selectedBoardIndex={selectedBoardIndex ? selectedBoardIndex : 0}
-                handleBackToBoard={handleBackToBoard}
-            />,
-        ],
-        [
-            "editTask",
-            <EditTaskModal
-                task={task ? task : null}
-                otherColumns={otherColumns ? otherColumns : []}
-                currentColumn={currentColumn ? currentColumn : null}
-                setModalMode={setModalMode}
-                handleBackToBoard={handleBackToBoard}
-            />,
-        ],
-        [
-            "deleteTask",
-            <DeleteModal
-                isBoard={false}
-                selectedBoardIndex={selectedBoardIndex ? selectedBoardIndex : 0}
-                handleBackToBoard={handleBackToBoard}
-            />,
-        ],
-        ["addBoard", <AddBoardModal handleBackToBoard={handleBackToBoard} />],
-        [
-            "editBoard",
-            <EditBoardModal
-                selectedBoardIndex={selectedBoardIndex ? selectedBoardIndex : 0}
-                handleBackToBoard={handleBackToBoard}
-            />,
-        ],
-        [
-            "deleteBoard",
-            <DeleteModal
-                isBoard={true}
-                selectedBoardIndex={selectedBoardIndex ? selectedBoardIndex : 0}
-                handleBackToBoard={handleBackToBoard}
-            />,
-        ],
-    ])
-
-    return content.get(modalMode)
+    return modalContent
 }
