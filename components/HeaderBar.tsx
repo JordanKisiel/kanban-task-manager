@@ -1,7 +1,9 @@
+import { useState } from "react"
 import Image from "next/image"
 import ActionButton from "./ActionButton"
 import MenuButton from "./MenuButton"
 import Modal from "./Modal"
+import ModalSideBar from "./ModalSideBar"
 import addIcon from "../public/plus-icon.svg"
 import { useBoards } from "@/lib/dataUtils"
 import { useModal } from "@/hooks/useModal"
@@ -11,16 +13,16 @@ type Props = {
     selectedBoardIndex: number
     columnIndex: number
     taskIndex: number
-    isSideBarShown: boolean
-    handleShowModalSideBar: Function
+    isDarkMode: boolean
+    toggleDarkMode: Function
 }
 
 export default function HeaderBar({
     selectedBoardIndex,
     columnIndex,
     taskIndex,
-    isSideBarShown,
-    handleShowModalSideBar,
+    isDarkMode,
+    toggleDarkMode,
 }: Props) {
     const { boards, isLoading, isError, mutate } = useBoards(
         "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
@@ -30,6 +32,8 @@ export default function HeaderBar({
         "addTask",
         false
     )
+
+    const [showModalSideBar, setShowModalSideBar] = useState(false)
 
     const selectedBoardTitle = isLoading
         ? "Loading title"
@@ -64,9 +68,9 @@ export default function HeaderBar({
                         {selectedBoardTitle}
                     </h1>
                     <button
-                        onClick={(e) => handleShowModalSideBar(e)}
+                        onClick={(e) => setShowModalSideBar(true)}
                         className={`absolute w-full h-full top-0 bg-no-repeat bg-right ${
-                            isSideBarShown
+                            showModalSideBar
                                 ? "bg-[url('../public/arrow-up.svg')]"
                                 : "bg-[url('../public/arrow-down.svg')]"
                         } md:hidden md:bg-none`}
@@ -112,6 +116,16 @@ export default function HeaderBar({
                         setIsModalOpen={setIsModalOpen}
                     />
                 </Modal>
+            )}
+            {showModalSideBar && (
+                <ModalSideBar
+                    selectedBoardIndex={selectedBoardIndex}
+                    setShowModalSideBar={setShowModalSideBar}
+                    isDarkMode={isDarkMode}
+                    toggleDarkMode={toggleDarkMode}
+                    setIsModalOpen={setIsModalOpen}
+                    setModalMode={setModalMode}
+                />
             )}
         </>
     )

@@ -1,34 +1,26 @@
 import { nanoid } from "nanoid"
 import StyleToggle from "./StyleToggle"
-import Modal from "./Modal"
-import ModalContent from "./ModalContent"
 import { useBoards } from "@/lib/dataUtils"
-import { useModal } from "@/hooks/useModal"
 
 type Props = {
     selectedBoardIndex: number
-    columnIndex: number
-    taskIndex: number
-    handleShowModalSideBar: Function
+    setShowModalSideBar: Function
     isDarkMode: boolean
     toggleDarkMode: Function
+    setIsModalOpen: Function
+    setModalMode: Function
 }
 
 export default function ModalSideBar({
     selectedBoardIndex,
-    columnIndex,
-    taskIndex,
-    handleShowModalSideBar,
+    setShowModalSideBar,
     isDarkMode,
     toggleDarkMode,
+    setIsModalOpen,
+    setModalMode,
 }: Props) {
     const { boards, isLoading, isError, mutate } = useBoards(
         "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
-    )
-
-    const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
-        "addBoard",
-        false
     )
 
     const numBoards = isLoading ? 0 : boards.length
@@ -57,9 +49,9 @@ export default function ModalSideBar({
     return (
         <>
             <div
-                onClick={(e) => handleShowModalSideBar(e)}
+                onClick={(e) => setShowModalSideBar(false)}
                 className="
-                bg-neutral-900/50 dark:bg-neutral-900/70 absolute flex flex-col 
+                bg-neutral-900/50 dark:bg-neutral-900/70 fixed flex flex-col 
                 items-center inset-0 pt-[5rem] md:hidden"
             >
                 <div
@@ -77,12 +69,12 @@ export default function ModalSideBar({
                         {boardsList}
                         <li
                             onClick={(e) => {
-                                handleShowModalSideBar(e)
                                 setIsModalOpen(true)
                                 setModalMode("addBoard")
+                                setShowModalSideBar(false)
                             }}
                             className="
-                            font-bold py-3 pl-[3.4rem] mr-6 text-purple-600 
+                            font-bold py-3 pl-[3.2rem] mr-6 text-purple-600 
                             bg-[url('../public/board-icon-purple.svg')] bg-no-repeat bg-[center_left_1.5rem]"
                         >
                             + Create New Board
@@ -96,21 +88,6 @@ export default function ModalSideBar({
                     </div>
                 </div>
             </div>
-            {isModalOpen && (
-                <Modal
-                    selectedBoardIndex={selectedBoardIndex}
-                    setIsModalOpen={setIsModalOpen}
-                >
-                    <ModalContent
-                        mode={modalMode}
-                        selectedBoardIndex={selectedBoardIndex}
-                        columnIndex={columnIndex}
-                        taskIndex={taskIndex}
-                        setModalMode={setModalMode}
-                        setIsModalOpen={setIsModalOpen}
-                    />
-                </Modal>
-            )}
         </>
     )
 }

@@ -8,19 +8,9 @@ import Image from "next/image"
 import Logo from "@/components/Logo"
 import HeaderBar from "../components/HeaderBar"
 import Board from "../components/Board"
-import ModalSideBar from "../components/ModalSideBar"
 import { Task } from "../types"
 import SideBar from "../components/SideBar"
 import showIcon from "@/public/show-icon.svg"
-
-type ModalMode =
-    | "viewTask"
-    | "editTask"
-    | "deleteTask"
-    | "addTask"
-    | "addBoard"
-    | "editBoard"
-    | "deleteBoard"
 
 export default function Home() {
     const router = useRouter()
@@ -41,7 +31,6 @@ export default function Home() {
     const { boards, isLoading, isError, mutate } = useBoards(
         "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
     )
-    const [showModalSideBar, setModalShowSideBar] = useState(false)
     const [showSideBar, setShowSideBar] = useLocalStorage(
         "kanban-show-sidebar",
         true
@@ -102,11 +91,6 @@ export default function Home() {
             document.querySelector("html")?.classList.remove("dark")
         }
     }, [isDarkMode])
-
-    //should this be a pointer event? or just a mouse event
-    function handleShowModalSideBar(event: PointerEvent) {
-        setModalShowSideBar((prevValue) => !prevValue)
-    }
 
     function handleHideSideBar() {
         setShowSideBar(false)
@@ -177,8 +161,8 @@ export default function Home() {
                         selectedBoardIndex={selectedBoardIndex}
                         columnIndex={columnIndex}
                         taskIndex={taskIndex}
-                        isSideBarShown={showModalSideBar}
-                        handleShowModalSideBar={handleShowModalSideBar}
+                        isDarkMode={isDarkMode}
+                        toggleDarkMode={toggleDarkMode}
                     />
                 </div>
                 <div
@@ -209,16 +193,6 @@ export default function Home() {
                     />
                 </div>
             </div>
-            {showModalSideBar && (
-                <ModalSideBar
-                    selectedBoardIndex={selectedBoardIndex}
-                    columnIndex={columnIndex}
-                    taskIndex={taskIndex}
-                    handleShowModalSideBar={handleShowModalSideBar}
-                    isDarkMode={isDarkMode}
-                    toggleDarkMode={toggleDarkMode}
-                />
-            )}
             {!showSideBar && (
                 <button
                     onClick={() => handleShowSideBar()}
