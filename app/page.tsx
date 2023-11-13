@@ -9,17 +9,9 @@ import Logo from "@/components/Logo"
 import HeaderBar from "../components/HeaderBar"
 import Board from "../components/Board"
 import ModalSideBar from "../components/ModalSideBar"
-import Modal from "../components/Modal"
 import { Task } from "../types"
-import ViewTaskModal from "@/components/ViewTaskModal"
-import EditTaskModal from "@/components/EditTaskModal"
-import DeleteModal from "@/components/DeleteModal"
-import AddTaskModal from "@/components/AddTaskModal"
-import AddBoardModal from "@/components/AddBoardModal"
-import EditBoardModal from "@/components/EditBoardModal"
 import SideBar from "../components/SideBar"
 import showIcon from "@/public/show-icon.svg"
-import { Board as BoardType } from "@/types"
 
 type ModalMode =
     | "viewTask"
@@ -50,8 +42,6 @@ export default function Home() {
         "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
     )
     const [showModalSideBar, setModalShowSideBar] = useState(false)
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [modalMode, setModalMode] = useState<ModalMode>("viewTask")
     const [showSideBar, setShowSideBar] = useLocalStorage(
         "kanban-show-sidebar",
         true
@@ -94,67 +84,6 @@ export default function Home() {
         })
     }
 
-    let modalToShow = (
-        <ViewTaskModal
-            selectedBoardIndex={selectedBoardIndex}
-            columnIndex={columnIndex}
-            taskIndex={taskIndex}
-            setModalMode={setModalMode}
-            setIsModalOpen={setIsModalOpen}
-        />
-    )
-
-    //TODO: consider using a switch structure
-    // could polymorphism be applied here?
-    // or an object or map to hold the different options
-    if (modalMode === "editTask") {
-        modalToShow = (
-            <EditTaskModal
-                selectedBoardIndex={selectedBoardIndex}
-                columnIndex={columnIndex}
-                taskIndex={taskIndex}
-                handleSwitchModalMode={handleSwitchModalMode}
-                handleBackToBoard={handleBackToBoard}
-            />
-        )
-    } else if (modalMode === "deleteTask") {
-        modalToShow = (
-            <DeleteModal
-                isBoard={false}
-                selectedBoardIndex={selectedBoardIndex}
-                columnIndex={columnIndex}
-                taskIndex={taskIndex}
-                handleBackToBoard={handleBackToBoard}
-            />
-        )
-    } else if (modalMode === "addTask") {
-        modalToShow = (
-            <AddTaskModal
-                columns={boards ? boards[selectedBoardIndex].columns : []}
-                handleBackToBoard={handleBackToBoard}
-            />
-        )
-    } else if (modalMode === "addBoard") {
-        modalToShow = <AddBoardModal setIsModalOpen={setIsModalOpen} />
-    } else if (modalMode === "editBoard") {
-        modalToShow = (
-            <EditBoardModal
-                board={boards[selectedBoardIndex]}
-                handleBackToBoard={handleBackToBoard}
-            />
-        )
-    } else if (modalMode === "deleteBoard") {
-        modalToShow = (
-            <DeleteModal
-                isBoard={true}
-                selectedBoardIndex={selectedBoardIndex}
-                columnIndex={columnIndex}
-                taskIndex={taskIndex}
-                handleBackToBoard={handleBackToBoard}
-            />
-        )
-    }
-
     useEffect(() => {
         if (boards.length > 0 && isBoardNewlyCreated) {
             changeSelectedBoard(boards.length - 1)
@@ -174,22 +103,6 @@ export default function Home() {
         }
     }, [isDarkMode])
 
-    //stop scrolling when modal is open
-    useEffect(() => {
-        if (isModalOpen) {
-            document.querySelector("body")?.classList.add("overflow-y-hidden")
-            document.querySelector("body")?.classList.remove("overflow-scroll")
-        } else {
-            document.querySelector("body")?.classList.add("overflow-scroll")
-            document
-                .querySelector("body")
-                ?.classList.remove("overflow-y-hidden")
-            //also set state of modal mode back to viewTask
-            //this accounts for case when user uses browser back button and closes modal
-            setModalMode("viewTask")
-        }
-    }, [isModalOpen])
-
     //should this be a pointer event? or just a mouse event
     function handleShowModalSideBar(event: PointerEvent) {
         setModalShowSideBar((prevValue) => !prevValue)
@@ -201,26 +114,6 @@ export default function Home() {
 
     function handleShowSideBar() {
         setShowSideBar(true)
-    }
-
-    function handleBackToBoard() {
-        changeSelectedBoard(selectedBoardIndex)
-        setModalMode("viewTask")
-        setIsModalOpen(false)
-    }
-
-    function handleSwitchModalMode(mode: ModalMode) {
-        setModalMode(mode)
-    }
-
-    function handleShowAddTaskModal() {
-        setModalMode("addTask")
-        setIsModalOpen(true)
-    }
-
-    function handleShowAddBoardModal() {
-        setModalMode("addBoard")
-        setIsModalOpen(true)
     }
 
     function toggleDarkMode() {
@@ -282,6 +175,8 @@ export default function Home() {
                     </div>
                     <HeaderBar
                         selectedBoardIndex={selectedBoardIndex}
+                        columnIndex={columnIndex}
+                        taskIndex={taskIndex}
                         isSideBarShown={showModalSideBar}
                         handleShowModalSideBar={handleShowModalSideBar}
                     />
@@ -293,6 +188,8 @@ export default function Home() {
                 >
                     <SideBar
                         selectedBoardIndex={selectedBoardIndex}
+                        columnIndex={columnIndex}
+                        taskIndex={taskIndex}
                         handleHideSideBar={handleHideSideBar}
                         handleShowSideBar={handleShowSideBar}
                         isDarkMode={isDarkMode}
@@ -306,6 +203,8 @@ export default function Home() {
                 >
                     <Board
                         selectedBoardIndex={selectedBoardIndex}
+                        columnIndex={columnIndex}
+                        taskIndex={taskIndex}
                         isDarkMode={isDarkMode}
                     />
                 </div>
@@ -313,18 +212,12 @@ export default function Home() {
             {showModalSideBar && (
                 <ModalSideBar
                     selectedBoardIndex={selectedBoardIndex}
+                    columnIndex={columnIndex}
+                    taskIndex={taskIndex}
                     handleShowModalSideBar={handleShowModalSideBar}
                     isDarkMode={isDarkMode}
                     toggleDarkMode={toggleDarkMode}
                 />
-            )}
-            {isModalOpen && (
-                <Modal
-                    selectedBoardIndex={selectedBoardIndex}
-                    setIsModalOpen={setIsModalOpen}
-                >
-                    {modalToShow}
-                </Modal>
             )}
             {!showSideBar && (
                 <button

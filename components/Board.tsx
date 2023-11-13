@@ -1,4 +1,3 @@
-import { useState } from "react"
 import Image from "next/image"
 import TaskColumn from "./TaskColumn"
 import Modal from "./Modal"
@@ -7,21 +6,29 @@ import ActionButton from "./ActionButton"
 import addIconDark from "../public/plus-icon.svg"
 import addIconLight from "../public/plus-icon-gray.svg"
 import { useBoards } from "@/lib/dataUtils"
-import { ModalMode } from "@/types"
+import { useModal } from "@/hooks/useModal"
 
 type Props = {
     selectedBoardIndex: number
+    columnIndex: number
+    taskIndex: number
     isDarkMode: boolean
 }
 
-export default function Board({ selectedBoardIndex, isDarkMode }: Props) {
+export default function Board({
+    selectedBoardIndex,
+    columnIndex,
+    taskIndex,
+    isDarkMode,
+}: Props) {
     const { boards, isLoading, isError, mutate } = useBoards(
         "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
     )
 
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [modalMode, setModalMode] =
-        useState<Extract<ModalMode, "editBoard">>("editBoard")
+    const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
+        "editBoard",
+        false
+    )
 
     const columns = isLoading ? [] : boards[selectedBoardIndex].columns
 
@@ -101,6 +108,9 @@ export default function Board({ selectedBoardIndex, isDarkMode }: Props) {
                     <ModalContent
                         mode={modalMode}
                         selectedBoardIndex={selectedBoardIndex}
+                        columnIndex={columnIndex}
+                        taskIndex={taskIndex}
+                        setModalMode={setModalMode}
                         setIsModalOpen={setIsModalOpen}
                     />
                 </Modal>

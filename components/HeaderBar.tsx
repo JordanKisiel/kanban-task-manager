@@ -4,18 +4,21 @@ import MenuButton from "./MenuButton"
 import Modal from "./Modal"
 import addIcon from "../public/plus-icon.svg"
 import { useBoards } from "@/lib/dataUtils"
-import { useState } from "react"
+import { useModal } from "@/hooks/useModal"
 import ModalContent from "./ModalContent"
-import { ModalMode } from "@/types"
 
 type Props = {
     selectedBoardIndex: number
+    columnIndex: number
+    taskIndex: number
     isSideBarShown: boolean
     handleShowModalSideBar: Function
 }
 
 export default function HeaderBar({
     selectedBoardIndex,
+    columnIndex,
+    taskIndex,
     isSideBarShown,
     handleShowModalSideBar,
 }: Props) {
@@ -23,11 +26,10 @@ export default function HeaderBar({
         "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
     )
 
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [modalMode, setModalMode] =
-        useState<Extract<ModalMode, "addTask" | "editBoard" | "deleteBoard">>(
-            "addTask"
-        )
+    const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
+        "addTask",
+        false
+    )
 
     const selectedBoardTitle = isLoading
         ? "Loading title"
@@ -104,8 +106,10 @@ export default function HeaderBar({
                     <ModalContent
                         mode={modalMode}
                         selectedBoardIndex={selectedBoardIndex}
-                        setIsModalOpen={setIsModalOpen}
+                        columnIndex={columnIndex}
+                        taskIndex={taskIndex}
                         setModalMode={setModalMode}
+                        setIsModalOpen={setIsModalOpen}
                     />
                 </Modal>
             )}

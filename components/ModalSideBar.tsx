@@ -1,13 +1,14 @@
-import { useState } from "react"
 import { nanoid } from "nanoid"
 import StyleToggle from "./StyleToggle"
 import Modal from "./Modal"
 import ModalContent from "./ModalContent"
 import { useBoards } from "@/lib/dataUtils"
-import { ModalMode } from "@/types"
+import { useModal } from "@/hooks/useModal"
 
 type Props = {
     selectedBoardIndex: number
+    columnIndex: number
+    taskIndex: number
     handleShowModalSideBar: Function
     isDarkMode: boolean
     toggleDarkMode: Function
@@ -15,6 +16,8 @@ type Props = {
 
 export default function ModalSideBar({
     selectedBoardIndex,
+    columnIndex,
+    taskIndex,
     handleShowModalSideBar,
     isDarkMode,
     toggleDarkMode,
@@ -23,9 +26,10 @@ export default function ModalSideBar({
         "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
     )
 
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [modalMode, setModalMode] =
-        useState<Extract<ModalMode, "addBoard">>("addBoard")
+    const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
+        "addBoard",
+        false
+    )
 
     const numBoards = isLoading ? 0 : boards.length
 
@@ -93,9 +97,16 @@ export default function ModalSideBar({
                 </div>
             </div>
             {isModalOpen && (
-                <Modal setIsModalOpen={setIsModalOpen}>
+                <Modal
+                    selectedBoardIndex={selectedBoardIndex}
+                    setIsModalOpen={setIsModalOpen}
+                >
                     <ModalContent
                         mode={modalMode}
+                        selectedBoardIndex={selectedBoardIndex}
+                        columnIndex={columnIndex}
+                        taskIndex={taskIndex}
+                        setModalMode={setModalMode}
                         setIsModalOpen={setIsModalOpen}
                     />
                 </Modal>

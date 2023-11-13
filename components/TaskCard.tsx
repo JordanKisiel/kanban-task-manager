@@ -1,11 +1,10 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Modal from "./Modal"
 import ModalContent from "./ModalContent"
-import { ModalMode } from "@/types"
+import { useModal } from "@/hooks/useModal"
 
 type Props = {
     selectedBoardIndex: number
@@ -22,11 +21,10 @@ export default function TaskCard({
     title,
     numSubtasks,
 }: Props) {
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [modalMode, setModalMode] =
-        useState<Extract<ModalMode, "viewTask" | "editTask" | "deleteTask">>(
-            "viewTask"
-        )
+    const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
+        "viewTask",
+        false
+    )
 
     const pathname = usePathname()
 
