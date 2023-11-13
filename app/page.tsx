@@ -1,8 +1,7 @@
 "use client"
 
 import { useLocalStorage } from "@/hooks/useLocalStorage"
-import { useSearchParams, useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useBoards } from "@/lib/dataUtils"
 import Image from "next/image"
 import Logo from "@/components/Logo"
@@ -12,11 +11,13 @@ import { Task } from "../types"
 import SideBar from "../components/SideBar"
 import showIcon from "@/public/show-icon.svg"
 
-export default function Home() {
-    const router = useRouter()
+type Props = {
+    params: { slug: string }
+    searchParams: { [key: string]: string | undefined }
+}
 
-    const searchParams = useSearchParams()
-    const selectedBoardIndexParam = searchParams.get("board")
+export default function Home({ searchParams }: Props) {
+    const selectedBoardIndexParam = searchParams.board
     let selectedBoardIndex =
         selectedBoardIndexParam !== null ? Number(selectedBoardIndexParam) : 0
 
@@ -26,7 +27,6 @@ export default function Home() {
     let otherColumns: string[] = []
     let currentColumn: string | null = null
 
-    const [isBoardNewlyCreated, setIsBoardNewlyCreated] = useState(false)
     //hard-coding userid for now
     const { boards, isLoading, isError, mutate } = useBoards(
         "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
@@ -40,7 +40,7 @@ export default function Home() {
         true
     )
 
-    const selectedTaskString = searchParams.get("task")
+    const selectedTaskString = searchParams.task || "0_0"
 
     //check if there is a board at the selected index
     //if not, change selected index to highest available
@@ -74,17 +74,6 @@ export default function Home() {
     }
 
     useEffect(() => {
-        if (boards.length > 0 && isBoardNewlyCreated) {
-            changeSelectedBoard(boards.length - 1)
-            setIsBoardNewlyCreated(false)
-        }
-    }, [boards, isBoardNewlyCreated])
-
-    useEffect(() => {
-        changeSelectedBoard(selectedBoardIndex)
-    }, [selectedBoardIndex])
-
-    useEffect(() => {
         if (isDarkMode) {
             document.querySelector("html")?.classList.add("dark")
         } else {
@@ -102,10 +91,6 @@ export default function Home() {
 
     function toggleDarkMode() {
         setIsDarkMode((prevValue: boolean) => !prevValue)
-    }
-
-    function changeSelectedBoard(index: number) {
-        router.push(`?board=${index}`)
     }
 
     //TODO:

@@ -5,6 +5,7 @@ import Modal from "./Modal"
 import ModalContent from "./ModalContent"
 import { useBoards } from "@/lib/dataUtils"
 import { useModal } from "@/hooks/useModal"
+import { useLocalStorage } from "@/hooks/useLocalStorage"
 
 type Props = {
     selectedBoardIndex: number
@@ -27,6 +28,11 @@ export default function SideBar({
 }: Props) {
     const { boards, isLoading, isError, mutate } = useBoards(
         "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
+    )
+
+    const [showSideBar, setShowSideBar] = useLocalStorage(
+        "kanban-show-sidebar",
+        true
     )
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
