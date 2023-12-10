@@ -4,7 +4,10 @@
 
 import { useState, useEffect } from "react"
 
-export function useLocalStorage(key: string, initialValue: any) {
+export function useLocalStorage(
+    key: string,
+    initialValue: any
+): [any, Function] {
     const [storedValue, setStoredValue] = useState(initialValue)
     // We will use this flag to trigger the reading from localStorage
     const [firstLoadDone, setFirstLoadDone] = useState(false)
@@ -27,7 +30,8 @@ export function useLocalStorage(key: string, initialValue: any) {
         }
 
         // Set the value from localStorage
-        setStoredValue(fromLocal)
+        const localValue = fromLocal()
+        setStoredValue(localValue)
         // First load is done
         setFirstLoadDone(true)
     }, [initialValue, key])

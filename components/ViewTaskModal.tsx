@@ -3,6 +3,7 @@ import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
 import { useBoards } from "@/lib/dataUtils"
+import { testUserId } from "@/testing/testingConsts"
 
 type Props = {
     selectedBoardIndex: number
@@ -19,9 +20,7 @@ export default function ViewTaskModal({
     setModalMode,
     setIsModalOpen,
 }: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(
-        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
-    )
+    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
 
     const task =
         boards[selectedBoardIndex].columns[columnIndex].tasks[taskIndex]
@@ -68,14 +67,17 @@ export default function ViewTaskModal({
         {
             actionName: "Edit",
             action: () => setModalMode("editTask"),
+            isDisabled: false,
         },
         {
             actionName: "Delete",
             action: () => setModalMode("deleteTask"),
+            isDisabled: false,
         },
         {
             actionName: "Close",
             action: () => setIsModalOpen(false),
+            isDisabled: false,
         },
     ]
 

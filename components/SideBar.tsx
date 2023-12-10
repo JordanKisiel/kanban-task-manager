@@ -1,3 +1,5 @@
+"use client"
+
 import { nanoid } from "nanoid"
 import Link from "next/link"
 import StyleToggle from "./StyleToggle"
@@ -5,35 +7,27 @@ import Modal from "./Modal"
 import ModalContent from "./ModalContent"
 import { useBoards } from "@/lib/dataUtils"
 import { useModal } from "@/hooks/useModal"
-import { useLocalStorage } from "@/hooks/useLocalStorage"
+import { testUserId } from "@/testing/testingConsts"
+import { useUrlIndices } from "@/hooks/useUrlIndices"
 
 type Props = {
-    selectedBoardIndex: number
-    columnIndex: number
-    taskIndex: number
     handleHideSideBar: Function
     handleShowSideBar: Function
     isDarkMode: boolean
     toggleDarkMode: Function
+    setNewBoardCreated: Function
 }
 
 export default function SideBar({
-    selectedBoardIndex,
-    columnIndex,
-    taskIndex,
     handleHideSideBar,
     handleShowSideBar,
     isDarkMode,
     toggleDarkMode,
+    setNewBoardCreated,
 }: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(
-        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
-    )
+    const { selectedBoardIndex, columnIndex, taskIndex } = useUrlIndices()
 
-    const [showSideBar, setShowSideBar] = useLocalStorage(
-        "kanban-show-sidebar",
-        true
-    )
+    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "addBoard",
@@ -128,6 +122,7 @@ export default function SideBar({
                         taskIndex={taskIndex}
                         setModalMode={setModalMode}
                         setIsModalOpen={setIsModalOpen}
+                        setNewBoardCreated={setNewBoardCreated}
                     />
                 </Modal>
             )}

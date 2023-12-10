@@ -1,20 +1,26 @@
 "use client"
 
 import { useState } from "react"
+import { mutate } from "swr"
 import { addBoard } from "@/lib/dataUtils"
 import ActionButton from "./ActionButton"
 import ColumnInputList from "./ColumnsInputList"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
+import { testUserId } from "@/testing/testingConsts"
 
 type Props = {
     setIsModalOpen: Function
+    setNewBoardCreated: Function
 }
 
 const TITLE_PLACEHOLDER = "e.g. Web Design"
 
-export default function AddBoardModal({ setIsModalOpen }: Props) {
+export default function AddBoardModal({
+    setIsModalOpen,
+    setNewBoardCreated,
+}: Props) {
     const [title, setTitle] = useState("")
     const [columnNames, setColumnNames] = useState<string[]>([])
 
@@ -24,6 +30,7 @@ export default function AddBoardModal({ setIsModalOpen }: Props) {
             action: () => {
                 setIsModalOpen()
             },
+            isDisabled: false,
         },
     ]
 
@@ -55,21 +62,22 @@ export default function AddBoardModal({ setIsModalOpen }: Props) {
         setTitle(event.target.value)
     }
 
-    //hard-coding userId for now
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
-        let fetchRes
+        const res = await addBoard(testUserId, title, columnNames)
 
-        const addRes = await addBoard(
-            "be0fc8c3-496f-4ed8-9f27-32dcc66bba24",
-            title,
-            columnNames
-        )
+        if (res && res.ok) {
+            mutate(
+                (key) => typeof key === "string" && key.includes("/api/boards"),
+                undefined,
+                { revalidate: true }
+            )
+
+            setNewBoardCreated(true)
+        }
 
         setIsModalOpen()
-
-        return fetchRes
     }
 
     return (

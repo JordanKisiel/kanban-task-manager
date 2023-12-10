@@ -1,10 +1,12 @@
 import { useState } from "react"
 import ActionButton from "./ActionButton"
-import SubTaskInputList from "./SubTaskInputList"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import { addTask } from "@/lib/dataUtils"
 import { useBoards } from "@/lib/dataUtils"
+import { testUserId } from "@/testing/testingConsts"
+import ModalLabel from "./ModalLabel"
+import DynamicInputList from "./DynamicInputList"
 
 type Props = {
     selectedBoardIndex: number
@@ -27,9 +29,7 @@ export default function AddTaskModal({
     selectedBoardIndex,
     setIsModalOpen,
 }: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(
-        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
-    )
+    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
 
     const columns = boards[selectedBoardIndex].columns
 
@@ -57,6 +57,7 @@ export default function AddTaskModal({
         {
             actionName: "Close",
             action: () => setIsModalOpen(),
+            isDisabled: false,
         },
     ]
 
@@ -127,7 +128,6 @@ export default function AddTaskModal({
         })
     }
 
-    //hard-coding userID for now
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
@@ -149,12 +149,7 @@ export default function AddTaskModal({
                 className="flex flex-col gap-6"
             >
                 <div>
-                    <label
-                        htmlFor="title-input"
-                        className="dark:text-neutral-100 text-xs block mb-2"
-                    >
-                        Title
-                    </label>
+                    <ModalLabel htmlFor="title-input">Title</ModalLabel>
                     <input
                         onChange={(e) => handleTitleChange(e)}
                         type="text"
@@ -169,12 +164,9 @@ export default function AddTaskModal({
                     />
                 </div>
                 <div>
-                    <label
-                        htmlFor="description-input"
-                        className="dark:text-neutral-100 text-xs block mb-2"
-                    >
+                    <ModalLabel htmlFor="description-input">
                         Description
-                    </label>
+                    </ModalLabel>
                     <textarea
                         onChange={(e) => handleDescriptionChange(e)}
                         id="description-input"
@@ -188,19 +180,17 @@ export default function AddTaskModal({
                         value={formData.description}
                     ></textarea>
                 </div>
-                <SubTaskInputList
-                    subTasks={formData.subTasks}
+                <DynamicInputList
+                    values={formData.subTasks}
+                    title="Subtasks"
+                    addNewText="Add New Subtask"
+                    initialPlaceholder="e.g. Make coffee"
                     handleAddInput={handleAddSubTask}
                     handleChangeInput={handleChangeSubTask}
                     handleRemoveInput={handleRemoveSubTask}
                 />
                 <div>
-                    <label
-                        htmlFor="status-select"
-                        className="dark:text-neutral-100 text-xs block mb-2"
-                    >
-                        Status
-                    </label>
+                    <ModalLabel htmlFor="status-select">Status</ModalLabel>
                     <select
                         onChange={(e) => handleStatusChange(e)}
                         className="

@@ -1,15 +1,16 @@
 "use client"
 
 import { useLocalStorage } from "@/hooks/useLocalStorage"
+import { useDarkMode } from "@/hooks/useDarkMode"
+import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { useBoards } from "@/lib/dataUtils"
 import Image from "next/image"
 import Logo from "@/components/Logo"
 import HeaderBar from "../components/HeaderBar"
 import Board from "../components/Board"
-import { Task } from "../types"
 import SideBar from "../components/SideBar"
 import showIcon from "@/public/show-icon.svg"
+import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 
 type Props = {
     params: { slug: string }
@@ -17,69 +18,22 @@ type Props = {
 }
 
 export default function Home({ searchParams }: Props) {
-    const selectedBoardIndexParam = searchParams.board
-    let selectedBoardIndex =
-        selectedBoardIndexParam !== null ? Number(selectedBoardIndexParam) : 0
+    const router = useRouter()
 
-    let task: Task | null = null
-    let columnIndex = 0
-    let taskIndex = 0
-    let otherColumns: string[] = []
-    let currentColumn: string | null = null
+    useEffect(() => {
+        if (!searchParams.board) {
+            router.push("?boards=0")
+        }
+    }, [searchParams.board])
 
-    //hard-coding userid for now
-    const { boards, isLoading, isError, mutate } = useBoards(
-        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
-    )
+    const [isDarkMode, toggleDarkMode] = useDarkMode("kanban-isDarkMode")
+
     const [showSideBar, setShowSideBar] = useLocalStorage(
         "kanban-show-sidebar",
         true
     )
-    const [isDarkMode, setIsDarkMode] = useLocalStorage(
-        "kanban-isDarkMode",
-        true
-    )
 
-    const selectedTaskString = searchParams.task || "0_0"
-
-    //check if there is a board at the selected index
-    //if not, change selected index to highest available
-    if (!boards[selectedBoardIndex]) {
-        if (boards.length > 0) {
-            selectedBoardIndex = boards.length - 1
-        } else {
-            //TODO:
-            //  --what should happen if the user has no boards?
-        }
-    }
-
-    if (selectedTaskString !== null && boards.length > 0) {
-        const [columnIndexString, taskIndexString] =
-            selectedTaskString.split("_")
-
-        columnIndex = Number(columnIndexString)
-        taskIndex = Number(taskIndexString)
-
-        task = boards[selectedBoardIndex].columns[columnIndex].tasks[taskIndex]
-
-        const columnTitles = boards[selectedBoardIndex].columns.map(
-            (column) => column.title
-        )
-
-        currentColumn = columnTitles[columnIndex]
-
-        otherColumns = columnTitles.filter((column, index) => {
-            return columnIndex !== index
-        })
-    }
-
-    useEffect(() => {
-        if (isDarkMode) {
-            document.querySelector("html")?.classList.add("dark")
-        } else {
-            document.querySelector("html")?.classList.remove("dark")
-        }
-    }, [isDarkMode])
+    const { setNewBoardCreated } = useNewBoardCreated()
 
     function handleHideSideBar() {
         setShowSideBar(false)
@@ -89,42 +43,12 @@ export default function Home({ searchParams }: Props) {
         setShowSideBar(true)
     }
 
-    function toggleDarkMode() {
-        setIsDarkMode((prevValue: boolean) => !prevValue)
-    }
-
-    //TODO:
-    //      -re-think the structure of my application based upon what I've learned in the nextjs course
-    //        -specifically:
-    //           -fetching data in components that need them and fetching data on the server side if at all possible
-    //             -using Suspense and fallback skeletons for components that fetch data
-    //           -write my data fetching functions to be more granualar
-    //           -structure my components folder closer to what was in the course
-    //           -instead of using an API layer, try using server actions instead
-    //              -if I HAVE to fetch data on the client, then I should be using an API layer
-    //           -think about my route structure (use the userId as a dynamic route to access the associated boards?)
-    //           -use noStore or force-dynamic using segment config options
-    //           -simulate slow data fetch to see what the experience is and make sure it works write
-    //           -simulate and handle errors
-    //     -in general, it's a good practice to move data fetching down into the components that need it and wrapping them in
-    //       Suspense
-    //     -go through hooks ONE BY ONE and see if I can remove them from this page so that it can be a server component
-    //         -INCREMENTAL THIS TIME -> TEST AND GET EACH CHANGE WORKING FIRST
-    //     -change ViewTaskModal so it doesn't get warning
-    //       -ViewTaskModal needs the ability to change subTask isComplete state
-    //         -this is an UPDATE operation
-    //
-    // -no indication that data is being submitted to the user
-    //      -I need a loading state (maybe I should try using SWR? probably would have to research and learn to a certain extent)
-    // -review code (especially this page component) to see if what can be abstracted out and if the page can be made a server
-    //  component by moving hooks into child components
-
     return (
         <main className="flex flex-col min-h-screen">
             <div
                 className="
-                flex w-full md:grid md:grid-rows-[1fr_18fr] md:grid-cols-[11fr_24fr] md:h-full md:fixed 
-                lg:grid-cols-[1fr_3fr] xl:grid-cols-[1fr_6fr]"
+                flex w-full md:grid md:grid-rows-[1fr_18fr] md:grid-cols-[16.5rem_24fr] md:h-full md:fixed 
+                lg:grid-cols-[17rem_3fr] xl:grid-cols-[17rem_6fr]"
             >
                 <div
                     className={`hidden md:flex bg-neutral-100 md:dark:bg-neutral-700 md:pl-6 md:border-r-[1px] 
@@ -142,13 +66,7 @@ export default function Home({ searchParams }: Props) {
                     <div className="flex flex-row justify-center items-center md:hidden">
                         <Logo isDarkMode={isDarkMode} />
                     </div>
-                    <HeaderBar
-                        selectedBoardIndex={selectedBoardIndex}
-                        columnIndex={columnIndex}
-                        taskIndex={taskIndex}
-                        isDarkMode={isDarkMode}
-                        toggleDarkMode={toggleDarkMode}
-                    />
+                    <HeaderBar setNewBoardCreated={setNewBoardCreated} />
                 </div>
                 <div
                     className={`hidden bg-neutral-100 dark:bg-neutral-700 md:block lg:min-w-[15rem] ${
@@ -156,13 +74,11 @@ export default function Home({ searchParams }: Props) {
                     }`}
                 >
                     <SideBar
-                        selectedBoardIndex={selectedBoardIndex}
-                        columnIndex={columnIndex}
-                        taskIndex={taskIndex}
                         handleHideSideBar={handleHideSideBar}
                         handleShowSideBar={handleShowSideBar}
                         isDarkMode={isDarkMode}
                         toggleDarkMode={toggleDarkMode}
+                        setNewBoardCreated={setNewBoardCreated}
                     />
                 </div>
                 <div
@@ -171,10 +87,8 @@ export default function Home({ searchParams }: Props) {
                     }`}
                 >
                     <Board
-                        selectedBoardIndex={selectedBoardIndex}
-                        columnIndex={columnIndex}
-                        taskIndex={taskIndex}
                         isDarkMode={isDarkMode}
+                        setNewBoardCreated={setNewBoardCreated}
                     />
                 </div>
             </div>

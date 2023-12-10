@@ -7,6 +7,7 @@ type Props = {
     actions: {
         actionName: string
         action: Function
+        isDisabled: boolean
     }[]
 }
 
@@ -19,10 +20,15 @@ export default function MenuButton({ actions }: Props) {
             <button
                 type="button"
                 key={action.actionName}
+                disabled={action.isDisabled}
                 onClick={() => action.action()}
-                className="
-                    bg-neutral-300 dark:bg-neutral-600 w-full px-6 py-3 rounded text-neutral-900 
-                    dark:text-neutral-100 text-xs text-[0.82rem] uppercase tracking-[0.12em] whitespace-nowrap"
+                className={`
+                    bg-neutral-300 dark:bg-neutral-600 w-full px-6 py-3 rounded ${
+                        action.isDisabled
+                            ? "text-neutral-400 dark:text-neutral-500"
+                            : "text-neutral-900 dark:text-neutral-100"
+                    } 
+                    text-xs text-[0.82rem] uppercase tracking-[0.12em] whitespace-nowrap`}
             >
                 {action.actionName}
             </button>

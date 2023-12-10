@@ -1,12 +1,14 @@
+"use client"
+
 import { nanoid } from "nanoid"
 import StyleToggle from "./StyleToggle"
 import { useBoards } from "@/lib/dataUtils"
+import { useDarkMode } from "@/hooks/useDarkMode"
+import { testUserId } from "@/testing/testingConsts"
 
 type Props = {
     selectedBoardIndex: number
     setShowModalSideBar: Function
-    isDarkMode: boolean
-    toggleDarkMode: Function
     setIsModalOpen: Function
     setModalMode: Function
 }
@@ -14,14 +16,12 @@ type Props = {
 export default function ModalSideBar({
     selectedBoardIndex,
     setShowModalSideBar,
-    isDarkMode,
-    toggleDarkMode,
     setIsModalOpen,
     setModalMode,
 }: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(
-        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
-    )
+    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
+
+    const [isDarkMode, toggleDarkMode] = useDarkMode("kanban-isDarkMode")
 
     const numBoards = isLoading ? 0 : boards.length
 

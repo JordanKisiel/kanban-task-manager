@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react"
 import Image from "next/image"
 import ActionButton from "./ActionButton"
@@ -8,25 +10,22 @@ import addIcon from "../public/plus-icon.svg"
 import { useBoards } from "@/lib/dataUtils"
 import { useModal } from "@/hooks/useModal"
 import ModalContent from "./ModalContent"
+import { testUserId } from "@/testing/testingConsts"
+import { useUrlIndices } from "@/hooks/useUrlIndices"
 
 type Props = {
-    selectedBoardIndex: number
-    columnIndex: number
-    taskIndex: number
-    isDarkMode: boolean
-    toggleDarkMode: Function
+    setNewBoardCreated: Function
 }
 
-export default function HeaderBar({
-    selectedBoardIndex,
-    columnIndex,
-    taskIndex,
-    isDarkMode,
-    toggleDarkMode,
-}: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(
-        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
-    )
+export default function HeaderBar({ setNewBoardCreated }: Props) {
+    const {
+        selectedBoardIndex,
+        columnIndex,
+        taskIndex,
+        changeSelectedBoardIndex,
+    } = useUrlIndices()
+
+    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "addTask",
@@ -37,7 +36,9 @@ export default function HeaderBar({
 
     const selectedBoardTitle = isLoading
         ? "Loading title"
-        : boards[selectedBoardIndex].title
+        : boards.length > 0
+        ? boards[selectedBoardIndex].title
+        : ""
 
     const isNoBoards = boards.length === 0
     const isNoColumns =
@@ -50,6 +51,7 @@ export default function HeaderBar({
                 setIsModalOpen(true)
                 setModalMode("editBoard")
             },
+            isDisabled: boards.length === 0,
         },
         {
             actionName: "Delete Board",
@@ -57,6 +59,7 @@ export default function HeaderBar({
                 setIsModalOpen(true)
                 setModalMode("deleteBoard")
             },
+            isDisabled: boards.length === 0,
         },
     ]
 
@@ -114,6 +117,8 @@ export default function HeaderBar({
                         taskIndex={taskIndex}
                         setModalMode={setModalMode}
                         setIsModalOpen={setIsModalOpen}
+                        setNewBoardCreated={setNewBoardCreated}
+                        changeSelectedBoardIndex={changeSelectedBoardIndex}
                     />
                 </Modal>
             )}
@@ -121,8 +126,6 @@ export default function HeaderBar({
                 <ModalSideBar
                     selectedBoardIndex={selectedBoardIndex}
                     setShowModalSideBar={setShowModalSideBar}
-                    isDarkMode={isDarkMode}
-                    toggleDarkMode={toggleDarkMode}
                     setIsModalOpen={setIsModalOpen}
                     setModalMode={setModalMode}
                 />

@@ -16,7 +16,7 @@ export default function RemovableInput({
     return (
         <div className="flex flex-row">
             <input
-                onChange={(e) => handleChangeInput(e)}
+                onChange={(e) => handleChangeInput(e, id)}
                 type="text"
                 id={`${id}`}
                 placeholder={placeholderText}

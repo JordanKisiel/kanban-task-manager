@@ -2,11 +2,13 @@ import ActionButton from "./ActionButton"
 import { deleteBoard, deleteTask } from "@/lib/dataUtils"
 import { Board, Task } from "@/types"
 import { useBoards } from "@/lib/dataUtils"
+import { testUserId } from "@/testing/testingConsts"
 
 type BoardProps = {
     isBoard: true
     selectedBoardIndex: number
     setIsModalOpen: Function
+    changeSelectedBoardIndex: Function
 }
 
 type TaskProps = {
@@ -19,12 +21,8 @@ type TaskProps = {
 
 type Props = BoardProps | TaskProps
 
-//TODO: fix this component so it can actually handle a null object
-
 export default function DeleteModal(props: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(
-        "be0fc8c3-496f-4ed8-9f27-32dcc66bba24"
-    )
+    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
 
     let itemToDelete: Board | Task | null = null
 
@@ -47,16 +45,25 @@ export default function DeleteModal(props: Props) {
         }' task and its subtasks? This action cannot be reversed.`
     }
 
-    //hard-coding userId for now
-    async function handleDelete(isBoardItem: boolean) {
-        let deleteRes
+    async function handleDelete() {
+        let deleteRes: Response | undefined
 
-        if (isBoardItem && itemToDelete) {
+        if (props.isBoard && itemToDelete) {
             deleteRes = await deleteBoard(itemToDelete.id)
         }
 
-        if (!isBoardItem && itemToDelete) {
+        if (!props.isBoard && itemToDelete) {
             deleteRes = await deleteTask(itemToDelete.id)
+        }
+
+        //revalidating all data regardless of whether
+        //we're deleting a task or board
+        if (deleteRes && deleteRes.ok) {
+            mutate(boards, { revalidate: true })
+        }
+
+        if (props.isBoard) {
+            props.changeSelectedBoardIndex(0)
         }
 
         props.setIsModalOpen()
@@ -75,7 +82,7 @@ export default function DeleteModal(props: Props) {
                     textColor="text-neutral-100"
                     textSize="text-sm"
                     handler={() => {
-                        handleDelete(props.isBoard)
+                        handleDelete()
                     }}
                 >
                     Delete

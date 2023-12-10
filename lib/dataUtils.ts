@@ -4,7 +4,7 @@ import { Board } from "@/types"
 
 const BASE_URL = config.url
 
-const boardFetcher: BareFetcher<Board[]> = (url: string) =>
+const boardFetcher: BareFetcher<any> = (url: string) =>
     fetch(url).then((r) => r.json())
 
 export function useBoards(userId: string) {
@@ -59,6 +59,43 @@ export async function deleteBoard(boardId: number) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ boardId }),
+        })
+    } catch (error) {
+        console.error(error)
+    }
+
+    return res
+}
+
+export async function editBoard(
+    boardId: number,
+    formData: {
+        title: string
+        columns: {
+            create: string[]
+            update: {
+                id: number
+                title: string
+            }[]
+            delete: {
+                id: number
+            }[]
+        }
+    }
+) {
+    let res
+
+    try {
+        res = await fetch(`${BASE_URL}/api/boards`, {
+            method: "PUT",
+            headers: {
+                "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+                boardId,
+                title: formData.title,
+                columns: formData.columns,
+            }),
         })
     } catch (error) {
         console.error(error)

@@ -40,6 +40,7 @@ type DeleteTaskProps = {
 type AddBoardProps = {
     mode: "addBoard"
     setIsModalOpen: Function
+    setNewBoardCreated: Function
 }
 
 type EditBoardProps = {
@@ -52,6 +53,7 @@ type DeleteBoardProps = {
     mode: "deleteBoard"
     selectedBoardIndex: number
     setIsModalOpen: Function
+    changeSelectedBoardIndex: Function
 }
 
 type Props =
@@ -110,7 +112,10 @@ export default function ModalContent(props: Props) {
             break
         case "addBoard":
             modalContent = (
-                <AddBoardModal setIsModalOpen={props.setIsModalOpen} />
+                <AddBoardModal
+                    setIsModalOpen={props.setIsModalOpen}
+                    setNewBoardCreated={props.setNewBoardCreated}
+                />
             )
             break
         case "editBoard":
@@ -127,6 +132,7 @@ export default function ModalContent(props: Props) {
                     isBoard={true}
                     selectedBoardIndex={props.selectedBoardIndex}
                     setIsModalOpen={props.setIsModalOpen}
+                    changeSelectedBoardIndex={props.changeSelectedBoardIndex}
                 />
             )
             break

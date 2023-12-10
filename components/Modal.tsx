@@ -17,7 +17,6 @@ export default function Modal({
         <div
             onClick={() => {
                 setIsModalOpen(false)
-                console.log(selectedBoardIndex)
                 router.push(`/?board=${selectedBoardIndex}`)
             }}
             className="bg-neutral-900/50 dark:bg-neutral-900/90 fixed flex flex-col items-center inset-0 justify-center px-4 py-12 z-10"

@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import Image from "next/image"
 import addIcon from "@/public/plus-icon-purple.svg"
 import RemovableInput from "./RemovableInput"
