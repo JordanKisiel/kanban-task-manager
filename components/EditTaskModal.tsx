@@ -1,11 +1,11 @@
 import ActionButton from "./ActionButton"
-import SubTaskInputList from "./SubTaskInputList"
-import { Task } from "../types"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
-import { useBoards } from "@/lib/dataUtils"
+import { editTask, useBoards } from "@/lib/dataUtils"
 import { testUserId } from "@/testing/testingConsts"
+import DynamicInputList from "./DynamicInputList"
+import { useState } from "react"
 
 type Props = {
     selectedBoardIndex: number
@@ -15,11 +15,25 @@ type Props = {
     setIsModalOpen: Function
 }
 
+type FormData = {
+    title: string
+    description: string
+    subTasks: {
+        create: string[]
+        update: {
+            id: number
+            description: string
+        }[]
+        delete: {
+            id: number
+        }[]
+    }
+    columnId: number
+}
+
 const TITLE_PLACEHOLDER = "e.g. Take coffee break"
 const DESCRIPTION_PLACEHOLDER =
     "e.g. It's always good to take a break. This 15 minute break will charge the batteries a little."
-
-//TODO: add the ability to pass subtasks array into SubtaskInputList and have it render those out automatically (if they exist)
 
 export default function EditTaskModal({
     selectedBoardIndex,
@@ -33,23 +47,44 @@ export default function EditTaskModal({
     const task =
         boards[selectedBoardIndex].columns[columnIndex].tasks[taskIndex]
 
-    const currentColumn = boards[selectedBoardIndex].columns[columnIndex].title
+    const [formData, setFormData] = useState<FormData>({
+        title: task.title,
+        description: task.description,
+        subTasks: {
+            create: [],
+            update: [...task.subTasks],
+            delete: [],
+        },
+        columnId: task.columnId,
+    })
 
-    const otherColumns = boards[selectedBoardIndex].columns
-        .filter((column, index) => {
+    //subTask descriptions to render
+    //always render update subTasks first
+    const subTaskDescriptions = [
+        ...formData.subTasks.update.map((subTask) => {
+            return subTask.description
+        }),
+        ...formData.subTasks.create,
+    ]
+
+    const currentColumn = boards[selectedBoardIndex].columns[columnIndex]
+
+    const otherColumns = boards[selectedBoardIndex].columns.filter(
+        (column, index) => {
             return index !== columnIndex
-        })
-        .map((column) => column.title)
+        }
+    )
 
-    const columnNames = [currentColumn, ...otherColumns]
+    const columnOptions = [currentColumn, ...otherColumns]
 
-    const selectOptions = columnNames.map((columnName) => {
+    const selectOptions = columnOptions.map((columnOption) => {
         return (
             <option
-                key={columnName}
-                value={columnName ? columnName : ""}
+                key={columnOption.id}
+                value={columnOption.title ? columnOption.title : ""}
+                id={`${columnOption.id}`}
             >
-                {columnName}
+                {columnOption.title}
             </option>
         )
     })
@@ -72,16 +107,163 @@ export default function EditTaskModal({
         },
     ]
 
+    function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                title: event.target.value,
+            }
+        })
+    }
+
+    function handleDescriptionChange(
+        event: React.ChangeEvent<HTMLTextAreaElement>
+    ) {
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                description: event.target.value,
+            }
+        })
+    }
+
+    function handleAddSubTask() {
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                subTasks: {
+                    ...prevFormData.subTasks,
+                    create: [...prevFormData.subTasks.create, ""],
+                },
+            }
+        })
+    }
+
+    // mapping the CREATE array:
+    //   -we look for (inputIndex - UPDATE.length) === index
+    //   -because the update array is always rendered before the create array
+    // mapping the UPDATE array:
+    //   -we look for inputIndex === index
+    // and there is never mapping for DELETE
+    //   -because it's never rendered
+    function handleChangeSubTask(
+        event: React.ChangeEvent<HTMLInputElement>,
+        inputIndex: number
+    ) {
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                subTasks: {
+                    create: prevFormData.subTasks.create.map(
+                        (subTask, index) => {
+                            if (
+                                inputIndex -
+                                    prevFormData.subTasks.update.length ===
+                                index
+                            ) {
+                                return event.target.value
+                            } else {
+                                return subTask
+                            }
+                        }
+                    ),
+                    update: prevFormData.subTasks.update.map(
+                        (subTask, index) => {
+                            if (inputIndex === index) {
+                                return {
+                                    id: subTask.id,
+                                    description: event.target.value,
+                                }
+                            } else {
+                                return subTask
+                            }
+                        }
+                    ),
+                    delete: [...prevFormData.subTasks.delete],
+                },
+            }
+        })
+    }
+
+    // filtering the CREATE array:
+    //   -we look for (inputIndex - UPDATE.length) !== index
+    //   -because the update array is always rendered before the create array
+    // filtering the UPDATE array:
+    //   -we look for inputIndex !== index
+    // for the DELETE array:
+    //   -we look for inputIndex === index in the UPDATE array
+    //   -because that's the item that already exists in the DB that will
+    //    have to be removed
+    //   -DELETE is also processed first so we can find the item to remove
+    //    before filtering it from UPDATE
+    function handleRemoveSubTask(inputIndex: number) {
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                subTasks: {
+                    create: prevFormData.subTasks.create.filter(
+                        (subTask, index) => {
+                            return (
+                                inputIndex -
+                                    prevFormData.subTasks.update.length !==
+                                index
+                            )
+                        }
+                    ),
+                    delete: [
+                        ...prevFormData.subTasks.delete,
+                        ...prevFormData.subTasks.update.filter(
+                            (subTask, index) => {
+                                return inputIndex === index
+                            }
+                        ),
+                    ],
+                    update: prevFormData.subTasks.update.filter(
+                        (subTask, index) => {
+                            return inputIndex !== index
+                        }
+                    ),
+                },
+            }
+        })
+    }
+
+    function handleStatusChange(event: React.ChangeEvent<HTMLSelectElement>) {
+        const selectedOptionIndex = event.target.options.selectedIndex
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                columnId: Number(event.target.options[selectedOptionIndex].id),
+            }
+        })
+    }
+
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+
+        let res = await editTask(task.id, formData)
+
+        if (res && res.ok) {
+            mutate(boards, { revalidate: true })
+        }
+
+        setIsModalOpen()
+    }
+
     return (
         <>
             <div className="flex flex-row justify-between">
                 <ModalHeader>Edit Task</ModalHeader>
                 <MenuButton actions={menuOptions} />
             </div>
-            <form className="flex flex-col gap-6">
+            <form
+                onSubmit={(e) => handleSubmit(e)}
+                className="flex flex-col gap-6"
+            >
                 <div>
                     <ModalLabel htmlFor="title-input">Title</ModalLabel>
                     <input
+                        onChange={(e) => handleTitleChange(e)}
                         type="text"
                         id="title-input"
                         className="
@@ -90,7 +272,7 @@ export default function EditTaskModal({
                             px-4 py-3 outline-2 outline-purple-300 placeholder:text-neutral-500 
                             dark:placeholder:opacity-50"
                         placeholder={TITLE_PLACEHOLDER}
-                        value={task ? task.title : "No task selected"}
+                        value={formData.title}
                     />
                 </div>
                 <div>
@@ -98,6 +280,7 @@ export default function EditTaskModal({
                         Description
                     </ModalLabel>
                     <textarea
+                        onChange={(e) => handleDescriptionChange(e)}
                         id="description-input"
                         className="
                             w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 rounded 
@@ -109,14 +292,19 @@ export default function EditTaskModal({
                         {task ? task.description : "No task selected"}
                     </textarea>
                 </div>
-                <SubTaskInputList
-                    subTasks={task.subTasks.map(
-                        (subTask) => subTask.description
-                    )}
+                <DynamicInputList
+                    title="Subtasks"
+                    addNewText="Add New Subtask"
+                    initialPlaceholder="e.g. make plan"
+                    values={subTaskDescriptions}
+                    handleAddInput={handleAddSubTask}
+                    handleChangeInput={handleChangeSubTask}
+                    handleRemoveInput={handleRemoveSubTask}
                 />
                 <div>
                     <ModalLabel htmlFor="status-select">Status</ModalLabel>
                     <select
+                        onChange={(e) => handleStatusChange(e)}
                         className="
                             appearance-none w-full bg-neutral-100 dark:bg-neutral-700 border-[1px] 
                             border-neutral-300 dark:border-neutral-600 rounded text-sm text-neutral-900 
@@ -133,9 +321,7 @@ export default function EditTaskModal({
                     bgColor="bg-purple-600"
                     textColor="text-neutral-100"
                     textSize="text-sm"
-                    handler={() => {
-                        /*does nothing*/
-                    }}
+                    isSubmit={true}
                 >
                     Save Task Changes
                 </ActionButton>

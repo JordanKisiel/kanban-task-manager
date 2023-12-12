@@ -123,8 +123,10 @@ export async function addTask(formData: {
         columnId: formData.status,
     }
 
+    let res
+
     try {
-        await fetch(`${BASE_URL}/api/tasks`, {
+        res = await fetch(`${BASE_URL}/api/tasks`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -134,6 +136,8 @@ export async function addTask(formData: {
     } catch (error) {
         console.error(error)
     }
+
+    return res
 }
 
 export async function deleteTask(taskId: number) {
@@ -149,6 +153,42 @@ export async function deleteTask(taskId: number) {
         })
     } catch (error) {
         console.log(error)
+    }
+
+    return res
+}
+
+export async function editTask(
+    taskId: number,
+    formData: {
+        title: string
+        description: string
+        subTasks: {
+            create: string[]
+            update: { id: number; description: string }[]
+            delete: { id: number }[]
+        }
+        columnId: number
+    }
+) {
+    let res
+
+    try {
+        res = await fetch(`${BASE_URL}/api/tasks`, {
+            method: "PUT",
+            headers: {
+                "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+                taskId,
+                title: formData.title,
+                description: formData.description,
+                subTasks: formData.subTasks,
+                columnId: formData.columnId,
+            }),
+        })
+    } catch (error) {
+        console.error(error)
     }
 
     return res

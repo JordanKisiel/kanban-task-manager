@@ -42,6 +42,7 @@ export default function EditBoardModal({
         columns: {
             create: [],
             update: boards[selectedBoardIndex].columns.map((column) => {
+                //TODO: could I just spread the cols here?
                 return {
                     id: column.id,
                     title: column.title,

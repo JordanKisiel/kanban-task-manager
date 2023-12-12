@@ -131,7 +131,11 @@ export default function AddTaskModal({
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
-        await addTask(formData)
+        const res = await addTask(formData)
+
+        if (res && res.ok) {
+            mutate(boards, { revalidate: true })
+        }
 
         setIsModalOpen()
     }

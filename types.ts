@@ -9,6 +9,7 @@ export type Task = {
     title: string
     description: string
     subTasks: SubTask[]
+    columnId: number
 }
 
 export type Column = {
