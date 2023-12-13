@@ -11,20 +11,22 @@ import { useBoards } from "@/lib/dataUtils"
 import { useModal } from "@/hooks/useModal"
 import ModalContent from "./ModalContent"
 import { testUserId } from "@/testing/testingConsts"
-import { useUrlIndices } from "@/hooks/useUrlIndices"
 
 type Props = {
+    selectedBoardIndex: number
+    columnIndex: number
+    taskIndex: number
+    changeSelectedBoardIndex: Function
     setNewBoardCreated: Function
 }
 
-export default function HeaderBar({ setNewBoardCreated }: Props) {
-    const {
-        selectedBoardIndex,
-        columnIndex,
-        taskIndex,
-        changeSelectedBoardIndex,
-    } = useUrlIndices()
-
+export default function HeaderBar({
+    selectedBoardIndex,
+    columnIndex,
+    taskIndex,
+    changeSelectedBoardIndex,
+    setNewBoardCreated,
+}: Props) {
     const { boards, isLoading, isError, mutate } = useBoards(testUserId)
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(

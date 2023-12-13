@@ -21,8 +21,15 @@ export async function GET(request: NextRequest) {
                 },
                 include: {
                     tasks: {
+                        orderBy: {
+                            id: "asc",
+                        },
                         include: {
-                            subTasks: true,
+                            subTasks: {
+                                orderBy: {
+                                    id: "asc",
+                                },
+                            },
                         },
                     },
                 },

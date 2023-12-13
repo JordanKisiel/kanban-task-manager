@@ -11,6 +11,7 @@ import Board from "../components/Board"
 import SideBar from "../components/SideBar"
 import showIcon from "@/public/show-icon.svg"
 import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
+import { useUrlIndices } from "@/hooks/useUrlIndices"
 
 type Props = {
     params: { slug: string }
@@ -25,6 +26,13 @@ export default function Home({ searchParams }: Props) {
             router.push("?boards=0")
         }
     }, [searchParams.board])
+
+    const {
+        selectedBoardIndex,
+        columnIndex,
+        taskIndex,
+        changeSelectedBoardIndex,
+    } = useUrlIndices()
 
     const [isDarkMode, toggleDarkMode] = useDarkMode("kanban-isDarkMode")
 
@@ -66,7 +74,13 @@ export default function Home({ searchParams }: Props) {
                     <div className="flex flex-row justify-center items-center md:hidden">
                         <Logo isDarkMode={isDarkMode} />
                     </div>
-                    <HeaderBar setNewBoardCreated={setNewBoardCreated} />
+                    <HeaderBar
+                        selectedBoardIndex={selectedBoardIndex}
+                        columnIndex={columnIndex}
+                        taskIndex={taskIndex}
+                        changeSelectedBoardIndex={changeSelectedBoardIndex}
+                        setNewBoardCreated={setNewBoardCreated}
+                    />
                 </div>
                 <div
                     className={`hidden bg-neutral-100 dark:bg-neutral-700 md:block lg:min-w-[15rem] ${
@@ -79,6 +93,10 @@ export default function Home({ searchParams }: Props) {
                         isDarkMode={isDarkMode}
                         toggleDarkMode={toggleDarkMode}
                         setNewBoardCreated={setNewBoardCreated}
+                        selectedBoardIndex={selectedBoardIndex}
+                        columnIndex={columnIndex}
+                        taskIndex={taskIndex}
+                        changeSelectedBoardIndex={changeSelectedBoardIndex}
                     />
                 </div>
                 <div
@@ -89,6 +107,10 @@ export default function Home({ searchParams }: Props) {
                     <Board
                         isDarkMode={isDarkMode}
                         setNewBoardCreated={setNewBoardCreated}
+                        changeSelectedBoardIndex={changeSelectedBoardIndex}
+                        columnIndex={columnIndex}
+                        selectedBoardIndex={selectedBoardIndex}
+                        taskIndex={taskIndex}
                     />
                 </div>
             </div>

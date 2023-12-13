@@ -1,13 +1,15 @@
-import { Subtask } from "../types"
+import { SubTask } from "../types"
 
 type Props = {
-    subtask: Subtask
+    subtask: SubTask
+    handleCheck: Function
 }
 
-export default function SubtaskCard({ subtask }: Props) {
+export default function SubtaskCard({ subtask, handleCheck }: Props) {
     return (
         <div className="rounded bg-neutral-200 dark:bg-neutral-800 flex flex-row px-3 py-4 gap-3">
             <input
+                onChange={() => handleCheck()}
                 className="
                     appearance-none bg-neutral-100 text-neutral-500 w-[1rem] aspect-square 
                     rounded-sm checked:bg-purple-600 checked:bg-[url('../public/check-icon.svg')] 

@@ -10,16 +10,24 @@ import addIconLight from "../public/plus-icon-gray.svg"
 import { useBoards } from "@/lib/dataUtils"
 import { useModal } from "@/hooks/useModal"
 import { testUserId } from "@/testing/testingConsts"
-import { useUrlIndices } from "@/hooks/useUrlIndices"
 
 type Props = {
     isDarkMode: boolean
     setNewBoardCreated: Function
+    selectedBoardIndex: number
+    columnIndex: number
+    taskIndex: number
+    changeSelectedBoardIndex: Function
 }
 
-export default function Board({ isDarkMode, setNewBoardCreated }: Props) {
-    const { selectedBoardIndex, columnIndex, taskIndex } = useUrlIndices()
-
+export default function Board({
+    isDarkMode,
+    setNewBoardCreated,
+    selectedBoardIndex,
+    columnIndex,
+    taskIndex,
+    changeSelectedBoardIndex,
+}: Props) {
     const { boards, isLoading, isError, mutate } = useBoards(testUserId)
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
@@ -40,6 +48,8 @@ export default function Board({ isDarkMode, setNewBoardCreated }: Props) {
                 columnIndex={index}
                 title={column.title}
                 tasks={column.tasks}
+                changeSelectedBoardIndex={changeSelectedBoardIndex}
+                setNewBoardCreated={setNewBoardCreated}
             />
         )
     })
@@ -154,6 +164,7 @@ export default function Board({ isDarkMode, setNewBoardCreated }: Props) {
                         setModalMode={setModalMode}
                         setIsModalOpen={setIsModalOpen}
                         setNewBoardCreated={setNewBoardCreated}
+                        changeSelectedBoardIndex={changeSelectedBoardIndex}
                     />
                 </Modal>
             )}

@@ -1,6 +1,5 @@
 "use client"
 
-import { nanoid } from "nanoid"
 import StyleToggle from "./StyleToggle"
 import { useBoards } from "@/lib/dataUtils"
 import { useDarkMode } from "@/hooks/useDarkMode"
@@ -25,26 +24,26 @@ export default function ModalSideBar({
 
     const numBoards = isLoading ? 0 : boards.length
 
-    const boardNames = isLoading ? [] : boards.map((board) => board.title)
+    const boardsList = isLoading
+        ? []
+        : boards.map((board, index) => {
+              const isSelected = index === selectedBoardIndex
 
-    const boardsList = boardNames.map((boardName, index) => {
-        const isSelected = index === selectedBoardIndex
+              const normalStyles = "bg-[url('../public/board-icon.svg')]"
+              const selectedStyles =
+                  "bg-purple-600 text-neutral-300 rounded-r-full block bg-[url('../public/board-icon-white.svg')]"
 
-        const normalStyles = "bg-[url('../public/board-icon.svg')]"
-        const selectedStyles =
-            "bg-purple-600 text-neutral-300 rounded-r-full block bg-[url('../public/board-icon-white.svg')]"
-
-        return (
-            <li
-                key={nanoid()}
-                className={`py-3 pl-[3.4rem] mr-6 bg-no-repeat bg-[center_left_1.5rem] ${
-                    isSelected ? selectedStyles : normalStyles
-                }`}
-            >
-                {boardName}
-            </li>
-        )
-    })
+              return (
+                  <li
+                      key={board.id}
+                      className={`py-3 pl-[3.4rem] mr-6 bg-no-repeat bg-[center_left_1.5rem] ${
+                          isSelected ? selectedStyles : normalStyles
+                      }`}
+                  >
+                      {board.title}
+                  </li>
+              )
+          })
 
     return (
         <>

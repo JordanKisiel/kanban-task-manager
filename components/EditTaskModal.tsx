@@ -288,6 +288,7 @@ export default function EditTaskModal({
                             placeholder-dark:text-neutral-500 placeholder-dark:opacity-50"
                         rows={4}
                         placeholder={DESCRIPTION_PLACEHOLDER}
+                        value={formData.description}
                     >
                         {task ? task.description : "No task selected"}
                     </textarea>

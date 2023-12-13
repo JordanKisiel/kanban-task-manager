@@ -1,6 +1,5 @@
 "use client"
 
-import { nanoid } from "nanoid"
 import Link from "next/link"
 import StyleToggle from "./StyleToggle"
 import Modal from "./Modal"
@@ -8,7 +7,6 @@ import ModalContent from "./ModalContent"
 import { useBoards } from "@/lib/dataUtils"
 import { useModal } from "@/hooks/useModal"
 import { testUserId } from "@/testing/testingConsts"
-import { useUrlIndices } from "@/hooks/useUrlIndices"
 
 type Props = {
     handleHideSideBar: Function
@@ -16,6 +14,10 @@ type Props = {
     isDarkMode: boolean
     toggleDarkMode: Function
     setNewBoardCreated: Function
+    selectedBoardIndex: number
+    columnIndex: number
+    taskIndex: number
+    changeSelectedBoardIndex: Function
 }
 
 export default function SideBar({
@@ -24,9 +26,11 @@ export default function SideBar({
     isDarkMode,
     toggleDarkMode,
     setNewBoardCreated,
+    selectedBoardIndex,
+    columnIndex,
+    taskIndex,
+    changeSelectedBoardIndex,
 }: Props) {
-    const { selectedBoardIndex, columnIndex, taskIndex } = useUrlIndices()
-
     const { boards, isLoading, isError, mutate } = useBoards(testUserId)
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
@@ -36,30 +40,30 @@ export default function SideBar({
 
     const numBoards = isLoading ? 0 : boards.length
 
-    const boardNames = isLoading ? [] : boards.map((board) => board.title)
+    const boardsList = isLoading
+        ? []
+        : boards.map((board, index) => {
+              const isSelected = index === selectedBoardIndex
 
-    const boardsList = boardNames.map((boardName, index) => {
-        const isSelected = index === selectedBoardIndex
+              const normalStyles = "bg-[url('../public/board-icon.svg')]"
+              const selectedStyles =
+                  "bg-purple-600 text-neutral-300 rounded-r-full block bg-[url('../public/board-icon-white.svg')]"
 
-        const normalStyles = "bg-[url('../public/board-icon.svg')]"
-        const selectedStyles =
-            "bg-purple-600 text-neutral-300 rounded-r-full block bg-[url('../public/board-icon-white.svg')]"
-
-        return (
-            <Link
-                href={`?board=${index}`}
-                key={nanoid()}
-            >
-                <li
-                    className={`py-3 pl-[3.4rem] mr-6 bg-no-repeat bg-[center_left_1.5rem] ${
-                        isSelected ? selectedStyles : normalStyles
-                    }`}
-                >
-                    {boardName}
-                </li>
-            </Link>
-        )
-    })
+              return (
+                  <Link
+                      href={`?board=${index}`}
+                      key={board.id}
+                  >
+                      <li
+                          className={`py-3 pl-[3.4rem] mr-6 bg-no-repeat bg-[center_left_1.5rem] ${
+                              isSelected ? selectedStyles : normalStyles
+                          }`}
+                      >
+                          {board.title}
+                      </li>
+                  </Link>
+              )
+          })
 
     return (
         <>
@@ -123,6 +127,7 @@ export default function SideBar({
                         setModalMode={setModalMode}
                         setIsModalOpen={setIsModalOpen}
                         setNewBoardCreated={setNewBoardCreated}
+                        changeSelectedBoardIndex={changeSelectedBoardIndex}
                     />
                 </Modal>
             )}

@@ -41,7 +41,11 @@ export async function DELETE(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+    console.log("PUT called")
+
     const req = await request.json()
+
+    console.log(req.subTasks.update)
 
     let { taskId, title, description, subTasks, columnId } = req
 
@@ -79,7 +83,11 @@ export async function PUT(request: NextRequest) {
             },
         }),
         ...subTasks.update.map(
-            (subTask: { id: number; description: string }) => {
+            (subTask: {
+                id: number
+                description: string
+                isComplete: boolean
+            }) => {
                 return prisma.subTask.update({
                     //create updates for each updated subtask
                     where: {
@@ -87,6 +95,7 @@ export async function PUT(request: NextRequest) {
                     },
                     data: {
                         description: subTask.description,
+                        isComplete: subTask.isComplete,
                     },
                 })
             }

@@ -11,7 +11,10 @@ type Props = {
     columnIndex: number
     taskIndex: number
     title: string
-    numSubtasks: number
+    completedSubTasks: number
+    totalSubTasks: number
+    changeSelectedBoardIndex: Function
+    setNewBoardCreated: Function
 }
 
 export default function TaskCard({
@@ -19,7 +22,10 @@ export default function TaskCard({
     columnIndex,
     taskIndex,
     title,
-    numSubtasks,
+    completedSubTasks,
+    totalSubTasks,
+    changeSelectedBoardIndex,
+    setNewBoardCreated,
 }: Props) {
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "viewTask",
@@ -43,7 +49,7 @@ export default function TaskCard({
                 shadow-[0_4px_6px_0_rgba(54,78,126,0.10)] dark:shadow-none"
                 >
                     <h4 className="font-bold dark:text-neutral-100">{title}</h4>
-                    <span className="text-xs font-bold text-neutral-500">{`0 of ${numSubtasks} subtasks`}</span>
+                    <span className="text-xs font-bold text-neutral-500">{`${completedSubTasks} of ${totalSubTasks} subtasks`}</span>
                 </div>
             </Link>
             {isModalOpen && (
@@ -58,6 +64,8 @@ export default function TaskCard({
                         taskIndex={taskIndex}
                         setModalMode={setModalMode}
                         setIsModalOpen={setIsModalOpen}
+                        setNewBoardCreated={setNewBoardCreated}
+                        changeSelectedBoardIndex={changeSelectedBoardIndex}
                     />
                 </Modal>
             )}
