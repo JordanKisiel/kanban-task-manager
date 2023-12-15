@@ -2,37 +2,49 @@
 
 import { useLocalStorage } from "@/hooks/useLocalStorage"
 import { useDarkMode } from "@/hooks/useDarkMode"
-import { useRouter } from "next/navigation"
+import { useModal } from "@/hooks/useModal"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import Image from "next/image"
 import Logo from "@/components/Logo"
 import HeaderBar from "../components/HeaderBar"
 import Board from "../components/Board"
 import SideBar from "../components/SideBar"
+import Modal from "@/components/Modal"
+import ModalContent from "@/components/ModalContent"
 import showIcon from "@/public/show-icon.svg"
 import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
-import { useUrlIndices } from "@/hooks/useUrlIndices"
 
-type Props = {
-    params: { slug: string }
-    searchParams: { [key: string]: string | undefined }
-}
-
-export default function Home({ searchParams }: Props) {
+export default function Home() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+
+    //null values default to zero when cast to number
+    const selectedBoardIndex = Number(searchParams.get("board"))
+    let taskId =
+        searchParams.get("task") !== null
+            ? Number(searchParams.get("task"))
+            : null
 
     useEffect(() => {
-        if (!searchParams.board) {
+        if (searchParams.get("board") === null) {
             router.push("?boards=0")
         }
-    }, [searchParams.board])
+    }, [searchParams.get("board")])
 
-    const {
-        selectedBoardIndex,
-        columnIndex,
-        taskIndex,
-        changeSelectedBoardIndex,
-    } = useUrlIndices()
+    useEffect(() => {
+        if (taskId !== null) {
+            setModalMode("viewTask")
+            setIsModalOpen(true)
+        } else {
+            setIsModalOpen(false)
+        }
+    }, [taskId])
+
+    const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
+        "viewTask",
+        false
+    )
 
     const [isDarkMode, toggleDarkMode] = useDarkMode("kanban-isDarkMode")
 
@@ -42,6 +54,10 @@ export default function Home({ searchParams }: Props) {
     )
 
     const { setNewBoardCreated } = useNewBoardCreated()
+
+    function changeSelectedBoardIndex(index: number) {
+        router.push(`/?board=${index}`)
+    }
 
     function handleHideSideBar() {
         setShowSideBar(false)
@@ -76,8 +92,7 @@ export default function Home({ searchParams }: Props) {
                     </div>
                     <HeaderBar
                         selectedBoardIndex={selectedBoardIndex}
-                        columnIndex={columnIndex}
-                        taskIndex={taskIndex}
+                        taskId={taskId}
                         changeSelectedBoardIndex={changeSelectedBoardIndex}
                         setNewBoardCreated={setNewBoardCreated}
                     />
@@ -94,8 +109,7 @@ export default function Home({ searchParams }: Props) {
                         toggleDarkMode={toggleDarkMode}
                         setNewBoardCreated={setNewBoardCreated}
                         selectedBoardIndex={selectedBoardIndex}
-                        columnIndex={columnIndex}
-                        taskIndex={taskIndex}
+                        taskId={taskId}
                         changeSelectedBoardIndex={changeSelectedBoardIndex}
                     />
                 </div>
@@ -108,9 +122,8 @@ export default function Home({ searchParams }: Props) {
                         isDarkMode={isDarkMode}
                         setNewBoardCreated={setNewBoardCreated}
                         changeSelectedBoardIndex={changeSelectedBoardIndex}
-                        columnIndex={columnIndex}
                         selectedBoardIndex={selectedBoardIndex}
-                        taskIndex={taskIndex}
+                        taskId={taskId}
                     />
                 </div>
             </div>
@@ -126,6 +139,22 @@ export default function Home({ searchParams }: Props) {
                         height={11}
                     />
                 </button>
+            )}
+            {isModalOpen && (
+                <Modal
+                    selectedBoardIndex={selectedBoardIndex}
+                    setIsModalOpen={setIsModalOpen}
+                >
+                    <ModalContent
+                        mode={modalMode}
+                        selectedBoardIndex={selectedBoardIndex}
+                        taskId={taskId}
+                        setModalMode={setModalMode}
+                        setIsModalOpen={setIsModalOpen}
+                        setNewBoardCreated={setNewBoardCreated}
+                        changeSelectedBoardIndex={changeSelectedBoardIndex}
+                    />
+                </Modal>
             )}
         </main>
     )

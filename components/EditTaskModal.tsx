@@ -6,11 +6,11 @@ import { editTask, useBoards } from "@/lib/dataUtils"
 import { testUserId } from "@/testing/testingConsts"
 import DynamicInputList from "./DynamicInputList"
 import { useState } from "react"
+import { Task } from "@/types"
 
 type Props = {
     selectedBoardIndex: number
-    columnIndex: number
-    taskIndex: number
+    taskId: number | null
     setModalMode: Function
     setIsModalOpen: Function
 }
@@ -28,7 +28,7 @@ type FormData = {
             id: number
         }[]
     }
-    columnId: number
+    columnId: number | null
 }
 
 const TITLE_PLACEHOLDER = "e.g. Take coffee break"
@@ -37,25 +37,36 @@ const DESCRIPTION_PLACEHOLDER =
 
 export default function EditTaskModal({
     selectedBoardIndex,
-    columnIndex,
-    taskIndex,
+    taskId,
     setModalMode,
     setIsModalOpen,
 }: Props) {
     const { boards, isLoading, isError, mutate } = useBoards(testUserId)
 
-    const task =
-        boards[selectedBoardIndex].columns[columnIndex].tasks[taskIndex]
+    const tasks = boards[selectedBoardIndex].columns
+        .map((column) => {
+            return column.tasks.map((task) => {
+                return task
+            })
+        })
+        .flat()
+
+    const task: Task | null =
+        taskId !== null
+            ? tasks.filter((task) => {
+                  return task.id === taskId
+              })[0]
+            : null
 
     const [formData, setFormData] = useState<FormData>({
-        title: task.title,
-        description: task.description,
+        title: task?.title || "",
+        description: task?.description || "",
         subTasks: {
             create: [],
-            update: [...task.subTasks],
+            update: task !== null ? [...task.subTasks] : [],
             delete: [],
         },
-        columnId: task.columnId,
+        columnId: task?.columnId || null,
     })
 
     //subTask descriptions to render
@@ -67,15 +78,17 @@ export default function EditTaskModal({
         ...formData.subTasks.create,
     ]
 
-    const currentColumn = boards[selectedBoardIndex].columns[columnIndex]
-
-    const otherColumns = boards[selectedBoardIndex].columns.filter(
-        (column, index) => {
-            return index !== columnIndex
+    const currentColumn = boards[selectedBoardIndex].columns.filter(
+        (column) => {
+            return column.id === task?.columnId
         }
     )
 
-    const columnOptions = [currentColumn, ...otherColumns]
+    const otherColumns = boards[selectedBoardIndex].columns.filter((column) => {
+        return task?.columnId !== column.id
+    })
+
+    const columnOptions = [...currentColumn, ...otherColumns]
 
     const selectOptions = columnOptions.map((columnOption) => {
         return (
@@ -240,8 +253,11 @@ export default function EditTaskModal({
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
+        let res
 
-        let res = await editTask(task.id, formData)
+        if (task !== null) {
+            res = await editTask(task.id, formData)
+        }
 
         if (res && res.ok) {
             mutate(boards, { revalidate: true })

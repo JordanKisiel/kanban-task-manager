@@ -41,11 +41,7 @@ export async function DELETE(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-    console.log("PUT called")
-
     const req = await request.json()
-
-    console.log(req.subTasks.update)
 
     let { taskId, title, description, subTasks, columnId } = req
 

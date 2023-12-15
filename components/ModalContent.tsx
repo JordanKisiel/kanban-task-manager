@@ -8,8 +8,7 @@ import EditBoardModal from "./EditBoardModal"
 type ViewTaskProps = {
     mode: "viewTask"
     selectedBoardIndex: number
-    columnIndex: number
-    taskIndex: number
+    taskId: number | null
     setModalMode: Function
     setIsModalOpen: Function
 }
@@ -23,8 +22,7 @@ type AddTaskProps = {
 type EditTaskProps = {
     mode: "editTask"
     selectedBoardIndex: number
-    columnIndex: number
-    taskIndex: number
+    taskId: number | null
     setModalMode: Function
     setIsModalOpen: Function
 }
@@ -32,8 +30,7 @@ type EditTaskProps = {
 type DeleteTaskProps = {
     mode: "deleteTask"
     selectedBoardIndex: number
-    columnIndex: number
-    taskIndex: number
+    taskId: number | null
     setIsModalOpen: Function
 }
 
@@ -73,8 +70,7 @@ export default function ModalContent(props: Props) {
             modalContent = (
                 <ViewTaskModal
                     selectedBoardIndex={props.selectedBoardIndex}
-                    columnIndex={props.columnIndex}
-                    taskIndex={props.taskIndex}
+                    taskId={props.taskId}
                     setModalMode={props.setModalMode}
                     setIsModalOpen={props.setIsModalOpen}
                 />
@@ -92,8 +88,7 @@ export default function ModalContent(props: Props) {
             modalContent = (
                 <EditTaskModal
                     selectedBoardIndex={props.selectedBoardIndex}
-                    columnIndex={props.columnIndex}
-                    taskIndex={props.taskIndex}
+                    taskId={props.taskId}
                     setModalMode={props.setModalMode}
                     setIsModalOpen={props.setIsModalOpen}
                 />
@@ -104,8 +99,7 @@ export default function ModalContent(props: Props) {
                 <DeleteModal
                     isBoard={false}
                     selectedBoardIndex={props.selectedBoardIndex}
-                    columnIndex={props.columnIndex}
-                    taskIndex={props.taskIndex}
+                    taskId={props.taskId}
                     setIsModalOpen={props.setIsModalOpen}
                 />
             )

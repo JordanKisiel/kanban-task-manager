@@ -14,16 +14,14 @@ import { testUserId } from "@/testing/testingConsts"
 
 type Props = {
     selectedBoardIndex: number
-    columnIndex: number
-    taskIndex: number
+    taskId: number | null
     changeSelectedBoardIndex: Function
     setNewBoardCreated: Function
 }
 
 export default function HeaderBar({
     selectedBoardIndex,
-    columnIndex,
-    taskIndex,
+    taskId,
     changeSelectedBoardIndex,
     setNewBoardCreated,
 }: Props) {
@@ -115,8 +113,7 @@ export default function HeaderBar({
                     <ModalContent
                         mode={modalMode}
                         selectedBoardIndex={selectedBoardIndex}
-                        columnIndex={columnIndex}
-                        taskIndex={taskIndex}
+                        taskId={taskId}
                         setModalMode={setModalMode}
                         setIsModalOpen={setIsModalOpen}
                         setNewBoardCreated={setNewBoardCreated}

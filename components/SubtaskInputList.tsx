@@ -12,8 +12,6 @@ type Props = {
     handleRemoveInput: Function
 }
 
-const SUBTASK_PLACEHOLDER_1 = "e.g. Make coffee"
-const SUBTASK_PLACEHOLDER_2 = "e.g. Drink coffee & smile"
 const SUBTASK_PLACEHOLDER_OTHER = "e.g. Another subtask"
 
 export default function SubTaskInputList({

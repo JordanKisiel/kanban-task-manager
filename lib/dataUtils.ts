@@ -4,13 +4,13 @@ import { Board } from "@/types"
 
 const BASE_URL = config.url
 
-const boardFetcher: BareFetcher<any> = (url: string) =>
+const bareFetcher: BareFetcher<any> = (url: string) =>
     fetch(url).then((r) => r.json())
 
 export function useBoards(userId: string) {
     const { data, error, isLoading, mutate } = useSWR<Board[]>(
         `${BASE_URL}/api/boards?user=${userId}`,
-        boardFetcher
+        bareFetcher
     )
 
     return {
@@ -168,7 +168,7 @@ export async function editTask(
             update: { id: number; description: string }[]
             delete: { id: number }[]
         }
-        columnId: number
+        columnId: number | null
     }
 ) {
     let res

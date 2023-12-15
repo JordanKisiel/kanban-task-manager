@@ -21,7 +21,7 @@ export default function TaskColumn({
     //TODO: replace with function that produces new colors as needed
     const columnColors = ["bg-[#49C4E5]", "bg-[#8471F2]", "bg-[#67E2AE]"]
 
-    const taskCards = tasks.map(({ title, subTasks }, index) => {
+    const taskCards = tasks.map(({ title, subTasks, id }, index) => {
         const completedSubTasks = subTasks.reduce((accum, curr) => {
             if (curr.isComplete) {
                 accum += 1
@@ -33,8 +33,7 @@ export default function TaskColumn({
             <TaskCard
                 key={`${columnIndex}_${index}`}
                 selectedBoardIndex={selectedBoardIndex}
-                columnIndex={columnIndex}
-                taskIndex={index}
+                taskId={id}
                 title={title}
                 completedSubTasks={completedSubTasks}
                 totalSubTasks={subTasks.length > 0 ? subTasks.length : 0}

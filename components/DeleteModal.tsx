@@ -13,8 +13,7 @@ type BoardProps = {
 
 type TaskProps = {
     isBoard: false
-    columnIndex: number
-    taskIndex: number
+    taskId: number | null
     selectedBoardIndex: number
     setIsModalOpen: Function
 }
@@ -29,10 +28,17 @@ export default function DeleteModal(props: Props) {
     if (props.isBoard) {
         itemToDelete = boards[props.selectedBoardIndex]
     } else {
-        itemToDelete =
-            boards[props.selectedBoardIndex].columns[props.columnIndex].tasks[
-                props.taskIndex
-            ]
+        const tasks = boards[props.selectedBoardIndex].columns
+            .map((column) => {
+                return column.tasks.map((task) => {
+                    return task
+                })
+            })
+            .flat()
+
+        itemToDelete = tasks.filter((task) => {
+            return task.id === props.taskId
+        })[0]
     }
 
     let userMessage = `Are you sure you want to delete the '${

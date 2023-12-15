@@ -15,8 +15,7 @@ type Props = {
     toggleDarkMode: Function
     setNewBoardCreated: Function
     selectedBoardIndex: number
-    columnIndex: number
-    taskIndex: number
+    taskId: number | null
     changeSelectedBoardIndex: Function
 }
 
@@ -27,8 +26,7 @@ export default function SideBar({
     toggleDarkMode,
     setNewBoardCreated,
     selectedBoardIndex,
-    columnIndex,
-    taskIndex,
+    taskId,
     changeSelectedBoardIndex,
 }: Props) {
     const { boards, isLoading, isError, mutate } = useBoards(testUserId)
@@ -122,8 +120,7 @@ export default function SideBar({
                     <ModalContent
                         mode={modalMode}
                         selectedBoardIndex={selectedBoardIndex}
-                        columnIndex={columnIndex}
-                        taskIndex={taskIndex}
+                        taskId={taskId}
                         setModalMode={setModalMode}
                         setIsModalOpen={setIsModalOpen}
                         setNewBoardCreated={setNewBoardCreated}
