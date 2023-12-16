@@ -4,6 +4,7 @@ import Link from "next/link"
 import StyleToggle from "./StyleToggle"
 import Modal from "./Modal"
 import ModalContent from "./ModalContent"
+import ItemSkeleton from "./ItemSkeleton"
 import { useBoards } from "@/lib/dataUtils"
 import { useModal } from "@/hooks/useModal"
 import { testUserId } from "@/testing/testingConsts"
@@ -36,10 +37,16 @@ export default function SideBar({
         false
     )
 
+    const NUM_SKELETON_ITEMS = 3
+
     const numBoards = isLoading ? 0 : boards.length
 
     const boardsList = isLoading
-        ? []
+        ? Array(NUM_SKELETON_ITEMS)
+              .fill("")
+              .map((item, index) => {
+                  return <ItemSkeleton key={index} />
+              })
         : boards.map((board, index) => {
               const isSelected = index === selectedBoardIndex
 
