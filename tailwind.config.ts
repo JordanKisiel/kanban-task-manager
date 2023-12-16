@@ -23,6 +23,10 @@ const config: Config = {
                 "red-100": "#FF9898",
                 "red-300": "#EA5555",
             },
+            animation: {
+                "pulse-fast":
+                    "pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+            },
         },
     },
     plugins: [],
