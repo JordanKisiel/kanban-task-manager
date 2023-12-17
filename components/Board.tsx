@@ -5,6 +5,7 @@ import TaskColumn from "./TaskColumn"
 import Modal from "./Modal"
 import ModalContent from "./ModalContent"
 import ActionButton from "./ActionButton"
+import ColumnSkeleton from "./ColumnSkeleton"
 import addIconDark from "../public/plus-icon.svg"
 import addIconLight from "../public/plus-icon-gray.svg"
 import { useBoards } from "@/lib/dataUtils"
@@ -33,6 +34,8 @@ export default function Board({
         false
     )
 
+    const NUM_SKELETON_COLS = 3
+
     const columns =
         isLoading || boards.length === 0
             ? []
@@ -51,6 +54,17 @@ export default function Board({
             />
         )
     })
+
+    const skeletonColumns = Array(NUM_SKELETON_COLS)
+        .fill("")
+        .map((column, index) => {
+            return (
+                <ColumnSkeleton
+                    key={index}
+                    numTaskCardSkeletons={3}
+                />
+            )
+        })
 
     const board = (
         <div className="grid grid-flow-col auto-cols-[16rem] px-6 py-20 gap-6 overflow-auto md:pt-5 md:pb-20">
@@ -76,6 +90,12 @@ export default function Board({
                     New Column
                 </button>
             </div>
+        </div>
+    )
+
+    const skeletonBoard = (
+        <div className="grid grid-flow-col auto-cols-[16rem] px-6 py-20 gap-6 overflow-auto md:pt-5 md:pb-20">
+            {skeletonColumns}
         </div>
     )
 
@@ -138,7 +158,9 @@ export default function Board({
     )
 
     let content: React.ReactNode
-    if (boards.length === 0) {
+    if (isLoading) {
+        content = skeletonBoard
+    } else if (boards.length === 0) {
         content = newUserPrompt
     } else if (columns.length === 0) {
         content = emptyBoard
