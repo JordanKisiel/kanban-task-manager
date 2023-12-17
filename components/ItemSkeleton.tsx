@@ -1,8 +1,24 @@
-//TODO: finish skeleton list component based upon:
-// https://dev.to/jobpick/how-to-create-a-skeleton-loader-in-tailwindcss-38gh
+type Props = {
+    width: "small" | "medium" | "full"
+    height: "small" | "medium" | "large"
+}
 
-export default function ItemSkeleton() {
+export default function ItemSkeleton({ width, height }: Props) {
+    const widthSizes = {
+        small: "w-[50%]",
+        medium: "w-[75%]",
+        full: "",
+    }
+
+    const heightSizes = {
+        small: "h-4",
+        medium: "h-6",
+        large: "h-8",
+    }
+
     return (
-        <li className="block bg-purple-600 ml-4 mr-6 mb-3 h-8 rounded animate-pulse"></li>
+        <div
+            className={`${widthSizes[width]} ${heightSizes[height]} block bg-purple-600 ml-[1.4rem] mr-8 mb-3 rounded animate-pulse-fast`}
+        ></div>
     )
 }
