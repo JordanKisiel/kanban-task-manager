@@ -1,3 +1,4 @@
+import { useState } from "react"
 import ActionButton from "./ActionButton"
 import { deleteBoard, deleteTask } from "@/lib/dataUtils"
 import { Board, Task } from "@/types"
@@ -22,6 +23,8 @@ type Props = BoardProps | TaskProps
 
 export default function DeleteModal(props: Props) {
     const { boards, isLoading, isError, mutate } = useBoards(testUserId)
+
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
     let itemToDelete: Board | Task | null = null
 
@@ -52,6 +55,8 @@ export default function DeleteModal(props: Props) {
     }
 
     async function handleDelete() {
+        setIsSubmitted(true)
+
         let deleteRes: Response | undefined
 
         if (props.isBoard && itemToDelete) {
@@ -90,6 +95,8 @@ export default function DeleteModal(props: Props) {
                     handler={() => {
                         handleDelete()
                     }}
+                    isDisabled={isSubmitted}
+                    isLoading={isSubmitted}
                 >
                     Delete
                 </ActionButton>
@@ -99,6 +106,7 @@ export default function DeleteModal(props: Props) {
                     textColor="text-purple-600"
                     textSize="text-sm"
                     handler={() => props.setIsModalOpen()}
+                    isDisabled={isSubmitted}
                 >
                     Cancel
                 </ActionButton>
