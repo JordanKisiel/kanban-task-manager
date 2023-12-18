@@ -23,6 +23,7 @@ export default function AddBoardModal({
 }: Props) {
     const [title, setTitle] = useState("")
     const [columnNames, setColumnNames] = useState<string[]>([])
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
     const menuOptions = [
         {
@@ -65,6 +66,8 @@ export default function AddBoardModal({
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
+        setIsSubmitted(true)
+
         const res = await addBoard(testUserId, title, columnNames)
 
         if (res && res.ok) {
@@ -85,7 +88,9 @@ export default function AddBoardModal({
             onSubmit={(e) => {
                 handleSubmit(e)
             }}
-            className="flex flex-col gap-6"
+            className={`${
+                isSubmitted ? "opacity-50" : "opacity-100"
+            } flex flex-col gap-6`}
         >
             <div className="flex flex-row justify-between">
                 <ModalHeader>Add New Board</ModalHeader>
@@ -122,6 +127,8 @@ export default function AddBoardModal({
                     textSize="text-sm"
                     isWidthFull={true}
                     isSubmit={true}
+                    isDisabled={isSubmitted}
+                    isLoading={isSubmitted}
                 >
                     Create New Board
                 </ActionButton>
