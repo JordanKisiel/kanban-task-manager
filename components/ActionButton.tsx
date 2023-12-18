@@ -1,3 +1,6 @@
+import Image from "next/image"
+import spinnerIcon from "@/public/spinner.svg"
+
 type Props = {
     isWidthFull: boolean
     bgColor: string
@@ -6,6 +9,7 @@ type Props = {
     isDisabled?: boolean
     handler?: Function
     isSubmit?: boolean
+    isLoading?: boolean
     children: React.ReactNode
 }
 
@@ -17,9 +21,14 @@ export default function ActionButton({
     isDisabled,
     handler,
     isSubmit,
+    isLoading,
     children,
 }: Props) {
-    const styles = `py-2 px-5 rounded-full flex justify-center gap-1 items-center font-bold disabled:opacity-50 ${
+    const spinnerStyles = `${
+        isLoading ? "inline" : "hidden"
+    } absolute top-[0.35rem] left-[7rem] animate-spin`
+
+    const styles = `relative py-2 px-5 rounded-full flex justify-center gap-1 items-center font-bold disabled:opacity-50 ${
         isWidthFull && "w-full"
     }  ${bgColor} ${textColor} ${textSize}`
 
@@ -30,6 +39,11 @@ export default function ActionButton({
                 disabled={isDisabled}
                 className={styles}
             >
+                <Image
+                    className={spinnerStyles}
+                    src={spinnerIcon}
+                    alt="loading icon"
+                />
                 {children}
             </button>
         )
