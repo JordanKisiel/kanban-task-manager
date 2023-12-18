@@ -11,10 +11,16 @@ export default function TaskCardSkeleton() {
                 <ItemSkeleton
                     width="full"
                     height="medium"
+                    bgColor="bg-neutral-400 dark:bg-neutral-800"
+                    opacity={"opacity-100"}
+                    margins={"mb-3"}
                 />
                 <ItemSkeleton
                     width="small"
                     height="small"
+                    bgColor="bg-neutral-400 dark:bg-neutral-800"
+                    opacity={"opacity-100"}
+                    margins={"mb-3"}
                 />
             </div>
         </>

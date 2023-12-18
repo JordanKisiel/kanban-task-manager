@@ -45,7 +45,16 @@ export default function SideBar({
         ? Array(NUM_SKELETON_ITEMS)
               .fill("")
               .map((item, index) => {
-                  return <ItemSkeleton key={index} />
+                  return (
+                      <ItemSkeleton
+                          key={index}
+                          width="full"
+                          height="large"
+                          bgColor="bg-neutral-400 dark:bg-neutral-800"
+                          opacity={"opacity-100"}
+                          margins={"ml-[1.4rem] mr-8 mb-3"}
+                      />
+                  )
               })
         : boards.map((board, index) => {
               const isSelected = index === selectedBoardIndex

@@ -7,6 +7,7 @@ import MenuButton from "./MenuButton"
 import Modal from "./Modal"
 import ModalSideBar from "./ModalSideBar"
 import addIcon from "../public/plus-icon.svg"
+import LoadingText from "./LoadingText"
 import { useBoards } from "@/lib/dataUtils"
 import { useModal } from "@/hooks/useModal"
 import ModalContent from "./ModalContent"
@@ -34,11 +35,17 @@ export default function HeaderBar({
 
     const [showModalSideBar, setShowModalSideBar] = useState(false)
 
-    const selectedBoardTitle = isLoading
-        ? "Loading title"
-        : boards.length > 0
-        ? boards[selectedBoardIndex].title
-        : ""
+    const selectedBoardTitle = isLoading ? (
+        <LoadingText
+            text="Loading Title"
+            ellipsisLength={4}
+            ellipsisSpeedInSec={0.7}
+        />
+    ) : boards.length > 0 ? (
+        boards[selectedBoardIndex].title
+    ) : (
+        ""
+    )
 
     const isNoBoards = boards.length === 0
     const isNoColumns =

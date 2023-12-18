@@ -18,6 +18,9 @@ export default function ColumnSkeleton({ numTaskCardSkeletons }: Props) {
                 <ItemSkeleton
                     width="medium"
                     height="small"
+                    bgColor="bg-neutral-400 dark:bg-neutral-600"
+                    opacity={"opacity-100"}
+                    margins={"mb-3"}
                 />
             </div>
             <div className="flex flex-col gap-6">{taskCardSkeletons}</div>

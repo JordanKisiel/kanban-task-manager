@@ -1,9 +1,18 @@
 type Props = {
     width: "small" | "medium" | "full"
     height: "small" | "medium" | "large"
+    bgColor: string
+    opacity: string
+    margins: string
 }
 
-export default function ItemSkeleton({ width, height }: Props) {
+export default function ItemSkeleton({
+    width,
+    height,
+    bgColor,
+    opacity,
+    margins,
+}: Props) {
     const widthSizes = {
         small: "w-[50%]",
         medium: "w-[75%]",
@@ -18,7 +27,7 @@ export default function ItemSkeleton({ width, height }: Props) {
 
     return (
         <div
-            className={`${widthSizes[width]} ${heightSizes[height]} block bg-purple-600 ml-[1.4rem] mr-8 mb-3 rounded animate-pulse-fast`}
+            className={`${widthSizes[width]} ${heightSizes[height]} ${bgColor} ${opacity} ${margins} block rounded animate-pulse-fast`}
         ></div>
     )
 }
