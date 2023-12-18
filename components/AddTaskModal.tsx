@@ -40,6 +40,7 @@ export default function AddTaskModal({
         selectedIndex: 0,
         status: columns[0].id,
     })
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
     const selectOptions = columns.map((column, index) => {
         return (
@@ -131,6 +132,8 @@ export default function AddTaskModal({
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
+        setIsSubmitted(true)
+
         const res = await addTask(formData)
 
         if (res && res.ok) {
@@ -141,7 +144,7 @@ export default function AddTaskModal({
     }
 
     return (
-        <>
+        <div className={`${isSubmitted ? "opacity-50" : "opacity-100"}`}>
             <div className="flex flex-row justify-between">
                 <ModalHeader>Add New Task</ModalHeader>
                 <MenuButton actions={menuOptions} />
@@ -215,10 +218,12 @@ export default function AddTaskModal({
                     textColor="dark:text-neutral-100"
                     textSize="text-sm"
                     isSubmit={true}
+                    isDisabled={isSubmitted}
+                    isLoading={isSubmitted}
                 >
                     Create Task
                 </ActionButton>
             </form>
-        </>
+        </div>
     )
 }
