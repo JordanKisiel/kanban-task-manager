@@ -4,11 +4,11 @@ import { useState } from "react"
 import { mutate } from "swr"
 import { addBoard } from "@/lib/dataUtils"
 import ActionButton from "./ActionButton"
-import ColumnInputList from "./ColumnsInputList"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
 import { testUserId } from "@/testing/testingConsts"
+import DynamicInputList from "./DynamicInputList"
 
 type Props = {
     setIsModalOpen: Function
@@ -106,11 +106,14 @@ export default function AddBoardModal({
                     value={title}
                 />
             </div>
-            <ColumnInputList
-                columnNames={columnNames}
-                handleAddColumn={handleAddColumn}
-                handleChangeColumn={handleChangeColumn}
-                handleDeleteColumn={handleDeleteColumn}
+            <DynamicInputList
+                values={columnNames}
+                title="Board Columns"
+                initialPlaceholder="e.g. Todo"
+                addNewText="Add New Column"
+                handleAddInput={handleAddColumn}
+                handleChangeInput={handleChangeColumn}
+                handleRemoveInput={handleDeleteColumn}
             />
             <div>
                 <ActionButton
