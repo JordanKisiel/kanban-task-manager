@@ -7,6 +7,7 @@ import { editTask, useBoards } from "@/lib/dataUtils"
 import { testUserId } from "@/testing/testingConsts"
 import { useState, useEffect } from "react"
 import { Task } from "@/types"
+import ItemSkeleton from "./ItemSkeleton"
 
 type Props = {
     selectedBoardIndex: number
@@ -37,6 +38,8 @@ export default function ViewTaskModal({
     setModalMode,
     setIsModalOpen,
 }: Props) {
+    console.log("view task rendered")
+
     const { boards, isLoading, isError } = useBoards(testUserId)
     const { mutate } = useSWRConfig()
 
@@ -75,29 +78,35 @@ export default function ViewTaskModal({
         return accum + valueToAdd
     }, 0)
 
-    const subtaskCards = formData.subTasks.update.map((subTask, index) => {
-        return (
-            <SubtaskCard
-                key={subTask.id}
-                subtask={subTask}
-                handleCheck={() => handleCheck(index)}
-            />
-        )
-    })
-
-    const currentColumn = isLoading
+    const subTaskCards = isLoading
         ? []
-        : boards[selectedBoardIndex].columns.filter((column) => {
-              return column.id === task?.columnId
+        : formData.subTasks.update.map((subTask, index) => {
+              return (
+                  <SubtaskCard
+                      key={subTask.id}
+                      subtask={subTask}
+                      handleCheck={() => handleCheck(index)}
+                  />
+              )
           })
 
-    const otherColumns = isLoading
-        ? []
-        : boards[selectedBoardIndex].columns.filter((column) => {
-              return task?.columnId !== column.id
-          })
+    const currentColumn =
+        isLoading || formData.columnId === null
+            ? []
+            : boards[selectedBoardIndex].columns.filter((column) => {
+                  return column.id === formData.columnId
+              })
+
+    const otherColumns =
+        isLoading || formData.columnId === null
+            ? []
+            : boards[selectedBoardIndex].columns.filter((column) => {
+                  return column.id !== formData.columnId
+              })
 
     const columnOptions = [...currentColumn, ...otherColumns]
+
+    console.log(columnOptions)
 
     const selectOptions = columnOptions.map((columnOption) => {
         return (
@@ -131,6 +140,25 @@ export default function ViewTaskModal({
         },
     ]
 
+    //synchronizes client formData with data coming back from server
+    useEffect(() => {
+        if (!isLoading && task !== null) {
+            setFormData((prevFormData) => {
+                return {
+                    ...prevFormData,
+                    title: task.title,
+                    description: task.description,
+                    subTasks: {
+                        ...prevFormData.subTasks,
+                        update: task.subTasks,
+                    },
+                    columnId: task.columnId,
+                }
+            })
+        }
+    }, [isLoading, task])
+
+    //sends data to server whenever there's a form change
     useEffect(() => {
         async function handleFormChange() {
             const newData = {
@@ -154,7 +182,6 @@ export default function ViewTaskModal({
             }
 
             if (res && res.ok) {
-                console.log(jsonData)
                 mutate(boards, jsonData[jsonData.length - 1], options)
             }
         }
@@ -201,35 +228,106 @@ export default function ViewTaskModal({
     return (
         <form>
             <div className="flex flex-row mb-6 justify-between items-start">
-                <ModalHeader>
-                    {task ? task.title : "No task selected"}
-                </ModalHeader>
-                <MenuButton actions={menuOptions} />
+                {!isLoading ? (
+                    <ModalHeader>{formData.title}</ModalHeader>
+                ) : (
+                    <ItemSkeleton
+                        bgColor="dark:bg-neutral-800"
+                        height="large"
+                        width="medium"
+                        margins=""
+                        opacity="opacity-100"
+                    />
+                )}
+
+                <MenuButton
+                    actions={menuOptions}
+                    isDisabled={isLoading}
+                />
             </div>
-            <p className="text-neutral-500 text-sm leading-6 mb-6">
-                {task ? task.description : "No task selected"}
-            </p>
+            {!isLoading ? (
+                <p className="text-neutral-500 text-sm leading-6 mb-6">
+                    {formData.description}
+                </p>
+            ) : (
+                <ItemSkeleton
+                    bgColor="dark:bg-neutral-800"
+                    height="small"
+                    width="medium"
+                    margins="mb-6"
+                    opacity="opacity-100"
+                />
+            )}
+
             <div className="mb-5">
-                <span
-                    className="
-                    text-neutral-500 dark:text-neutral-100 text-xs font-bold block mb-4"
-                >
-                    {`Subtasks (${numCompletedTasks} of ${
-                        task ? task.subTasks.length : 0
-                    })`}
-                </span>
-                <ul className="flex flex-col gap-2">{subtaskCards}</ul>
+                {!isLoading ? (
+                    <span
+                        className="
+                text-neutral-500 dark:text-neutral-100 text-xs font-bold block mb-4"
+                    >
+                        {`Subtasks (${numCompletedTasks} of ${
+                            formData.subTasks.update
+                                ? formData.subTasks.update.length
+                                : 0
+                        })`}
+                    </span>
+                ) : (
+                    <>
+                        <ItemSkeleton
+                            bgColor="dark:bg-neutral-800"
+                            height="small"
+                            width="small"
+                            margins="mb-4"
+                            opacity="opacity-100"
+                        />
+                        <ItemSkeleton
+                            bgColor="dark:bg-neutral-800"
+                            height="small"
+                            width="small"
+                            margins="mb-4"
+                            opacity="opacity-100"
+                        />
+                    </>
+                )}
+
+                <ul className="flex flex-col gap-2">{subTaskCards}</ul>
             </div>
             <div>
-                <ModalLabel htmlFor="status-select">Current Status</ModalLabel>
-                <select
-                    onChange={(e) => handleStatusChange(e)}
-                    className="appearance-none w-full bg-neutral-100 dark:bg-neutral-700 border-[1px] border-neutral-300 dark:border-neutral-600 rounded text-sm text-neutral-900 dark:text-neutral-100 px-4 py-3 outline-2 dark:outline-purple-300 bg-[url('../public/arrow-down.svg')] bg-no-repeat bg-[center_right_1rem]"
-                    name="status"
-                    id="status-select"
-                >
-                    {selectOptions}
-                </select>
+                {!isLoading ? (
+                    <>
+                        <ModalLabel htmlFor="status-select">
+                            Current Status
+                        </ModalLabel>
+                        <select
+                            onChange={(e) => handleStatusChange(e)}
+                            className="appearance-none w-full bg-neutral-100 dark:bg-neutral-700 border-[1px] 
+                                border-neutral-300 dark:border-neutral-600 rounded text-sm text-neutral-900 
+                                dark:text-neutral-100 px-4 py-3 outline-2 dark:outline-purple-300 
+                                bg-[url('../public/arrow-down.svg')] bg-no-repeat bg-[center_right_1rem]"
+                            name="status"
+                            id="status-select"
+                        >
+                            {selectOptions}
+                        </select>
+                    </>
+                ) : (
+                    <>
+                        <ItemSkeleton
+                            bgColor="dark:bg-neutral-800"
+                            height="small"
+                            width="small"
+                            margins="mb-3"
+                            opacity="opacity-100"
+                        />
+                        <ItemSkeleton
+                            bgColor="dark:bg-neutral-800"
+                            height="large"
+                            width="medium"
+                            margins=""
+                            opacity="opacity-100"
+                        />
+                    </>
+                )}
             </div>
         </form>
     )
