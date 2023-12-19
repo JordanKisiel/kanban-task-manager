@@ -114,6 +114,5 @@ export async function PUT(request: NextRequest) {
         }),
     ])
 
-    console.log(result)
     return NextResponse.json(result)
 }

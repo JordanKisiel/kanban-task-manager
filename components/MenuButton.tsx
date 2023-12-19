@@ -9,9 +9,10 @@ type Props = {
         action: Function
         isDisabled: boolean
     }[]
+    isDisabled?: boolean
 }
 
-export default function MenuButton({ actions }: Props) {
+export default function MenuButton({ actions, isDisabled }: Props) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const menuRef: any = useRef()
 
@@ -59,7 +60,10 @@ export default function MenuButton({ actions }: Props) {
                         handleOpenMenu()
                     }
                 }}
-                className="text-xs leading-6 text-transparent bg-[url('../public/menu-icon.svg')] bg-no-repeat bg-right"
+                disabled={isDisabled}
+                className={`text-xs leading-6 text-transparent bg-[url('../public/menu-icon.svg')] bg-no-repeat bg-right ${
+                    isDisabled && "opacity-50"
+                }`}
             >
                 Menu
             </button>
