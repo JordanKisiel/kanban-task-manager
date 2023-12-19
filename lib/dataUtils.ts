@@ -2,7 +2,7 @@ import useSWR, { BareFetcher } from "swr"
 import { config } from "./baseURL"
 import { Board } from "@/types"
 
-const DELAY_TIME = 4000
+const DELAY_TIME = 20000
 
 function delay(ms: number) {
     return new Promise((resolve) => {
@@ -13,6 +13,7 @@ function delay(ms: number) {
 const BASE_URL = config.url
 
 async function bareFetcher(url: string) {
+    await delay(DELAY_TIME)
     return fetch(url).then((r) => r.json())
 }
 
