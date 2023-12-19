@@ -2,6 +2,8 @@ import useSWR, { BareFetcher } from "swr"
 import { config } from "./baseURL"
 import { Board } from "@/types"
 
+const DELAY_TIME = 4000
+
 function delay(ms: number) {
     return new Promise((resolve) => {
         setTimeout(() => resolve("delay finished"), ms)
@@ -11,14 +13,8 @@ function delay(ms: number) {
 const BASE_URL = config.url
 
 async function bareFetcher(url: string) {
-    await delay(20000)
     return fetch(url).then((r) => r.json())
 }
-
-// const bareFetcher: BareFetcher<any> = (url: string) => {
-//     delay(2000)
-//     fetch(url).then((r) => r.json())
-// }
 
 export function useBoards(userId: string) {
     const { data, error, isLoading, mutate } = useSWR<Board[]>(
@@ -96,6 +92,8 @@ export async function editBoard(
         }
     }
 ) {
+    await delay(DELAY_TIME)
+
     let res
 
     try {
@@ -184,6 +182,8 @@ export async function editTask(
         columnId: number | null
     }
 ) {
+    //await delay(DELAY_TIME)
+
     let res
 
     try {

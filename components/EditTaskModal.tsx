@@ -7,6 +7,7 @@ import { testUserId } from "@/testing/testingConsts"
 import DynamicInputList from "./DynamicInputList"
 import { useState } from "react"
 import { Task } from "@/types"
+import { useRouter } from "next/navigation"
 
 type Props = {
     selectedBoardIndex: number
@@ -43,6 +44,8 @@ export default function EditTaskModal({
 }: Props) {
     const { boards, isLoading, isError, mutate } = useBoards(testUserId)
 
+    const router = useRouter()
+
     const tasks = boards[selectedBoardIndex].columns
         .map((column) => {
             return column.tasks.map((task) => {
@@ -68,6 +71,8 @@ export default function EditTaskModal({
         },
         columnId: task?.columnId || null,
     })
+
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
     //subTask descriptions to render
     //always render update subTasks first
@@ -253,6 +258,9 @@ export default function EditTaskModal({
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
+
+        setIsSubmitted(true)
+
         let res
 
         if (task !== null) {
@@ -263,11 +271,12 @@ export default function EditTaskModal({
             mutate(boards, { revalidate: true })
         }
 
-        setIsModalOpen()
+        setIsModalOpen(false)
+        router.push(`/?board=${selectedBoardIndex}`)
     }
 
     return (
-        <>
+        <div className={`${isSubmitted ? "opacity-50" : "opacity-100"}`}>
             <div className="flex flex-row justify-between">
                 <ModalHeader>Edit Task</ModalHeader>
                 <MenuButton actions={menuOptions} />
@@ -339,10 +348,12 @@ export default function EditTaskModal({
                     textColor="text-neutral-100"
                     textSize="text-sm"
                     isSubmit={true}
+                    isDisabled={isSubmitted}
+                    isLoading={isSubmitted}
                 >
                     Save Task Changes
                 </ActionButton>
             </form>
-        </>
+        </div>
     )
 }

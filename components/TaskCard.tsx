@@ -2,9 +2,6 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import Modal from "./Modal"
-import ModalContent from "./ModalContent"
-import { useModal } from "@/hooks/useModal"
 
 type Props = {
     selectedBoardIndex: number
@@ -12,8 +9,6 @@ type Props = {
     title: string
     completedSubTasks: number
     totalSubTasks: number
-    changeSelectedBoardIndex: Function
-    setNewBoardCreated: Function
 }
 
 export default function TaskCard({
@@ -22,8 +17,6 @@ export default function TaskCard({
     title,
     completedSubTasks,
     totalSubTasks,
-    changeSelectedBoardIndex,
-    setNewBoardCreated,
 }: Props) {
     const pathname = usePathname()
 

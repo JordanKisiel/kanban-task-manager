@@ -49,8 +49,6 @@ export default function Board({
                 columnIndex={index}
                 title={column.title}
                 tasks={column.tasks}
-                changeSelectedBoardIndex={changeSelectedBoardIndex}
-                setNewBoardCreated={setNewBoardCreated}
             />
         )
     })

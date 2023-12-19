@@ -34,6 +34,7 @@ export default function Home() {
 
     useEffect(() => {
         if (taskId !== null) {
+            console.log(`selected board: ${selectedBoardIndex}`)
             setModalMode("viewTask")
             setIsModalOpen(true)
         } else {

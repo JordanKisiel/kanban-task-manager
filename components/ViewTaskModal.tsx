@@ -1,3 +1,4 @@
+import { useSWRConfig } from "swr"
 import SubtaskCard from "./SubtaskCard"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
@@ -36,15 +37,18 @@ export default function ViewTaskModal({
     setModalMode,
     setIsModalOpen,
 }: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
+    const { boards, isLoading, isError } = useBoards(testUserId)
+    const { mutate } = useSWRConfig()
 
-    const tasks = boards[selectedBoardIndex].columns
-        .map((column) => {
-            return column.tasks.map((task) => {
-                return task
-            })
-        })
-        .flat()
+    const tasks = isLoading
+        ? []
+        : boards[selectedBoardIndex].columns
+              .map((column) => {
+                  return column.tasks.map((task) => {
+                      return task
+                  })
+              })
+              .flat()
 
     const task: Task | null =
         taskId !== null
@@ -81,15 +85,17 @@ export default function ViewTaskModal({
         )
     })
 
-    const currentColumn = boards[selectedBoardIndex].columns.filter(
-        (column) => {
-            return column.id === task?.columnId
-        }
-    )
+    const currentColumn = isLoading
+        ? []
+        : boards[selectedBoardIndex].columns.filter((column) => {
+              return column.id === task?.columnId
+          })
 
-    const otherColumns = boards[selectedBoardIndex].columns.filter((column) => {
-        return task?.columnId !== column.id
-    })
+    const otherColumns = isLoading
+        ? []
+        : boards[selectedBoardIndex].columns.filter((column) => {
+              return task?.columnId !== column.id
+          })
 
     const columnOptions = [...currentColumn, ...otherColumns]
 
@@ -127,20 +133,36 @@ export default function ViewTaskModal({
 
     useEffect(() => {
         async function handleFormChange() {
+            const newData = {
+                ...task,
+                subTasks: [...formData.subTasks.update],
+                columnId: formData.columnId,
+            }
+
+            const options = {
+                optimisticData: newData,
+                rollbackOnError: true,
+            }
+
             //TODO: think about debouncing here
             let res
+            let jsonData
 
             if (task !== null) {
                 res = await editTask(task.id, formData)
+                jsonData = await res?.json()
             }
 
             if (res && res.ok) {
-                mutate(boards, { revalidate: true })
+                console.log(jsonData)
+                mutate(boards, jsonData[jsonData.length - 1], options)
             }
         }
 
-        handleFormChange()
-    }, [formData])
+        if (!isLoading && formData.columnId !== null) {
+            handleFormChange()
+        }
+    }, [formData, isLoading, formData.columnId])
 
     function handleCheck(inputIndex: number) {
         setFormData((prevFormData) => {

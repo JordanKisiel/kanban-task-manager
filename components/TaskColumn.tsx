@@ -6,8 +6,6 @@ type Props = {
     columnIndex: number
     title: string
     tasks: Task[]
-    changeSelectedBoardIndex: Function
-    setNewBoardCreated: Function
 }
 
 export default function TaskColumn({
@@ -15,8 +13,6 @@ export default function TaskColumn({
     columnIndex,
     title,
     tasks,
-    changeSelectedBoardIndex,
-    setNewBoardCreated,
 }: Props) {
     //TODO: replace with function that produces new colors as needed
     const columnColors = ["bg-[#49C4E5]", "bg-[#8471F2]", "bg-[#67E2AE]"]
@@ -37,8 +33,6 @@ export default function TaskColumn({
                 title={title}
                 completedSubTasks={completedSubTasks}
                 totalSubTasks={subTasks.length > 0 ? subTasks.length : 0}
-                changeSelectedBoardIndex={changeSelectedBoardIndex}
-                setNewBoardCreated={setNewBoardCreated}
             />
         )
     })

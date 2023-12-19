@@ -52,6 +52,8 @@ export default function EditBoardModal({
         },
     })
 
+    const [isSubmitted, setIsSubmitted] = useState<boolean>()
+
     const columnTitles: string[] = [
         ...formData.columns.update.map((column) => column.title),
         ...formData.columns.create,
@@ -173,6 +175,8 @@ export default function EditBoardModal({
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
+        setIsSubmitted(true)
+
         const res = await editBoard(boards[selectedBoardIndex].id, formData)
 
         if (res && res.ok) {
@@ -183,7 +187,7 @@ export default function EditBoardModal({
     }
 
     return (
-        <>
+        <div className={`${isSubmitted ? "opacity-50" : "opacity-100"}`}>
             <div className="flex flex-row justify-between">
                 <ModalHeader>Edit Board</ModalHeader>
                 <MenuButton actions={menuOptions} />
@@ -225,11 +229,13 @@ export default function EditBoardModal({
                         textColor="text-neutral-100"
                         textSize="text-sm"
                         isSubmit={true}
+                        isDisabled={isSubmitted}
+                        isLoading={isSubmitted}
                     >
                         Save Board Changes
                     </ActionButton>
                 </div>
             </form>
-        </>
+        </div>
     )
 }

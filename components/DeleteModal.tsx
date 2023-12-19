@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import ActionButton from "./ActionButton"
 import { deleteBoard, deleteTask } from "@/lib/dataUtils"
 import { Board, Task } from "@/types"
@@ -23,6 +24,8 @@ type Props = BoardProps | TaskProps
 
 export default function DeleteModal(props: Props) {
     const { boards, isLoading, isError, mutate } = useBoards(testUserId)
+
+    const router = useRouter()
 
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
@@ -77,7 +80,9 @@ export default function DeleteModal(props: Props) {
             props.changeSelectedBoardIndex(0)
         }
 
-        props.setIsModalOpen()
+        props.setIsModalOpen(false)
+
+        router.push(`/?board=${props.selectedBoardIndex}`)
     }
 
     return (

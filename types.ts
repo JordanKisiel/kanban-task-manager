@@ -9,7 +9,7 @@ export type Task = {
     title: string
     description: string
     subTasks: SubTask[]
-    columnId: number
+    columnId: number | null
 }
 
 export type Column = {
