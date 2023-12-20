@@ -38,8 +38,6 @@ export default function ViewTaskModal({
     setModalMode,
     setIsModalOpen,
 }: Props) {
-    console.log("view task rendered")
-
     const { boards, isLoading, isError } = useBoards(testUserId)
     const { mutate } = useSWRConfig()
 
@@ -106,8 +104,6 @@ export default function ViewTaskModal({
 
     const columnOptions = [...currentColumn, ...otherColumns]
 
-    console.log(columnOptions)
-
     const selectOptions = columnOptions.map((columnOption) => {
         return (
             <option
@@ -161,15 +157,43 @@ export default function ViewTaskModal({
     //sends data to server whenever there's a form change
     useEffect(() => {
         async function handleFormChange() {
-            const newData = {
-                ...task,
-                subTasks: [...formData.subTasks.update],
-                columnId: formData.columnId,
-            }
+            //create an updated version of the boards data
+            //to use for the optimistic update
+            const newBoards = boards.map((board, index) => {
+                if (index === selectedBoardIndex) {
+                    return {
+                        ...board,
+                        columns: board.columns.map((column) => {
+                            if (column.id === task?.columnId) {
+                                return {
+                                    ...column,
+                                    tasks: column.tasks.map((task) => {
+                                        if (task.id === taskId) {
+                                            return {
+                                                ...task,
+                                                subTasks:
+                                                    formData.subTasks.update,
+                                                columnId: formData.columnId,
+                                            }
+                                        } else {
+                                            return task
+                                        }
+                                    }),
+                                }
+                            } else {
+                                return column
+                            }
+                        }),
+                    }
+                } else {
+                    return board
+                }
+            })
 
             const options = {
-                optimisticData: newData,
+                optimisticData: newBoards,
                 rollbackOnError: true,
+                revalidate: true,
             }
 
             //TODO: think about debouncing here
@@ -182,14 +206,21 @@ export default function ViewTaskModal({
             }
 
             if (res && res.ok) {
-                mutate(boards, jsonData[jsonData.length - 1], options)
+                console.log("mutate called")
+                mutate(
+                    (key) =>
+                        typeof key === "string" && key.includes("/api/boards"),
+                    boards,
+                    options
+                )
             }
         }
 
         if (!isLoading && formData.columnId !== null) {
+            console.log("sent data to server")
             handleFormChange()
         }
-    }, [formData, isLoading, formData.columnId])
+    }, [formData, isLoading])
 
     function handleCheck(inputIndex: number) {
         setFormData((prevFormData) => {

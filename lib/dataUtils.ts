@@ -2,7 +2,7 @@ import useSWR, { BareFetcher } from "swr"
 import { config } from "./baseURL"
 import { Board } from "@/types"
 
-const DELAY_TIME = 20000
+const DELAY_TIME = 1000
 
 function delay(ms: number) {
     return new Promise((resolve) => {
@@ -11,9 +11,8 @@ function delay(ms: number) {
 }
 
 const BASE_URL = config.url
-
-async function bareFetcher(url: string) {
-    await delay(DELAY_TIME)
+export async function bareFetcher(url: string) {
+    //await delay(DELAY_TIME)
     return fetch(url).then((r) => r.json())
 }
 
@@ -93,7 +92,7 @@ export async function editBoard(
         }
     }
 ) {
-    await delay(DELAY_TIME)
+    //await delay(DELAY_TIME)
 
     let res
 
@@ -188,6 +187,7 @@ export async function editTask(
     let res
 
     try {
+        //throw new Error("testing rollback error")
         res = await fetch(`${BASE_URL}/api/tasks`, {
             method: "PUT",
             headers: {
