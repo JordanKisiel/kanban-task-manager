@@ -136,7 +136,10 @@ export default function ViewTaskModal({
         },
     ]
 
-    //synchronizes client formData with data coming back from server
+    //sets formData when loading is done
+    //this is required in cases where the taskId is already
+    //present in the search params so this component opens automatically
+    //possibly before the loading of data is complete
     useEffect(() => {
         if (!isLoading && task !== null) {
             setFormData((prevFormData) => {
@@ -157,62 +160,15 @@ export default function ViewTaskModal({
     //sends data to server whenever there's a form change
     useEffect(() => {
         async function handleFormChange() {
-            //create an updated version of the boards data
-            //to use for the optimistic update
-            const newBoards = boards.map((board, index) => {
-                if (index === selectedBoardIndex) {
-                    return {
-                        ...board,
-                        columns: board.columns.map((column) => {
-                            if (column.id === task?.columnId) {
-                                return {
-                                    ...column,
-                                    tasks: column.tasks.map((task) => {
-                                        if (task.id === taskId) {
-                                            return {
-                                                ...task,
-                                                subTasks:
-                                                    formData.subTasks.update,
-                                                columnId: formData.columnId,
-                                            }
-                                        } else {
-                                            return task
-                                        }
-                                    }),
-                                }
-                            } else {
-                                return column
-                            }
-                        }),
-                    }
-                } else {
-                    return board
-                }
-            })
-
-            const options = {
-                optimisticData: newBoards,
-                rollbackOnError: true,
-                revalidate: true,
-            }
-
-            //TODO: think about debouncing here
             let res
-            let jsonData
 
             if (task !== null) {
                 res = await editTask(task.id, formData)
-                jsonData = await res?.json()
             }
 
             if (res && res.ok) {
                 console.log("mutate called")
-                mutate(
-                    (key) =>
-                        typeof key === "string" && key.includes("/api/boards"),
-                    boards,
-                    options
-                )
+                mutate(boards, { revalidate: true })
             }
         }
 
