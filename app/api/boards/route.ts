@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 
 export async function GET(request: NextRequest) {
-    //grab user from request URL -> '/boards?user=[some userID]'
+    //grab user from request URL -> '/boards?user=[some userId]'
     const searchParams = request.nextUrl.searchParams
     const user = searchParams.get("user") || ""
 
@@ -64,10 +64,13 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-    const res = await request.json()
-    let { boardId } = res
+    //grab boardId from request URL -> '/boards?board=[some boardId]'
+    const searchParams = request.nextUrl.searchParams
+    let board = searchParams.get("board")
 
-    boardId = Number(boardId)
+    if (board === null) return NextResponse.error()
+
+    const boardId = Number(board)
 
     const result = await prisma.board.delete({
         where: {

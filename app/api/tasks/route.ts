@@ -26,10 +26,13 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-    const req = await request.json()
-    let { taskId } = req
+    //grab user from request URL -> '/boards?user=[some userID]'
+    const searchParams = request.nextUrl.searchParams
+    const task = searchParams.get("task")
 
-    taskId = Number(taskId)
+    if (task === null) return NextResponse.error()
+
+    const taskId = Number(task)
 
     const result = await prisma.task.delete({
         where: {

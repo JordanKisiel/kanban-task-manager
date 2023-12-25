@@ -1,6 +1,5 @@
-import useSWR, { BareFetcher } from "swr"
+import axios from "axios"
 import { config } from "./baseURL"
-import { Board } from "@/types"
 
 const DELAY_TIME = 1000
 
@@ -11,23 +10,21 @@ function delay(ms: number) {
 }
 
 const BASE_URL = config.url
-export async function bareFetcher(url: string) {
-    //await delay(DELAY_TIME)
-    return fetch(url).then((r) => r.json())
-}
 
-export function useBoards(userId: string) {
-    const { data, error, isLoading, mutate } = useSWR<Board[]>(
-        `${BASE_URL}/api/boards?user=${userId}`,
-        bareFetcher
-    )
+export default axios.create({
+    baseURL: BASE_URL,
+})
 
-    return {
-        boards: !data ? [] : data,
-        isLoading,
-        isError: error,
-        mutate,
+export async function getBoards(userId: string) {
+    let response
+
+    try {
+        response = await axios.get(`/api/boards?user=${userId}`)
+    } catch (error) {
+        console.error(error)
     }
+
+    return response?.data
 }
 
 export async function addBoard(
@@ -35,7 +32,7 @@ export async function addBoard(
     title: string,
     columnNames: string[]
 ) {
-    let res
+    let response
 
     const columns = columnNames.map((name) => {
         return {
@@ -44,36 +41,20 @@ export async function addBoard(
     })
 
     try {
-        res = await fetch(`${BASE_URL}/api/boards`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId, title, columns }),
-        })
+        response = await axios.post("/api/boards", { userId, title, columns })
     } catch (error) {
         console.error(error)
     }
 
-    return res
+    return response?.data
 }
 
 export async function deleteBoard(boardId: number) {
-    let res
-
     try {
-        res = await fetch(`${BASE_URL}/api/boards`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ boardId }),
-        })
+        await axios.delete(`/api/boards?board=${boardId}`)
     } catch (error) {
         console.error(error)
     }
-
-    return res
 }
 
 export async function editBoard(
@@ -94,25 +75,19 @@ export async function editBoard(
 ) {
     //await delay(DELAY_TIME)
 
-    let res
+    let response
 
     try {
-        res = await fetch(`${BASE_URL}/api/boards`, {
-            method: "PUT",
-            headers: {
-                "Content-type": "application/json",
-            },
-            body: JSON.stringify({
-                boardId,
-                title: formData.title,
-                columns: formData.columns,
-            }),
+        response = await axios.put("/api/boards", {
+            boardId,
+            title: formData.title,
+            columns: formData.columns,
         })
     } catch (error) {
         console.error(error)
     }
 
-    return res
+    return response?.data
 }
 
 export async function addTask(formData: {
@@ -134,39 +109,23 @@ export async function addTask(formData: {
         columnId: formData.status,
     }
 
-    let res
+    let response
 
     try {
-        res = await fetch(`${BASE_URL}/api/tasks`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(task),
-        })
+        response = await axios.post("/api/tasks", task)
     } catch (error) {
         console.error(error)
     }
 
-    return res
+    return response?.data
 }
 
 export async function deleteTask(taskId: number) {
-    let res
-
     try {
-        res = await fetch(`${BASE_URL}/api/tasks`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ taskId }),
-        })
+        await axios.delete(`/api/tasks?task=${taskId}`)
     } catch (error) {
         console.log(error)
     }
-
-    return res
 }
 
 export async function editTask(
@@ -184,26 +143,19 @@ export async function editTask(
 ) {
     //await delay(DELAY_TIME)
 
-    let res
+    let response
 
     try {
-        //throw new Error("testing rollback error")
-        res = await fetch(`${BASE_URL}/api/tasks`, {
-            method: "PUT",
-            headers: {
-                "Content-type": "application/json",
-            },
-            body: JSON.stringify({
-                taskId,
-                title: formData.title,
-                description: formData.description,
-                subTasks: formData.subTasks,
-                columnId: formData.columnId,
-            }),
+        response = await axios.put("/api/tasks", {
+            taskId,
+            title: formData.title,
+            description: formData.description,
+            subTasks: formData.subTasks,
+            columnId: formData.columnId,
         })
     } catch (error) {
         console.error(error)
     }
 
-    return res
+    return response?.data
 }

@@ -1,11 +1,12 @@
 "use client"
 
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
 import StyleToggle from "./StyleToggle"
 import Modal from "./Modal"
 import ModalContent from "./ModalContent"
 import ItemSkeleton from "./ItemSkeleton"
-import { useBoards } from "@/lib/dataUtils"
+import { getBoards } from "@/lib/dataUtils"
 import { useModal } from "@/hooks/useModal"
 import { testUserId } from "@/testing/testingConsts"
 
@@ -30,7 +31,16 @@ export default function SideBar({
     taskId,
     changeSelectedBoardIndex,
 }: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
+    const queryClient = useQueryClient()
+
+    const {
+        data: boards,
+        isError,
+        isLoading,
+    } = useQuery({
+        queryKey: ["boardsData", { testUserId }],
+        queryFn: () => getBoards(testUserId),
+    })
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "addBoard",
