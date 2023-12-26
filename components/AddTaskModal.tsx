@@ -3,7 +3,6 @@ import ActionButton from "./ActionButton"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import { addTask } from "@/lib/dataUtils"
-import { useBoards } from "@/lib/dataUtils"
 import { testUserId } from "@/testing/testingConsts"
 import ModalLabel from "./ModalLabel"
 import DynamicInputList from "./DynamicInputList"
@@ -29,8 +28,6 @@ export default function AddTaskModal({
     selectedBoardIndex,
     setIsModalOpen,
 }: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
-
     const columns = boards[selectedBoardIndex].columns
 
     const [formData, setFormData] = useState<FormData>({

@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const user = searchParams.get("user") || ""
 
-    //get all boards and associated data base on userId
+    //get all boards and associated data based on userId
     const boards = await prisma.board.findMany({
         where: {
             userId: user,
@@ -18,20 +18,6 @@ export async function GET(request: NextRequest) {
             columns: {
                 orderBy: {
                     id: "asc",
-                },
-                include: {
-                    tasks: {
-                        orderBy: {
-                            id: "asc",
-                        },
-                        include: {
-                            subTasks: {
-                                orderBy: {
-                                    id: "asc",
-                                },
-                            },
-                        },
-                    },
                 },
             },
         },
@@ -59,91 +45,6 @@ export async function POST(request: NextRequest) {
             columns: true,
         },
     })
-
-    return NextResponse.json(result)
-}
-
-export async function DELETE(request: NextRequest) {
-    //grab boardId from request URL -> '/boards?board=[some boardId]'
-    const searchParams = request.nextUrl.searchParams
-    let board = searchParams.get("board")
-
-    if (board === null) return NextResponse.error()
-
-    const boardId = Number(board)
-
-    const result = await prisma.board.delete({
-        where: {
-            id: boardId,
-        },
-    })
-
-    return NextResponse.json(result)
-}
-
-export async function PUT(request: NextRequest) {
-    const res = await request.json()
-
-    let { boardId, title, columns } = res
-
-    boardId = Number(boardId)
-
-    const createColumns = columns.create.map((column: string) => {
-        return {
-            title: column,
-        }
-    })
-
-    const deleteColumns = columns.delete.map((column: { id: number }) => {
-        return column.id
-    })
-
-    const result = await prisma.$transaction([
-        prisma.board.update({
-            //update board title
-            where: {
-                id: boardId,
-            },
-            data: {
-                title,
-            },
-        }),
-        prisma.column.deleteMany({
-            //delete columns
-            where: {
-                id: {
-                    in: deleteColumns,
-                },
-            },
-        }),
-        ...columns.update.map((column: { id: number; title: string }) => {
-            return prisma.column.update({
-                //create updates for each updated column
-                where: {
-                    id: column.id,
-                },
-                data: {
-                    title: column.title,
-                },
-            })
-        }),
-        prisma.board.update({
-            //add new columns
-            where: {
-                id: boardId,
-            },
-            data: {
-                columns: {
-                    createMany: {
-                        data: createColumns,
-                    },
-                },
-            },
-            include: {
-                columns: true,
-            },
-        }),
-    ])
 
     return NextResponse.json(result)
 }

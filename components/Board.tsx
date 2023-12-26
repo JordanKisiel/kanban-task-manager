@@ -8,13 +8,14 @@ import ActionButton from "./ActionButton"
 import ColumnSkeleton from "./ColumnSkeleton"
 import addIconDark from "../public/plus-icon.svg"
 import addIconLight from "../public/plus-icon-gray.svg"
-import { useBoards } from "@/lib/dataUtils"
 import { useModal } from "@/hooks/useModal"
 import { testUserId } from "@/testing/testingConsts"
+import { useQuery } from "@tanstack/react-query"
+import { allBoardsOptions } from "@/lib/queries"
+import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 
 type Props = {
     isDarkMode: boolean
-    setNewBoardCreated: Function
     selectedBoardIndex: number
     taskId: number | null
     changeSelectedBoardIndex: Function
@@ -22,12 +23,17 @@ type Props = {
 
 export default function Board({
     isDarkMode,
-    setNewBoardCreated,
     selectedBoardIndex,
     taskId,
     changeSelectedBoardIndex,
 }: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
+    const {
+        data: boards,
+        isError,
+        isPending,
+    } = useQuery(allBoardsOptions(testUserId))
+
+    const { setNewBoardCreated } = useNewBoardCreated(isPending, boards)
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "editBoard",
@@ -37,21 +43,23 @@ export default function Board({
     const NUM_SKELETON_COLS = 3
 
     const columns =
-        isLoading || boards.length === 0
+        isPending || (boards && boards.length === 0)
             ? []
-            : boards[selectedBoardIndex].columns
+            : boards && boards[selectedBoardIndex].columns
 
-    const taskColumns = columns.map((column, index) => {
-        return (
-            <TaskColumn
-                key={column.title}
-                selectedBoardIndex={selectedBoardIndex}
-                columnIndex={index}
-                title={column.title}
-                tasks={column.tasks}
-            />
-        )
-    })
+    const taskColumns =
+        columns &&
+        columns.map((column, index) => {
+            return (
+                <TaskColumn
+                    key={column.title}
+                    selectedBoardIndex={selectedBoardIndex}
+                    columnIndex={index}
+                    title={column.title}
+                    tasks={column.tasks}
+                />
+            )
+        })
 
     const skeletonColumns = Array(NUM_SKELETON_COLS)
         .fill("")
@@ -156,11 +164,11 @@ export default function Board({
     )
 
     let content: React.ReactNode
-    if (isLoading) {
+    if (isPending) {
         content = skeletonBoard
-    } else if (boards.length === 0) {
+    } else if (boards && boards.length === 0) {
         content = newUserPrompt
-    } else if (columns.length === 0) {
+    } else if (columns && columns.length === 0) {
         content = emptyBoard
     } else {
         content = board

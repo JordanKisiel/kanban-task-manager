@@ -1,6 +1,30 @@
 import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 
+//get all task associated with given columnId
+export async function GET(request: NextRequest) {
+    const searchParams = request.nextUrl.searchParams
+    const colParam = searchParams.get("colId") || ""
+
+    const colId = Number(colParam)
+
+    //get task associated with given taskId
+    const tasks = await prisma.task.findMany({
+        where: {
+            columnId: colId,
+        },
+        include: {
+            subTasks: {
+                orderBy: {
+                    id: "asc",
+                },
+            },
+        },
+    })
+
+    return NextResponse.json(tasks)
+}
+
 //create task
 export async function POST(request: NextRequest) {
     const req = await request.json()
@@ -21,101 +45,6 @@ export async function POST(request: NextRequest) {
             subTasks: true,
         },
     })
-
-    return NextResponse.json(result)
-}
-
-export async function DELETE(request: NextRequest) {
-    //grab user from request URL -> '/boards?user=[some userID]'
-    const searchParams = request.nextUrl.searchParams
-    const task = searchParams.get("task")
-
-    if (task === null) return NextResponse.error()
-
-    const taskId = Number(task)
-
-    const result = await prisma.task.delete({
-        where: {
-            id: taskId,
-        },
-    })
-
-    return NextResponse.json(result)
-}
-
-export async function PUT(request: NextRequest) {
-    const req = await request.json()
-
-    let { taskId, title, description, subTasks, columnId } = req
-
-    taskId = Number(taskId)
-
-    const deleteSubTasks = subTasks.delete.map(
-        (subTask: { id: number }) => subTask.id
-    )
-
-    const createSubTasks = subTasks.create.map((subTask: string) => {
-        return {
-            description: subTask,
-            isComplete: false,
-        }
-    })
-
-    const result = await prisma.$transaction([
-        prisma.task.update({
-            //update task title & desc
-            where: {
-                id: taskId,
-            },
-            data: {
-                title,
-                description,
-                columnId,
-            },
-        }),
-        prisma.subTask.deleteMany({
-            //delete subtasks
-            where: {
-                id: {
-                    in: deleteSubTasks,
-                },
-            },
-        }),
-        ...subTasks.update.map(
-            (subTask: {
-                id: number
-                description: string
-                isComplete: boolean
-            }) => {
-                return prisma.subTask.update({
-                    //create updates for each updated subtask
-                    where: {
-                        id: subTask.id,
-                    },
-                    data: {
-                        description: subTask.description,
-                        isComplete: subTask.isComplete,
-                    },
-                })
-            }
-        ),
-        prisma.task.update({
-            //add new subtasks
-            where: {
-                id: taskId,
-            },
-            data: {
-                subTasks: {
-                    createMany: {
-                        data: createSubTasks,
-                    },
-                },
-            },
-            include: {
-                subTasks: true,
-            },
-        }),
-    ])
 
     return NextResponse.json(result)
 }

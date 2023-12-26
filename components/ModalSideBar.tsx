@@ -1,7 +1,6 @@
 "use client"
 
 import StyleToggle from "./StyleToggle"
-import { useBoards } from "@/lib/dataUtils"
 import { useDarkMode } from "@/hooks/useDarkMode"
 import { testUserId } from "@/testing/testingConsts"
 
@@ -18,8 +17,6 @@ export default function ModalSideBar({
     setIsModalOpen,
     setModalMode,
 }: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
-
     const [isDarkMode, toggleDarkMode] = useDarkMode("kanban-isDarkMode")
 
     const numBoards = isLoading ? 0 : boards.length

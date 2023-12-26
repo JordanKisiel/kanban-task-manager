@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import ActionButton from "./ActionButton"
 import MenuButton from "./MenuButton"
@@ -8,25 +9,30 @@ import Modal from "./Modal"
 import ModalSideBar from "./ModalSideBar"
 import addIcon from "../public/plus-icon.svg"
 import LoadingText from "./LoadingText"
-import { useBoards } from "@/lib/dataUtils"
 import { useModal } from "@/hooks/useModal"
 import ModalContent from "./ModalContent"
 import { testUserId } from "@/testing/testingConsts"
+import { allBoardsOptions } from "@/lib/queries"
+import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 
 type Props = {
     selectedBoardIndex: number
     taskId: number | null
     changeSelectedBoardIndex: Function
-    setNewBoardCreated: Function
 }
 
 export default function HeaderBar({
     selectedBoardIndex,
     taskId,
     changeSelectedBoardIndex,
-    setNewBoardCreated,
 }: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
+    const {
+        data: boards,
+        isError,
+        isPending,
+    } = useQuery(allBoardsOptions(testUserId))
+
+    const { setNewBoardCreated } = useNewBoardCreated(isPending, boards)
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "addTask",
@@ -35,21 +41,22 @@ export default function HeaderBar({
 
     const [showModalSideBar, setShowModalSideBar] = useState(false)
 
-    const selectedBoardTitle = isLoading ? (
+    const selectedBoardTitle = isPending ? (
         <LoadingText
             text="Loading Title"
             ellipsisLength={4}
             ellipsisSpeedInSec={0.7}
         />
-    ) : boards.length > 0 ? (
+    ) : boards && boards.length > 0 ? (
         boards[selectedBoardIndex].title
     ) : (
         ""
     )
 
-    const isNoBoards = boards.length === 0
+    const isNoBoards = boards && boards.length === 0
     const isNoColumns =
-        isNoBoards || boards[selectedBoardIndex].columns.length === 0
+        isNoBoards ||
+        (boards && boards[selectedBoardIndex].columns.length === 0)
 
     const menuOptions = [
         {
@@ -58,7 +65,7 @@ export default function HeaderBar({
                 setIsModalOpen(true)
                 setModalMode("editBoard")
             },
-            isDisabled: boards.length === 0,
+            isDisabled: boards !== undefined && boards.length === 0,
         },
         {
             actionName: "Delete Board",
@@ -66,7 +73,7 @@ export default function HeaderBar({
                 setIsModalOpen(true)
                 setModalMode("deleteBoard")
             },
-            isDisabled: boards.length === 0,
+            isDisabled: boards !== undefined && boards.length === 0,
         },
     ]
 

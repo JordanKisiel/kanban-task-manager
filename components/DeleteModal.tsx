@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation"
 import ActionButton from "./ActionButton"
 import { deleteBoard, deleteTask } from "@/lib/dataUtils"
 import { Board, Task } from "@/types"
-import { useBoards } from "@/lib/dataUtils"
 import { testUserId } from "@/testing/testingConsts"
 
 type BoardProps = {
@@ -23,8 +22,6 @@ type TaskProps = {
 type Props = BoardProps | TaskProps
 
 export default function DeleteModal(props: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
-
     const router = useRouter()
 
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false)

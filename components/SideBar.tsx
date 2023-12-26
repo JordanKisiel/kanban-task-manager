@@ -6,16 +6,16 @@ import StyleToggle from "./StyleToggle"
 import Modal from "./Modal"
 import ModalContent from "./ModalContent"
 import ItemSkeleton from "./ItemSkeleton"
-import { getBoards } from "@/lib/dataUtils"
+import { allBoardsOptions } from "@/lib/queries"
 import { useModal } from "@/hooks/useModal"
 import { testUserId } from "@/testing/testingConsts"
+import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 
 type Props = {
     handleHideSideBar: Function
     handleShowSideBar: Function
     isDarkMode: boolean
     toggleDarkMode: Function
-    setNewBoardCreated: Function
     selectedBoardIndex: number
     taskId: number | null
     changeSelectedBoardIndex: Function
@@ -26,21 +26,17 @@ export default function SideBar({
     handleShowSideBar,
     isDarkMode,
     toggleDarkMode,
-    setNewBoardCreated,
     selectedBoardIndex,
     taskId,
     changeSelectedBoardIndex,
 }: Props) {
-    const queryClient = useQueryClient()
-
     const {
         data: boards,
         isError,
-        isLoading,
-    } = useQuery({
-        queryKey: ["boardsData", { testUserId }],
-        queryFn: () => getBoards(testUserId),
-    })
+        isPending,
+    } = useQuery(allBoardsOptions(testUserId))
+
+    const { setNewBoardCreated } = useNewBoardCreated(isPending, boards)
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "addBoard",
@@ -49,9 +45,9 @@ export default function SideBar({
 
     const NUM_SKELETON_ITEMS = 3
 
-    const numBoards = isLoading ? 0 : boards.length
+    const numBoards = isPending ? 0 : boards?.length
 
-    const boardsList = isLoading
+    const boardsList = isPending
         ? Array(NUM_SKELETON_ITEMS)
               .fill("")
               .map((item, index) => {
@@ -66,7 +62,8 @@ export default function SideBar({
                       />
                   )
               })
-        : boards.map((board, index) => {
+        : boards &&
+          boards.map((board, index) => {
               const isSelected = index === selectedBoardIndex
 
               const normalStyles = "bg-[url('../public/board-icon.svg')]"

@@ -2,7 +2,7 @@ import ActionButton from "./ActionButton"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
-import { editTask, useBoards } from "@/lib/dataUtils"
+import { editTask } from "@/lib/dataUtils"
 import { testUserId } from "@/testing/testingConsts"
 import DynamicInputList from "./DynamicInputList"
 import { useState } from "react"
@@ -42,8 +42,6 @@ export default function EditTaskModal({
     setModalMode,
     setIsModalOpen,
 }: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
-
     const router = useRouter()
 
     const tasks = boards[selectedBoardIndex].columns

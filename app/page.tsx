@@ -13,7 +13,6 @@ import SideBar from "../components/SideBar"
 import Modal from "@/components/Modal"
 import ModalContent from "@/components/ModalContent"
 import showIcon from "@/public/show-icon.svg"
-import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 
 export default function Home() {
     const router = useRouter()
@@ -52,8 +51,6 @@ export default function Home() {
         "kanban-show-sidebar",
         true
     )
-
-    const { setNewBoardCreated } = useNewBoardCreated()
 
     function changeSelectedBoardIndex(index: number) {
         router.push(`/?board=${index}`)
@@ -94,7 +91,6 @@ export default function Home() {
                         selectedBoardIndex={selectedBoardIndex}
                         taskId={taskId}
                         changeSelectedBoardIndex={changeSelectedBoardIndex}
-                        setNewBoardCreated={setNewBoardCreated}
                     />
                 </div>
                 <div
@@ -107,7 +103,6 @@ export default function Home() {
                         handleShowSideBar={handleShowSideBar}
                         isDarkMode={isDarkMode}
                         toggleDarkMode={toggleDarkMode}
-                        setNewBoardCreated={setNewBoardCreated}
                         selectedBoardIndex={selectedBoardIndex}
                         taskId={taskId}
                         changeSelectedBoardIndex={changeSelectedBoardIndex}
@@ -120,7 +115,6 @@ export default function Home() {
                 >
                     <Board
                         isDarkMode={isDarkMode}
-                        setNewBoardCreated={setNewBoardCreated}
                         changeSelectedBoardIndex={changeSelectedBoardIndex}
                         selectedBoardIndex={selectedBoardIndex}
                         taskId={taskId}
@@ -151,7 +145,6 @@ export default function Home() {
                         taskId={taskId}
                         setModalMode={setModalMode}
                         setIsModalOpen={setIsModalOpen}
-                        setNewBoardCreated={setNewBoardCreated}
                         changeSelectedBoardIndex={changeSelectedBoardIndex}
                     />
                 </Modal>

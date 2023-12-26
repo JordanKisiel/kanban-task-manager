@@ -3,7 +3,7 @@ import SubtaskCard from "./SubtaskCard"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
-import { editTask, useBoards } from "@/lib/dataUtils"
+import { editTask } from "@/lib/dataUtils"
 import { testUserId } from "@/testing/testingConsts"
 import { useState, useEffect } from "react"
 import { Task } from "@/types"
@@ -38,7 +38,6 @@ export default function ViewTaskModal({
     setModalMode,
     setIsModalOpen,
 }: Props) {
-    const { boards, isLoading, isError } = useBoards(testUserId)
     const { mutate } = useSWRConfig()
 
     const tasks = isLoading

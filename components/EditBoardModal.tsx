@@ -4,7 +4,6 @@ import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
 import DynamicInputList from "./DynamicInputList"
-import { useBoards } from "@/lib/dataUtils"
 import { testUserId } from "@/testing/testingConsts"
 import { editBoard } from "@/lib/dataUtils"
 
@@ -33,8 +32,6 @@ export default function EditBoardModal({
     selectedBoardIndex,
     setIsModalOpen,
 }: Props) {
-    const { boards, isLoading, isError, mutate } = useBoards(testUserId)
-
     //initialize with data from board
     //all existing columns are added to update
     const [formData, setFormData] = useState<FormData>({
