@@ -2,35 +2,47 @@
 
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import Image from "next/image"
+import LoadingText from "./LoadingText"
+import { useModal } from "@/hooks/useModal"
+import { boardByIdOptions } from "@/lib/queries"
+import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
+import { Board } from "@/types"
+import AddTaskModal from "./AddTaskModal"
+import EditBoardModal from "./EditBoardModal"
+import DeleteModal from "./DeleteModal"
 import ActionButton from "./ActionButton"
 import MenuButton from "./MenuButton"
 import Modal from "./Modal"
 import ModalSideBar from "./ModalSideBar"
-import addIcon from "../public/plus-icon.svg"
-import LoadingText from "./LoadingText"
-import { useModal } from "@/hooks/useModal"
-import ModalContent from "./ModalContent"
-import { testUserId } from "@/testing/testingConsts"
-import { allBoardsOptions } from "@/lib/queries"
-import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
+import Image from "next/image"
+import addIcon from "@/public/plus-icon.svg"
 
 type Props = {
+    boardId: number
+    numBoards: number
+    boards: Board[]
     selectedBoardIndex: number
     taskId: number | null
     changeSelectedBoardIndex: Function
+    isDarkMode: boolean
+    toggleDarkMode: Function
 }
 
 export default function HeaderBar({
+    boardId,
+    numBoards,
+    boards,
     selectedBoardIndex,
     taskId,
     changeSelectedBoardIndex,
+    isDarkMode,
+    toggleDarkMode,
 }: Props) {
     const {
-        data: boards,
+        data: board,
         isError,
         isPending,
-    } = useQuery(allBoardsOptions(testUserId))
+    } = useQuery(boardByIdOptions(boardId))
 
     const { setNewBoardCreated } = useNewBoardCreated(isPending, boards)
 
@@ -47,16 +59,13 @@ export default function HeaderBar({
             ellipsisLength={4}
             ellipsisSpeedInSec={0.7}
         />
-    ) : boards && boards.length > 0 ? (
-        boards[selectedBoardIndex].title
     ) : (
-        ""
+        board?.title
     )
 
-    const isNoBoards = boards && boards.length === 0
+    const isNoBoards = numBoards === 0
     const isNoColumns =
-        isNoBoards ||
-        (boards && boards[selectedBoardIndex].columns.length === 0)
+        isNoBoards || (board ? board.columns.length === 0 : true)
 
     const menuOptions = [
         {
@@ -65,7 +74,7 @@ export default function HeaderBar({
                 setIsModalOpen(true)
                 setModalMode("editBoard")
             },
-            isDisabled: boards !== undefined && boards.length === 0,
+            isDisabled: numBoards === 0,
         },
         {
             actionName: "Delete Board",
@@ -73,9 +82,38 @@ export default function HeaderBar({
                 setIsModalOpen(true)
                 setModalMode("deleteBoard")
             },
-            isDisabled: boards !== undefined && boards.length === 0,
+            isDisabled: numBoards === 0,
         },
     ]
+
+    let modalContent: React.ReactElement
+
+    if (modalMode === "addTask") {
+        modalContent = (
+            <AddTaskModal
+                columns={board.columns}
+                setIsModalOpen={setIsModalOpen}
+            />
+        )
+    } else if (modalMode === "editTask") {
+        modalContent = (
+            <EditBoardModal
+                board={board}
+                selectedBoardIndex={selectedBoardIndex}
+                setIsModalOpen={setIsModalOpen}
+            />
+        )
+    } else {
+        modalContent = (
+            <DeleteModal
+                isBoard={true}
+                itemToDelete={board}
+                changeSelectedBoardIndex={changeSelectedBoardIndex}
+                selectedBoardIndex={selectedBoardIndex}
+                setIsModalOpen={setIsModalOpen}
+            />
+        )
+    }
 
     return (
         <>
@@ -124,23 +162,19 @@ export default function HeaderBar({
                     selectedBoardIndex={selectedBoardIndex}
                     setIsModalOpen={setIsModalOpen}
                 >
-                    <ModalContent
-                        mode={modalMode}
-                        selectedBoardIndex={selectedBoardIndex}
-                        taskId={taskId}
-                        setModalMode={setModalMode}
-                        setIsModalOpen={setIsModalOpen}
-                        setNewBoardCreated={setNewBoardCreated}
-                        changeSelectedBoardIndex={changeSelectedBoardIndex}
-                    />
+                    {modalContent}
                 </Modal>
             )}
             {showModalSideBar && (
                 <ModalSideBar
                     selectedBoardIndex={selectedBoardIndex}
                     setShowModalSideBar={setShowModalSideBar}
-                    setIsModalOpen={setIsModalOpen}
-                    setModalMode={setModalMode}
+                    boards={boards}
+                    changeSelectedBoardIndex={changeSelectedBoardIndex}
+                    isDarkMode={isDarkMode}
+                    toggleDarkMode={toggleDarkMode}
+                    isPending={isPending}
+                    taskId={taskId}
                 />
             )}
         </>

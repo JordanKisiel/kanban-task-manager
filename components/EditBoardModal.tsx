@@ -4,11 +4,14 @@ import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
 import DynamicInputList from "./DynamicInputList"
-import { testUserId } from "@/testing/testingConsts"
 import { editBoard } from "@/lib/dataUtils"
+import { useQuery } from "@tanstack/react-query"
+import { boardByIdOptions } from "@/lib/queries"
+import { Board } from "@/types"
 
 type Props = {
     selectedBoardIndex: number
+    board: Board
     setIsModalOpen: Function
 }
 
@@ -30,15 +33,16 @@ const TITLE_PLACEHOLDER = "e.g. Web Design"
 
 export default function EditBoardModal({
     selectedBoardIndex,
+    board,
     setIsModalOpen,
 }: Props) {
     //initialize with data from board
     //all existing columns are added to update
     const [formData, setFormData] = useState<FormData>({
-        title: boards[selectedBoardIndex].title,
+        title: board.title,
         columns: {
             create: [],
-            update: boards[selectedBoardIndex].columns.map((column) => {
+            update: board.columns.map((column) => {
                 //TODO: could I just spread the cols here?
                 return {
                     id: column.id,
@@ -174,11 +178,11 @@ export default function EditBoardModal({
 
         setIsSubmitted(true)
 
-        const res = await editBoard(boards[selectedBoardIndex].id, formData)
+        const res = await editBoard(board.id, formData)
 
-        if (res && res.ok) {
-            mutate(boards, { revalidate: true })
-        }
+        // if (res && res.ok) {
+        //     mutate(boards, { revalidate: true })
+        // }
 
         setIsModalOpen()
     }

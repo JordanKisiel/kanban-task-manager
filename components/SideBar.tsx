@@ -1,15 +1,13 @@
 "use client"
 
-import { useQuery, useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
 import StyleToggle from "./StyleToggle"
 import Modal from "./Modal"
-import ModalContent from "./ModalContent"
 import ItemSkeleton from "./ItemSkeleton"
-import { allBoardsOptions } from "@/lib/queries"
 import { useModal } from "@/hooks/useModal"
-import { testUserId } from "@/testing/testingConsts"
 import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
+import { Board } from "@/types"
+import AddBoardModal from "./AddBoardModal"
 
 type Props = {
     handleHideSideBar: Function
@@ -17,8 +15,8 @@ type Props = {
     isDarkMode: boolean
     toggleDarkMode: Function
     selectedBoardIndex: number
-    taskId: number | null
-    changeSelectedBoardIndex: Function
+    boards: Board[]
+    isPending: boolean
 }
 
 export default function SideBar({
@@ -27,15 +25,9 @@ export default function SideBar({
     isDarkMode,
     toggleDarkMode,
     selectedBoardIndex,
-    taskId,
-    changeSelectedBoardIndex,
+    boards,
+    isPending,
 }: Props) {
-    const {
-        data: boards,
-        isError,
-        isPending,
-    } = useQuery(allBoardsOptions(testUserId))
-
     const { setNewBoardCreated } = useNewBoardCreated(isPending, boards)
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
@@ -45,7 +37,7 @@ export default function SideBar({
 
     const NUM_SKELETON_ITEMS = 3
 
-    const numBoards = isPending ? 0 : boards?.length
+    const numBoards = isPending ? 0 : boards.length
 
     const boardsList = isPending
         ? Array(NUM_SKELETON_ITEMS)
@@ -140,14 +132,9 @@ export default function SideBar({
                     selectedBoardIndex={selectedBoardIndex}
                     setIsModalOpen={setIsModalOpen}
                 >
-                    <ModalContent
-                        mode={modalMode}
-                        selectedBoardIndex={selectedBoardIndex}
-                        taskId={taskId}
-                        setModalMode={setModalMode}
+                    <AddBoardModal
                         setIsModalOpen={setIsModalOpen}
                         setNewBoardCreated={setNewBoardCreated}
-                        changeSelectedBoardIndex={changeSelectedBoardIndex}
                     />
                 </Modal>
             )}

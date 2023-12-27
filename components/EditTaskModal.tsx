@@ -3,15 +3,17 @@ import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
 import { editTask } from "@/lib/dataUtils"
-import { testUserId } from "@/testing/testingConsts"
 import DynamicInputList from "./DynamicInputList"
 import { useState } from "react"
-import { Task } from "@/types"
 import { useRouter } from "next/navigation"
+import { useQuery } from "@tanstack/react-query"
+import { taskByIdOptions } from "@/lib/queries"
+import { Column } from "@/types"
 
 type Props = {
     selectedBoardIndex: number
-    taskId: number | null
+    taskId: number
+    columns: Column[]
     setModalMode: Function
     setIsModalOpen: Function
 }
@@ -39,29 +41,17 @@ const DESCRIPTION_PLACEHOLDER =
 export default function EditTaskModal({
     selectedBoardIndex,
     taskId,
+    columns,
     setModalMode,
     setIsModalOpen,
 }: Props) {
+    const { data: task, isPending, isError } = useQuery(taskByIdOptions(taskId))
+
     const router = useRouter()
 
-    const tasks = boards[selectedBoardIndex].columns
-        .map((column) => {
-            return column.tasks.map((task) => {
-                return task
-            })
-        })
-        .flat()
-
-    const task: Task | null =
-        taskId !== null
-            ? tasks.filter((task) => {
-                  return task.id === taskId
-              })[0]
-            : null
-
     const [formData, setFormData] = useState<FormData>({
-        title: task?.title || "",
-        description: task?.description || "",
+        title: task.title || "",
+        description: task.description || "",
         subTasks: {
             create: [],
             update: task !== null ? [...task.subTasks] : [],
@@ -81,13 +71,11 @@ export default function EditTaskModal({
         ...formData.subTasks.create,
     ]
 
-    const currentColumn = boards[selectedBoardIndex].columns.filter(
-        (column) => {
-            return column.id === task?.columnId
-        }
-    )
+    const currentColumn = columns.filter((column) => {
+        return column.id === task.columnId
+    })
 
-    const otherColumns = boards[selectedBoardIndex].columns.filter((column) => {
+    const otherColumns = columns.filter((column) => {
         return task?.columnId !== column.id
     })
 
@@ -265,9 +253,9 @@ export default function EditTaskModal({
             res = await editTask(task.id, formData)
         }
 
-        if (res && res.ok) {
-            mutate(boards, { revalidate: true })
-        }
+        // if (res && res.ok) {
+        //     mutate(boards, { revalidate: true })
+        // }
 
         setIsModalOpen(false)
         router.push(`/?board=${selectedBoardIndex}`)

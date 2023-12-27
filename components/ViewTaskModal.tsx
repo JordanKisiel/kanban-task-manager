@@ -1,17 +1,18 @@
-import { useSWRConfig } from "swr"
 import SubtaskCard from "./SubtaskCard"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
 import { editTask } from "@/lib/dataUtils"
-import { testUserId } from "@/testing/testingConsts"
 import { useState, useEffect } from "react"
-import { Task } from "@/types"
+import { Column } from "@/types"
 import ItemSkeleton from "./ItemSkeleton"
+import { taskByIdOptions } from "@/lib/queries"
+import { useQuery } from "@tanstack/react-query"
 
 type Props = {
     selectedBoardIndex: number
-    taskId: number | null
+    taskId: number
+    columns: Column[]
     setModalMode: Function
     setIsModalOpen: Function
 }
@@ -35,39 +36,23 @@ type FormData = {
 export default function ViewTaskModal({
     selectedBoardIndex,
     taskId,
+    columns,
     setModalMode,
     setIsModalOpen,
 }: Props) {
-    const { mutate } = useSWRConfig()
-
-    const tasks = isLoading
-        ? []
-        : boards[selectedBoardIndex].columns
-              .map((column) => {
-                  return column.tasks.map((task) => {
-                      return task
-                  })
-              })
-              .flat()
-
-    const task: Task | null =
-        taskId !== null
-            ? tasks.filter((task) => {
-                  return task.id === taskId
-              })[0]
-            : null
+    const { data: task, isPending, isError } = useQuery(taskByIdOptions(taskId))
 
     //the create & delete arrays will never be altered here
     //but are provided so the same editTask function can be re-used
     const [formData, setFormData] = useState<FormData>({
-        title: task?.title || "",
-        description: task?.description || "",
+        title: task.title || "",
+        description: task.description || "",
         subTasks: {
             create: [],
-            update: task?.subTasks || [],
+            update: task.subTasks || [],
             delete: [],
         },
-        columnId: task?.columnId || null,
+        columnId: task.columnId || null,
     })
 
     const numCompletedTasks = formData.subTasks.update.reduce((accum, curr) => {
@@ -75,7 +60,7 @@ export default function ViewTaskModal({
         return accum + valueToAdd
     }, 0)
 
-    const subTaskCards = isLoading
+    const subTaskCards = isPending
         ? []
         : formData.subTasks.update.map((subTask, index) => {
               return (
@@ -88,16 +73,16 @@ export default function ViewTaskModal({
           })
 
     const currentColumn =
-        isLoading || formData.columnId === null
+        isPending || formData.columnId === null
             ? []
-            : boards[selectedBoardIndex].columns.filter((column) => {
+            : columns.filter((column) => {
                   return column.id === formData.columnId
               })
 
     const otherColumns =
-        isLoading || formData.columnId === null
+        isPending || formData.columnId === null
             ? []
-            : boards[selectedBoardIndex].columns.filter((column) => {
+            : columns.filter((column) => {
                   return column.id !== formData.columnId
               })
 
@@ -140,7 +125,7 @@ export default function ViewTaskModal({
     //present in the search params so this component opens automatically
     //possibly before the loading of data is complete
     useEffect(() => {
-        if (!isLoading && task !== null) {
+        if (!isPending && task !== null) {
             setFormData((prevFormData) => {
                 return {
                     ...prevFormData,
@@ -154,7 +139,7 @@ export default function ViewTaskModal({
                 }
             })
         }
-    }, [isLoading, task])
+    }, [isPending, task])
 
     //sends data to server whenever there's a form change
     useEffect(() => {
@@ -171,11 +156,11 @@ export default function ViewTaskModal({
             }
         }
 
-        if (!isLoading && formData.columnId !== null) {
+        if (!isPending && formData.columnId !== null) {
             console.log("sent data to server")
             handleFormChange()
         }
-    }, [formData, isLoading])
+    }, [formData, isPending])
 
     function handleCheck(inputIndex: number) {
         setFormData((prevFormData) => {
@@ -214,7 +199,7 @@ export default function ViewTaskModal({
     return (
         <form>
             <div className="flex flex-row mb-6 justify-between items-start">
-                {!isLoading ? (
+                {!isPending ? (
                     <ModalHeader>{formData.title}</ModalHeader>
                 ) : (
                     <ItemSkeleton
@@ -228,10 +213,10 @@ export default function ViewTaskModal({
 
                 <MenuButton
                     actions={menuOptions}
-                    isDisabled={isLoading}
+                    isDisabled={isPending}
                 />
             </div>
-            {!isLoading ? (
+            {!isPending ? (
                 <p className="text-neutral-500 text-sm leading-6 mb-6">
                     {formData.description}
                 </p>
@@ -246,7 +231,7 @@ export default function ViewTaskModal({
             )}
 
             <div className="mb-5">
-                {!isLoading ? (
+                {!isPending ? (
                     <span
                         className="
                 text-neutral-500 dark:text-neutral-100 text-xs font-bold block mb-4"
@@ -279,7 +264,7 @@ export default function ViewTaskModal({
                 <ul className="flex flex-col gap-2">{subTaskCards}</ul>
             </div>
             <div>
-                {!isLoading ? (
+                {!isPending ? (
                     <>
                         <ModalLabel htmlFor="status-select">
                             Current Status

@@ -1,27 +1,39 @@
 "use client"
 
 import StyleToggle from "./StyleToggle"
-import { useDarkMode } from "@/hooks/useDarkMode"
-import { testUserId } from "@/testing/testingConsts"
+import Modal from "./Modal"
+import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
+import { useModal } from "@/hooks/useModal"
+import { Board } from "@/types"
+import AddBoardModal from "./AddBoardModal"
 
 type Props = {
     selectedBoardIndex: number
+    boards: Board[]
+    isPending: boolean
     setShowModalSideBar: Function
-    setIsModalOpen: Function
-    setModalMode: Function
+    isDarkMode: boolean
+    toggleDarkMode: Function
 }
 
 export default function ModalSideBar({
     selectedBoardIndex,
+    boards,
+    isPending,
     setShowModalSideBar,
-    setIsModalOpen,
-    setModalMode,
+    isDarkMode,
+    toggleDarkMode,
 }: Props) {
-    const [isDarkMode, toggleDarkMode] = useDarkMode("kanban-isDarkMode")
+    const { setNewBoardCreated } = useNewBoardCreated(isPending, boards)
 
-    const numBoards = isLoading ? 0 : boards.length
+    const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
+        "addBoard",
+        false
+    )
 
-    const boardsList = isLoading
+    const numBoards = isPending ? 0 : boards.length
+
+    const boardsList = isPending
         ? []
         : boards.map((board, index) => {
               const isSelected = index === selectedBoardIndex
@@ -84,6 +96,17 @@ export default function ModalSideBar({
                     </div>
                 </div>
             </div>
+            {isModalOpen && (
+                <Modal
+                    selectedBoardIndex={selectedBoardIndex}
+                    setIsModalOpen={setIsModalOpen}
+                >
+                    <AddBoardModal
+                        setIsModalOpen={setIsModalOpen}
+                        setNewBoardCreated={setNewBoardCreated}
+                    />
+                </Modal>
+            )}
         </>
     )
 }

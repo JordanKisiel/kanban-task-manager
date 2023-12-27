@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { mutate } from "swr"
 import { addBoard } from "@/lib/dataUtils"
 import ActionButton from "./ActionButton"
 import MenuButton from "./MenuButton"
@@ -70,15 +69,15 @@ export default function AddBoardModal({
 
         const res = await addBoard(testUserId, title, columnNames)
 
-        if (res && res.ok) {
-            mutate(
-                (key) => typeof key === "string" && key.includes("/api/boards"),
-                undefined,
-                { revalidate: true }
-            )
+        // if (res && res.ok) {
+        //     mutate(
+        //         (key) => typeof key === "string" && key.includes("/api/boards"),
+        //         undefined,
+        //         { revalidate: true }
+        //     )
 
-            setNewBoardCreated(true)
-        }
+        //     setNewBoardCreated(true)
+        // }
 
         setIsModalOpen()
     }

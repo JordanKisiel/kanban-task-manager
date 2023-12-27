@@ -3,12 +3,12 @@ import ActionButton from "./ActionButton"
 import MenuButton from "./MenuButton"
 import ModalHeader from "./ModalHeader"
 import { addTask } from "@/lib/dataUtils"
-import { testUserId } from "@/testing/testingConsts"
 import ModalLabel from "./ModalLabel"
 import DynamicInputList from "./DynamicInputList"
+import { Column } from "@/types"
 
 type Props = {
-    selectedBoardIndex: number
+    columns: Column[]
     setIsModalOpen: Function
 }
 
@@ -24,12 +24,7 @@ const TITLE_PLACEHOLDER = "e.g. Take coffee break"
 const DESCRIPTION_PLACEHOLDER =
     "e.g. It's always good to take a break. This 15 minute break will charge the batteries a little."
 
-export default function AddTaskModal({
-    selectedBoardIndex,
-    setIsModalOpen,
-}: Props) {
-    const columns = boards[selectedBoardIndex].columns
-
+export default function AddTaskModal({ columns, setIsModalOpen }: Props) {
     const [formData, setFormData] = useState<FormData>({
         title: "",
         description: "",
@@ -133,9 +128,9 @@ export default function AddTaskModal({
 
         const res = await addTask(formData)
 
-        if (res && res.ok) {
-            mutate(boards, { revalidate: true })
-        }
+        // if (res && res.ok) {
+        //     mutate(boards, { revalidate: true })
+        // }
 
         setIsModalOpen()
     }

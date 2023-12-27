@@ -11,8 +11,14 @@ import HeaderBar from "../components/HeaderBar"
 import Board from "../components/Board"
 import SideBar from "../components/SideBar"
 import Modal from "@/components/Modal"
-import ModalContent from "@/components/ModalContent"
 import showIcon from "@/public/show-icon.svg"
+import { useQuery } from "@tanstack/react-query"
+import { boardsByUserOptions, taskByIdOptions } from "@/lib/queries"
+import { testUserId } from "@/testing/testingConsts"
+import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
+import ViewTaskModal from "@/components/ViewTaskModal"
+import DeleteModal from "@/components/DeleteModal"
+import EditTaskModal from "@/components/EditTaskModal"
 
 export default function Home() {
     const router = useRouter()
@@ -20,17 +26,28 @@ export default function Home() {
 
     //null values default to zero when cast to number
     const selectedBoardIndex = Number(searchParams.get("board"))
-    let taskId =
-        searchParams.get("task") !== null
-            ? Number(searchParams.get("task"))
-            : null
+    let taskId = searchParams.get("task")
+        ? Number(searchParams.get("task"))
+        : null
 
+    const boards = useQuery(boardsByUserOptions(testUserId))
+
+    const task = useQuery(taskByIdOptions(taskId))
+
+    const { setNewBoardCreated } = useNewBoardCreated(
+        boards.isPending,
+        boards.data
+    )
+
+    //if there is no board search param, route to a board index of 0
     useEffect(() => {
         if (searchParams.get("board") === null) {
             router.push("?boards=0")
         }
     }, [searchParams.get("board")])
 
+    //if there's a task search param, open up viewtask modal
+    //to display that task
     useEffect(() => {
         if (taskId !== null) {
             setModalMode("viewTask")
@@ -44,6 +61,49 @@ export default function Home() {
         "viewTask",
         false
     )
+
+    //set to an empty element since these modals
+    //should never be open if taskId is null
+    //TODO:
+    //  is probably better to account for the situation in which
+    //  the url is being manipulated manually
+    //    ex. taskId set to a non-valid id
+    //        i.e. id not in the currently selected board
+    let modalContent: React.ReactElement = <></>
+
+    if (taskId !== null) {
+        if (modalMode === "viewTask") {
+            modalContent = (
+                <ViewTaskModal
+                    selectedBoardIndex={selectedBoardIndex}
+                    columns={boards.data[selectedBoardIndex].columns}
+                    taskId={taskId}
+                    setIsModalOpen={setIsModalOpen}
+                    setModalMode={setModalMode}
+                />
+            )
+        } else if (modalMode === "editTask") {
+            modalContent = (
+                <EditTaskModal
+                    selectedBoardIndex={selectedBoardIndex}
+                    columns={boards.data[selectedBoardIndex].columns}
+                    taskId={taskId}
+                    setIsModalOpen={setIsModalOpen}
+                    setModalMode={setModalMode}
+                />
+            )
+        } else {
+            modalContent = (
+                <DeleteModal
+                    isBoard={false}
+                    itemToDelete={task.data}
+                    changeSelectedBoardIndex={changeSelectedBoardIndex}
+                    selectedBoardIndex={selectedBoardIndex}
+                    setIsModalOpen={setIsModalOpen}
+                />
+            )
+        }
+    }
 
     const [isDarkMode, toggleDarkMode] = useDarkMode("kanban-isDarkMode")
 
@@ -88,9 +148,14 @@ export default function Home() {
                         <Logo isDarkMode={isDarkMode} />
                     </div>
                     <HeaderBar
+                        boardId={boards.data[selectedBoardIndex].id}
+                        numBoards={boards.data.length}
+                        boards={boards.data}
                         selectedBoardIndex={selectedBoardIndex}
                         taskId={taskId}
                         changeSelectedBoardIndex={changeSelectedBoardIndex}
+                        isDarkMode={isDarkMode}
+                        toggleDarkMode={toggleDarkMode}
                     />
                 </div>
                 <div
@@ -104,6 +169,8 @@ export default function Home() {
                         isDarkMode={isDarkMode}
                         toggleDarkMode={toggleDarkMode}
                         selectedBoardIndex={selectedBoardIndex}
+                        boards={boards}
+                        isPending={isPending}
                         taskId={taskId}
                         changeSelectedBoardIndex={changeSelectedBoardIndex}
                     />
@@ -139,14 +206,7 @@ export default function Home() {
                     selectedBoardIndex={selectedBoardIndex}
                     setIsModalOpen={setIsModalOpen}
                 >
-                    <ModalContent
-                        mode={modalMode}
-                        selectedBoardIndex={selectedBoardIndex}
-                        taskId={taskId}
-                        setModalMode={setModalMode}
-                        setIsModalOpen={setIsModalOpen}
-                        changeSelectedBoardIndex={changeSelectedBoardIndex}
-                    />
+                    {modalContent}
                 </Modal>
             )}
         </main>

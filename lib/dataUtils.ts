@@ -40,7 +40,7 @@ export async function getBoardsByUser(userId: string) {
     return response?.data as Board[]
 }
 
-export async function getTaskById(taskId: number) {
+export async function getTaskById(taskId: number | null) {
     let response
 
     try {

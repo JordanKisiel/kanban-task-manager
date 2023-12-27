@@ -3,37 +3,33 @@
 import Image from "next/image"
 import TaskColumn from "./TaskColumn"
 import Modal from "./Modal"
-import ModalContent from "./ModalContent"
 import ActionButton from "./ActionButton"
 import ColumnSkeleton from "./ColumnSkeleton"
 import addIconDark from "../public/plus-icon.svg"
 import addIconLight from "../public/plus-icon-gray.svg"
 import { useModal } from "@/hooks/useModal"
-import { testUserId } from "@/testing/testingConsts"
 import { useQuery } from "@tanstack/react-query"
-import { allBoardsOptions } from "@/lib/queries"
-import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
+import { boardByIdOptions } from "@/lib/queries"
+import EditBoardModal from "./EditBoardModal"
 
 type Props = {
+    boardId: number
+    numBoards: number
     isDarkMode: boolean
     selectedBoardIndex: number
-    taskId: number | null
-    changeSelectedBoardIndex: Function
 }
 
 export default function Board({
+    boardId,
+    numBoards,
     isDarkMode,
     selectedBoardIndex,
-    taskId,
-    changeSelectedBoardIndex,
 }: Props) {
     const {
-        data: boards,
+        data: board,
         isError,
         isPending,
-    } = useQuery(allBoardsOptions(testUserId))
-
-    const { setNewBoardCreated } = useNewBoardCreated(isPending, boards)
+    } = useQuery(boardByIdOptions(boardId))
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "editBoard",
@@ -42,24 +38,20 @@ export default function Board({
 
     const NUM_SKELETON_COLS = 3
 
-    const columns =
-        isPending || (boards && boards.length === 0)
-            ? []
-            : boards && boards[selectedBoardIndex].columns
+    //TODO: replace with function that produces new colors as needed
+    const columnColors = ["bg-[#49C4E5]", "bg-[#8471F2]", "bg-[#67E2AE]"]
 
-    const taskColumns =
-        columns &&
-        columns.map((column, index) => {
-            return (
-                <TaskColumn
-                    key={column.title}
-                    selectedBoardIndex={selectedBoardIndex}
-                    columnIndex={index}
-                    title={column.title}
-                    tasks={column.tasks}
-                />
-            )
-        })
+    const taskColumns = board.columns.map((column, index) => {
+        return (
+            <TaskColumn
+                key={column.title}
+                selectedBoardIndex={selectedBoardIndex}
+                columnId={column.id}
+                columnTitle={column.title}
+                columnColor={columnColors[index]}
+            />
+        )
+    })
 
     const skeletonColumns = Array(NUM_SKELETON_COLS)
         .fill("")
@@ -72,7 +64,7 @@ export default function Board({
             )
         })
 
-    const board = (
+    const boardDisplay = (
         <div className="grid grid-flow-col auto-cols-[16rem] px-6 py-20 gap-6 overflow-auto md:pt-5 md:pb-20">
             {taskColumns}
             <div className="flex flex-col pt-[2.3rem] h-full justify-center">
@@ -166,12 +158,12 @@ export default function Board({
     let content: React.ReactNode
     if (isPending) {
         content = skeletonBoard
-    } else if (boards && boards.length === 0) {
+    } else if (numBoards === 0) {
         content = newUserPrompt
-    } else if (columns && columns.length === 0) {
+    } else if (board.columns.length === 0) {
         content = emptyBoard
     } else {
-        content = board
+        content = boardDisplay
     }
 
     return (
@@ -182,14 +174,10 @@ export default function Board({
                     selectedBoardIndex={selectedBoardIndex}
                     setIsModalOpen={setIsModalOpen}
                 >
-                    <ModalContent
-                        mode={modalMode}
+                    <EditBoardModal
+                        board={board}
                         selectedBoardIndex={selectedBoardIndex}
-                        taskId={taskId}
-                        setModalMode={setModalMode}
                         setIsModalOpen={setIsModalOpen}
-                        setNewBoardCreated={setNewBoardCreated}
-                        changeSelectedBoardIndex={changeSelectedBoardIndex}
                     />
                 </Modal>
             )}
