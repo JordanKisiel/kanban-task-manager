@@ -1,10 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
 import LoadingText from "./LoadingText"
 import { useModal } from "@/hooks/useModal"
-import { boardByIdOptions } from "@/lib/queries"
 import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 import { Board } from "@/types"
 import AddTaskModal from "./AddTaskModal"
@@ -18,10 +16,10 @@ import Image from "next/image"
 import addIcon from "@/public/plus-icon.svg"
 
 type Props = {
-    boardId: number
+    selectedBoardIndex: number
     numBoards: number
     boards: Board[]
-    selectedBoardIndex: number
+    isPending: boolean
     taskId: number | null
     changeSelectedBoardIndex: Function
     isDarkMode: boolean
@@ -29,20 +27,16 @@ type Props = {
 }
 
 export default function HeaderBar({
-    boardId,
+    selectedBoardIndex,
     numBoards,
     boards,
-    selectedBoardIndex,
+    isPending,
     taskId,
     changeSelectedBoardIndex,
     isDarkMode,
     toggleDarkMode,
 }: Props) {
-    const {
-        data: board,
-        isError,
-        isPending,
-    } = useQuery(boardByIdOptions(boardId))
+    const board = boards[selectedBoardIndex]
 
     const { setNewBoardCreated } = useNewBoardCreated(isPending, boards)
 
@@ -60,12 +54,11 @@ export default function HeaderBar({
             ellipsisSpeedInSec={0.7}
         />
     ) : (
-        board?.title
+        board.title
     )
 
     const isNoBoards = numBoards === 0
-    const isNoColumns =
-        isNoBoards || (board ? board.columns.length === 0 : true)
+    const isNoColumns = board ? board.columns.length === 0 : true
 
     const menuOptions = [
         {
@@ -86,33 +79,36 @@ export default function HeaderBar({
         },
     ]
 
-    let modalContent: React.ReactElement
+    //TODO: possibly replace with a placeholder modal?
+    let modalContent: React.ReactElement = <></>
 
-    if (modalMode === "addTask") {
-        modalContent = (
-            <AddTaskModal
-                columns={board.columns}
-                setIsModalOpen={setIsModalOpen}
-            />
-        )
-    } else if (modalMode === "editTask") {
-        modalContent = (
-            <EditBoardModal
-                board={board}
-                selectedBoardIndex={selectedBoardIndex}
-                setIsModalOpen={setIsModalOpen}
-            />
-        )
-    } else {
-        modalContent = (
-            <DeleteModal
-                isBoard={true}
-                itemToDelete={board}
-                changeSelectedBoardIndex={changeSelectedBoardIndex}
-                selectedBoardIndex={selectedBoardIndex}
-                setIsModalOpen={setIsModalOpen}
-            />
-        )
+    if (board) {
+        if (modalMode === "addTask") {
+            modalContent = (
+                <AddTaskModal
+                    columns={board.columns}
+                    setIsModalOpen={setIsModalOpen}
+                />
+            )
+        } else if (modalMode === "editTask") {
+            modalContent = (
+                <EditBoardModal
+                    board={board}
+                    selectedBoardIndex={selectedBoardIndex}
+                    setIsModalOpen={setIsModalOpen}
+                />
+            )
+        } else {
+            modalContent = (
+                <DeleteModal
+                    isBoard={true}
+                    itemToDelete={board}
+                    changeSelectedBoardIndex={changeSelectedBoardIndex}
+                    selectedBoardIndex={selectedBoardIndex}
+                    setIsModalOpen={setIsModalOpen}
+                />
+            )
+        }
     }
 
     return (
@@ -170,11 +166,9 @@ export default function HeaderBar({
                     selectedBoardIndex={selectedBoardIndex}
                     setShowModalSideBar={setShowModalSideBar}
                     boards={boards}
-                    changeSelectedBoardIndex={changeSelectedBoardIndex}
                     isDarkMode={isDarkMode}
                     toggleDarkMode={toggleDarkMode}
                     isPending={isPending}
-                    taskId={taskId}
                 />
             )}
         </>

@@ -8,29 +8,24 @@ import ColumnSkeleton from "./ColumnSkeleton"
 import addIconDark from "../public/plus-icon.svg"
 import addIconLight from "../public/plus-icon-gray.svg"
 import { useModal } from "@/hooks/useModal"
-import { useQuery } from "@tanstack/react-query"
-import { boardByIdOptions } from "@/lib/queries"
 import EditBoardModal from "./EditBoardModal"
+import { Board } from "@/types"
 
 type Props = {
-    boardId: number
+    board: Board | null
+    isPending: boolean
     numBoards: number
     isDarkMode: boolean
     selectedBoardIndex: number
 }
 
 export default function Board({
-    boardId,
+    board,
+    isPending,
     numBoards,
     isDarkMode,
     selectedBoardIndex,
 }: Props) {
-    const {
-        data: board,
-        isError,
-        isPending,
-    } = useQuery(boardByIdOptions(boardId))
-
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "editBoard",
         false
@@ -38,20 +33,24 @@ export default function Board({
 
     const NUM_SKELETON_COLS = 3
 
-    //TODO: replace with function that produces new colors as needed
+    //TODO: add more colors (10) and function that loops the colors
+    //   -possible a good place for a generator function
     const columnColors = ["bg-[#49C4E5]", "bg-[#8471F2]", "bg-[#67E2AE]"]
 
-    const taskColumns = board.columns.map((column, index) => {
-        return (
-            <TaskColumn
-                key={column.title}
-                selectedBoardIndex={selectedBoardIndex}
-                columnId={column.id}
-                columnTitle={column.title}
-                columnColor={columnColors[index]}
-            />
-        )
-    })
+    const taskColumns =
+        board !== null
+            ? board.columns.map((column, index) => {
+                  return (
+                      <TaskColumn
+                          key={column.title}
+                          selectedBoardIndex={selectedBoardIndex}
+                          columnId={column.id}
+                          columnTitle={column.title}
+                          columnColor={columnColors[index]}
+                      />
+                  )
+              })
+            : []
 
     const skeletonColumns = Array(NUM_SKELETON_COLS)
         .fill("")
@@ -156,7 +155,7 @@ export default function Board({
     )
 
     let content: React.ReactNode
-    if (isPending) {
+    if (isPending || board === null) {
         content = skeletonBoard
     } else if (numBoards === 0) {
         content = newUserPrompt
@@ -164,6 +163,17 @@ export default function Board({
         content = emptyBoard
     } else {
         content = boardDisplay
+    }
+
+    let modalContent: React.ReactElement = <></>
+    if (board !== null) {
+        modalContent = (
+            <EditBoardModal
+                board={board}
+                selectedBoardIndex={selectedBoardIndex}
+                setIsModalOpen={setIsModalOpen}
+            />
+        )
     }
 
     return (
@@ -174,11 +184,7 @@ export default function Board({
                     selectedBoardIndex={selectedBoardIndex}
                     setIsModalOpen={setIsModalOpen}
                 >
-                    <EditBoardModal
-                        board={board}
-                        selectedBoardIndex={selectedBoardIndex}
-                        setIsModalOpen={setIsModalOpen}
-                    />
+                    {modalContent}
                 </Modal>
             )}
         </>

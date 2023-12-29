@@ -40,19 +40,24 @@ export default function ViewTaskModal({
     setModalMode,
     setIsModalOpen,
 }: Props) {
-    const { data: task, isPending, isError } = useQuery(taskByIdOptions(taskId))
+    const {
+        data: task,
+        isPending,
+        isError,
+        isSuccess,
+    } = useQuery(taskByIdOptions(taskId))
 
     //the create & delete arrays will never be altered here
     //but are provided so the same editTask function can be re-used
     const [formData, setFormData] = useState<FormData>({
-        title: task.title || "",
-        description: task.description || "",
+        title: isSuccess ? task.title : "",
+        description: isSuccess ? task.description : "",
         subTasks: {
             create: [],
-            update: task.subTasks || [],
+            update: isSuccess ? task.subTasks : [],
             delete: [],
         },
-        columnId: task.columnId || null,
+        columnId: isSuccess ? task.columnId : null,
     })
 
     const numCompletedTasks = formData.subTasks.update.reduce((accum, curr) => {
@@ -129,13 +134,13 @@ export default function ViewTaskModal({
             setFormData((prevFormData) => {
                 return {
                     ...prevFormData,
-                    title: task.title,
-                    description: task.description,
+                    title: isSuccess ? task.title : "",
+                    description: isSuccess ? task.description : "",
                     subTasks: {
                         ...prevFormData.subTasks,
-                        update: task.subTasks,
+                        update: isSuccess ? task.subTasks : [],
                     },
-                    columnId: task.columnId,
+                    columnId: isSuccess ? task.columnId : null,
                 }
             })
         }
@@ -146,14 +151,14 @@ export default function ViewTaskModal({
         async function handleFormChange() {
             let res
 
-            if (task !== null) {
+            if (isSuccess) {
                 res = await editTask(task.id, formData)
             }
 
-            if (res && res.ok) {
-                console.log("mutate called")
-                mutate(boards, { revalidate: true })
-            }
+            // if (res && res.ok) {
+            //     console.log("mutate called")
+            //     mutate(boards, { revalidate: true })
+            // }
         }
 
         if (!isPending && formData.columnId !== null) {

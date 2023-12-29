@@ -2,13 +2,11 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import ActionButton from "./ActionButton"
 import { deleteBoard, deleteTask } from "@/lib/dataUtils"
-import { useQuery } from "@tanstack/react-query"
-import { boardByIdOptions, taskByIdOptions } from "@/lib/queries"
 import { Board, Task } from "@/types"
 
 type Props = {
     isBoard: boolean
-    itemToDelete: Board | Task
+    itemToDelete: Board | Task | null
     selectedBoardIndex: number
     setIsModalOpen: Function
     changeSelectedBoardIndex: Function
@@ -25,21 +23,28 @@ export default function DeleteModal({
 
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
-    let userMessage = `Are you sure you want to delete the '${itemToDelete.title}
+    let userMessage =
+        "There doesn't appear to be an item to delete. Try refreshing the page."
+
+    if (itemToDelete !== null) {
+        userMessage = `Are you sure you want to delete the '${itemToDelete.title}
         ' board? This action will remove all columns and tasks and cannot be reversed.`
 
-    if (!isBoard) {
-        userMessage = `Are you sure you want to delete the '${itemToDelete.title}
+        if (!isBoard) {
+            userMessage = `Are you sure you want to delete the '${itemToDelete.title}
         ' task and its subtasks? This action cannot be reversed.`
+        }
     }
 
     async function handleDelete() {
         setIsSubmitted(true)
 
-        if (isBoard) {
-            await deleteBoard(itemToDelete.id)
-        } else {
-            await deleteTask(itemToDelete.id)
+        if (itemToDelete !== null) {
+            if (isBoard) {
+                await deleteBoard(itemToDelete.id)
+            } else {
+                await deleteTask(itemToDelete.id)
+            }
         }
 
         //revalidating all data regardless of whether

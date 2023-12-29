@@ -20,17 +20,20 @@ export default function TaskColumn({
         data: tasks,
         isPending,
         isError,
+        isSuccess,
     } = useQuery(tasksByColumnOptions(columnId))
 
-    const taskCards = tasks.map((task) => {
-        return (
-            <TaskCard
-                key={`${task.id}`}
-                selectedBoardIndex={selectedBoardIndex}
-                taskId={task.id}
-            />
-        )
-    })
+    const taskCards = isSuccess
+        ? tasks.map((task) => {
+              return (
+                  <TaskCard
+                      key={`${task.id}`}
+                      selectedBoardIndex={selectedBoardIndex}
+                      taskId={task.id}
+                  />
+              )
+          })
+        : []
 
     return (
         <div>
@@ -42,7 +45,7 @@ export default function TaskColumn({
                     className="
                     text-[0.82rem] uppercase tracking-[0.12em] text-neutral-500 font-bold"
                 >
-                    {`${columnTitle} (${tasks.length})`}
+                    {`${columnTitle} (${isSuccess ? tasks.length : 0})`}
                 </h3>
             </div>
             <div className="flex flex-col gap-6">{taskCards}</div>

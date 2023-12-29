@@ -45,16 +45,21 @@ export default function EditTaskModal({
     setModalMode,
     setIsModalOpen,
 }: Props) {
-    const { data: task, isPending, isError } = useQuery(taskByIdOptions(taskId))
+    const {
+        data: task,
+        isPending,
+        isError,
+        isSuccess,
+    } = useQuery(taskByIdOptions(taskId))
 
     const router = useRouter()
 
     const [formData, setFormData] = useState<FormData>({
-        title: task.title || "",
-        description: task.description || "",
+        title: isSuccess ? task.title : "",
+        description: isSuccess ? task.description : "",
         subTasks: {
             create: [],
-            update: task !== null ? [...task.subTasks] : [],
+            update: isSuccess ? [...task.subTasks] : [],
             delete: [],
         },
         columnId: task?.columnId || null,
@@ -71,9 +76,11 @@ export default function EditTaskModal({
         ...formData.subTasks.create,
     ]
 
-    const currentColumn = columns.filter((column) => {
-        return column.id === task.columnId
-    })
+    const currentColumn = isSuccess
+        ? columns.filter((column) => {
+              return column.id === task.columnId
+          })
+        : []
 
     const otherColumns = columns.filter((column) => {
         return task?.columnId !== column.id
@@ -249,7 +256,7 @@ export default function EditTaskModal({
 
         let res
 
-        if (task !== null) {
+        if (isSuccess) {
             res = await editTask(task.id, formData)
         }
 

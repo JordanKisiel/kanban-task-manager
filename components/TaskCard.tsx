@@ -11,31 +11,45 @@ type Props = {
 }
 
 export default function TaskCard({ selectedBoardIndex, taskId }: Props) {
-    const { data: task, isPending, isError } = useQuery(taskByIdOptions(taskId))
+    const {
+        data: task,
+        isPending,
+        isError,
+        isSuccess,
+    } = useQuery(taskByIdOptions(taskId))
 
-    const completedSubTasks = task.subTasks.reduce((accum, curr) => {
-        if (curr.isComplete) {
-            accum += 1
-        }
-        return accum
-    }, 0)
+    console.log(`task pending? ${isPending}`)
+    console.log(`task data ${JSON.stringify(task)}`)
+
+    const completedSubTasks = isSuccess
+        ? task.subTasks.reduce((accum, curr) => {
+              if (curr.isComplete) {
+                  accum += 1
+              }
+              return accum
+          }, 0)
+        : 0
 
     const pathname = usePathname()
 
+    const taskCardHref = isSuccess
+        ? `${pathname}?board=${selectedBoardIndex}&task=${task.id}`
+        : `#`
+
     return (
         <>
-            <Link
-                href={`${pathname}?board=${selectedBoardIndex}&task=${task.id}`}
-            >
+            <Link href={taskCardHref}>
                 <div
                     className="
                 bg-neutral-100 dark:bg-neutral-700 rounded py-5 px-4 
                 shadow-[0_4px_6px_0_rgba(54,78,126,0.10)] dark:shadow-none"
                 >
                     <h4 className="font-bold dark:text-neutral-100">
-                        {task.title}
+                        {isSuccess ? task.title : ""}
                     </h4>
-                    <span className="text-xs font-bold text-neutral-500">{`${completedSubTasks} of ${task.subTasks.length} subtasks`}</span>
+                    <span className="text-xs font-bold text-neutral-500">{`${completedSubTasks} of ${
+                        isSuccess ? task.subTasks.length : 0
+                    } subtasks`}</span>
                 </div>
             </Link>
         </>

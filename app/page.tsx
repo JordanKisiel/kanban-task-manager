@@ -71,7 +71,7 @@ export default function Home() {
     //        i.e. id not in the currently selected board
     let modalContent: React.ReactElement = <></>
 
-    if (taskId !== null) {
+    if (taskId !== null && boards.isSuccess) {
         if (modalMode === "viewTask") {
             modalContent = (
                 <ViewTaskModal
@@ -96,7 +96,7 @@ export default function Home() {
             modalContent = (
                 <DeleteModal
                     isBoard={false}
-                    itemToDelete={task.data}
+                    itemToDelete={task.isSuccess ? task.data : null}
                     changeSelectedBoardIndex={changeSelectedBoardIndex}
                     selectedBoardIndex={selectedBoardIndex}
                     setIsModalOpen={setIsModalOpen}
@@ -148,10 +148,10 @@ export default function Home() {
                         <Logo isDarkMode={isDarkMode} />
                     </div>
                     <HeaderBar
-                        boardId={boards.data[selectedBoardIndex].id}
-                        numBoards={boards.data.length}
-                        boards={boards.data}
                         selectedBoardIndex={selectedBoardIndex}
+                        numBoards={boards.isSuccess ? boards.data.length : 0}
+                        boards={boards.isSuccess ? boards.data : []}
+                        isPending={boards.isPending}
                         taskId={taskId}
                         changeSelectedBoardIndex={changeSelectedBoardIndex}
                         isDarkMode={isDarkMode}
@@ -169,10 +169,8 @@ export default function Home() {
                         isDarkMode={isDarkMode}
                         toggleDarkMode={toggleDarkMode}
                         selectedBoardIndex={selectedBoardIndex}
-                        boards={boards}
-                        isPending={isPending}
-                        taskId={taskId}
-                        changeSelectedBoardIndex={changeSelectedBoardIndex}
+                        boards={boards.isSuccess ? boards.data : []}
+                        isPending={boards.isPending}
                     />
                 </div>
                 <div
@@ -181,10 +179,15 @@ export default function Home() {
                     }`}
                 >
                     <Board
+                        board={
+                            boards.isSuccess && boards.data.length > 0
+                                ? boards.data[selectedBoardIndex]
+                                : null
+                        }
+                        numBoards={boards.isSuccess ? boards.data.length : 0}
+                        isPending={boards.isPending}
                         isDarkMode={isDarkMode}
-                        changeSelectedBoardIndex={changeSelectedBoardIndex}
                         selectedBoardIndex={selectedBoardIndex}
-                        taskId={taskId}
                     />
                 </div>
             </div>

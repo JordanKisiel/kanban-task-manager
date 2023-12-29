@@ -12,15 +12,11 @@ function delay(ms: number) {
 
 const BASE_URL = config.url
 
-export default axios.create({
-    baseURL: BASE_URL,
-})
-
 export async function getBoardById(boardId: number) {
     let response
 
     try {
-        response = await axios.get(`/api/boards/${boardId}`)
+        response = await axios.get(`${BASE_URL}/api/boards/${boardId}`)
     } catch (error) {
         console.error(error)
     }
@@ -32,7 +28,7 @@ export async function getBoardsByUser(userId: string) {
     let response
 
     try {
-        response = await axios.get(`/api/boards?user=${userId}`)
+        response = await axios.get(`${BASE_URL}/api/boards?user=${userId}`)
     } catch (error) {
         console.error(error)
     }
@@ -44,7 +40,7 @@ export async function getTaskById(taskId: number | null) {
     let response
 
     try {
-        response = await axios.get(`/api/tasks/${taskId}`)
+        response = await axios.get(`${BASE_URL}/api/tasks/${taskId}`)
     } catch (error) {
         console.error(error)
     }
@@ -56,7 +52,7 @@ export async function getTasksByColumn(colId: number) {
     let response
 
     try {
-        response = await axios.get(`/api/tasks?colId=${colId}`)
+        response = await axios.get(`${BASE_URL}/api/tasks?colId=${colId}`)
     } catch (error) {
         console.error(error)
     }
@@ -78,7 +74,11 @@ export async function addBoard(
     })
 
     try {
-        response = await axios.post("/api/boards", { userId, title, columns })
+        response = await axios.post("${BASE_URL}/api/boards", {
+            userId,
+            title,
+            columns,
+        })
     } catch (error) {
         console.error(error)
     }
@@ -108,7 +108,7 @@ export async function addTask(formData: {
     let response
 
     try {
-        response = await axios.post("/api/tasks", task)
+        response = await axios.post("${BASE_URL}/api/tasks", task)
     } catch (error) {
         console.error(error)
     }
@@ -118,7 +118,7 @@ export async function addTask(formData: {
 
 export async function deleteBoard(boardId: number) {
     try {
-        await axios.delete(`/api/boards/${boardId}`)
+        await axios.delete(`${BASE_URL}/api/boards/${boardId}`)
     } catch (error) {
         console.error(error)
     }
@@ -126,7 +126,7 @@ export async function deleteBoard(boardId: number) {
 
 export async function deleteTask(taskId: number) {
     try {
-        await axios.delete(`/api/tasks/${taskId}`)
+        await axios.delete(`${BASE_URL}/api/tasks/${taskId}`)
     } catch (error) {
         console.log(error)
     }
@@ -153,7 +153,7 @@ export async function editBoard(
     let response
 
     try {
-        response = await axios.put(`/api/boards/${boardId}`, {
+        response = await axios.put(`${BASE_URL}/api/boards/${boardId}`, {
             boardId,
             title: formData.title,
             columns: formData.columns,
@@ -183,7 +183,7 @@ export async function editTask(
     let response
 
     try {
-        response = await axios.put(`/api/tasks/${taskId}`, {
+        response = await axios.put(`${BASE_URL}/api/tasks/${taskId}`, {
             taskId,
             title: formData.title,
             description: formData.description,

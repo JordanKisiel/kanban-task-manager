@@ -1,21 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
-import { useParams } from "next/navigation"
 import prisma from "@/lib/prisma"
 
-function getTaskId() {
-    //grab taskId from request URL -> '/tasks/[taskId]'
-    const { id } = useParams()
-
-    const taskId = Number(id)
-
-    return taskId
-}
-
-export async function GET(request: NextRequest) {
+export async function GET(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
     //get task associated with given taskId
     const task = await prisma.task.findUnique({
         where: {
-            id: getTaskId(),
+            id: Number(params.id),
         },
         include: {
             subTasks: {
@@ -29,17 +22,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(task)
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
     const result = await prisma.task.delete({
         where: {
-            id: getTaskId(),
+            id: Number(params.id),
         },
     })
 
     return NextResponse.json(result)
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
     const req = await request.json()
 
     let { title, description, subTasks, columnId } = req
@@ -59,7 +58,7 @@ export async function PUT(request: NextRequest) {
         prisma.task.update({
             //update task title & desc
             where: {
-                id: getTaskId(),
+                id: Number(params.id),
             },
             data: {
                 title,
@@ -96,7 +95,7 @@ export async function PUT(request: NextRequest) {
         prisma.task.update({
             //add new subtasks
             where: {
-                id: getTaskId(),
+                id: Number(params.id),
             },
             data: {
                 subTasks: {
