@@ -14,14 +14,22 @@ type Props = {
     setNewBoardCreated: Function
 }
 
+type FormData = {
+    title: string
+    columnTitles: string[]
+}
+
 const TITLE_PLACEHOLDER = "e.g. Web Design"
 
 export default function AddBoardModal({
     setIsModalOpen,
     setNewBoardCreated,
 }: Props) {
-    const [title, setTitle] = useState("")
-    const [columnNames, setColumnNames] = useState<string[]>([])
+    const [formData, setFormData] = useState<FormData>({
+        title: "",
+        columnTitles: [],
+    })
+
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
     const menuOptions = [
@@ -35,31 +43,51 @@ export default function AddBoardModal({
     ]
 
     function handleAddColumn() {
-        setColumnNames((prevCols) => [...prevCols, ""])
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                columnTitles: [...prevFormData.columnTitles, ""],
+            }
+        })
     }
 
     function handleChangeColumn(event: React.ChangeEvent<HTMLInputElement>) {
-        setColumnNames((prevColumns) => {
-            return prevColumns.map((column, index) => {
-                if (`${index}` === event.target.id) {
-                    return event.target.value
-                } else {
-                    return column
-                }
-            })
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                columnTitles: prevFormData.columnTitles.map(
+                    (columnTitle, index) => {
+                        if (index.toString() === event.target.id) {
+                            return event.target.value
+                        } else {
+                            return columnTitle
+                        }
+                    }
+                ),
+            }
         })
     }
 
     function handleDeleteColumn(colIndex: number) {
-        setColumnNames((prevCols) => {
-            return prevCols.filter((column, index) => {
-                return colIndex !== index
-            })
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                columnTitles: prevFormData.columnTitles.filter(
+                    (columnTitle, index) => {
+                        return index !== colIndex
+                    }
+                ),
+            }
         })
     }
 
     function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
-        setTitle(event.target.value)
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData,
+                title: event.target.value,
+            }
+        })
     }
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -67,7 +95,7 @@ export default function AddBoardModal({
 
         setIsSubmitted(true)
 
-        const res = await addBoard(testUserId, title, columnNames)
+        const res = await addBoard(testUserId, formData)
 
         // if (res && res.ok) {
         //     mutate(
@@ -107,11 +135,11 @@ export default function AddBoardModal({
                         dark:outline-purple-300 placeholder-dark:text-neutral-500 
                         placeholder-dark:opacity-50"
                     placeholder={TITLE_PLACEHOLDER}
-                    value={title}
+                    value={formData.title}
                 />
             </div>
             <DynamicInputList
-                values={columnNames}
+                values={formData.columnTitles}
                 title="Board Columns"
                 initialPlaceholder="e.g. Todo"
                 addNewText="Add New Column"
