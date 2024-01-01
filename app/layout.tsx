@@ -27,7 +27,7 @@ export default function RootLayout({
             >
                 <Providers>
                     {children}
-                    <ReactQueryDevtools initialIsOpen={false} />
+                    {/* <ReactQueryDevtools initialIsOpen={false} /> */}
                 </Providers>
             </body>
         </html>

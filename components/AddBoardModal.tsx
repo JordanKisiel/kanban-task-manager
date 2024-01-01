@@ -8,6 +8,7 @@ import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
 import { testUserId } from "@/testing/testingConsts"
 import DynamicInputList from "./DynamicInputList"
+import { useMutation } from "@tanstack/react-query"
 
 type Props = {
     setIsModalOpen: Function
@@ -31,6 +32,19 @@ export default function AddBoardModal({
     })
 
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+
+    const addBoardMutation = useMutation({
+        mutationFn: addBoard,
+        onMutate: () => setIsSubmitted(true),
+        onSuccess: () => setIsModalOpen(false),
+        onError: () => {
+            setIsSubmitted(false)
+            //TODO: surface error to user (have some error div render?)
+            console.log(
+                "There was an error during submission. Please try again."
+            )
+        },
+    })
 
     const menuOptions = [
         {
@@ -93,21 +107,11 @@ export default function AddBoardModal({
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
-        setIsSubmitted(true)
-
-        const res = await addBoard(testUserId, formData)
-
-        // if (res && res.ok) {
-        //     mutate(
-        //         (key) => typeof key === "string" && key.includes("/api/boards"),
-        //         undefined,
-        //         { revalidate: true }
-        //     )
-
-        //     setNewBoardCreated(true)
-        // }
-
-        setIsModalOpen()
+        addBoardMutation.mutate({
+            userId: testUserId,
+            title: formData.title,
+            columnTitles: formData.columnTitles,
+        })
     }
 
     return (

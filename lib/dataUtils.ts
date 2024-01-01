@@ -60,16 +60,14 @@ export async function getTasksByColumn(colId: number) {
     return response?.data as Task[]
 }
 
-export async function addBoard(
-    userId: string,
-    formData: {
-        title: string
-        columnTitles: string[]
-    }
-) {
+export async function addBoard(boardData: {
+    userId: string
+    title: string
+    columnTitles: string[]
+}) {
     let response
 
-    const columns = formData.columnTitles.map((name) => {
+    const columns = boardData.columnTitles.map((name) => {
         return {
             title: name,
         }
@@ -77,8 +75,8 @@ export async function addBoard(
 
     try {
         response = await axios.post("${BASE_URL}/api/boards", {
-            userId,
-            title: formData.title,
+            userId: boardData.userId,
+            title: boardData.title,
             columns,
         })
     } catch (error) {
