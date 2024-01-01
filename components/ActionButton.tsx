@@ -24,9 +24,7 @@ export default function ActionButton({
     isLoading,
     children,
 }: Props) {
-    const spinnerStyles = `${
-        isLoading ? "inline" : "hidden"
-    } absolute top-[0.35rem] left-[0.75rem] animate-spin`
+    const spinnerStyles = `${isLoading ? "inline" : "hidden"} animate-spin`
 
     const styles = `relative py-2 px-5 rounded-full flex justify-center gap-1 items-center font-bold disabled:opacity-50 ${
         isWidthFull && "w-full"
@@ -39,12 +37,15 @@ export default function ActionButton({
                 disabled={isDisabled}
                 className={styles}
             >
-                <Image
-                    className={spinnerStyles}
-                    src={spinnerIcon}
-                    alt="loading icon"
-                />
-                {children}
+                {isLoading ? (
+                    <Image
+                        className={spinnerStyles}
+                        src={spinnerIcon}
+                        alt="loading icon"
+                    />
+                ) : (
+                    children
+                )}
             </button>
         )
     }
@@ -58,12 +59,15 @@ export default function ActionButton({
             }}
             className={styles}
         >
-            <Image
-                className={spinnerStyles}
-                src={spinnerIcon}
-                alt="loading icon"
-            />
-            {children}
+            {isLoading ? (
+                <Image
+                    className={spinnerStyles}
+                    src={spinnerIcon}
+                    alt="loading icon"
+                />
+            ) : (
+                children
+            )}
         </button>
     )
 }
