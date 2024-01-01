@@ -8,7 +8,7 @@ import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
 import { testUserId } from "@/testing/testingConsts"
 import DynamicInputList from "./DynamicInputList"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 type Props = {
     setIsModalOpen: Function
@@ -26,6 +26,8 @@ export default function AddBoardModal({
     setIsModalOpen,
     setNewBoardCreated,
 }: Props) {
+    const queryClient = useQueryClient()
+
     const [formData, setFormData] = useState<FormData>({
         title: "",
         columnTitles: [],
@@ -36,7 +38,11 @@ export default function AddBoardModal({
     const addBoardMutation = useMutation({
         mutationFn: addBoard,
         onMutate: () => setIsSubmitted(true),
-        onSuccess: () => setIsModalOpen(false),
+        onSuccess: () => {
+            setIsModalOpen(false)
+            queryClient.invalidateQueries({ queryKey: ["boardsData"] })
+            setNewBoardCreated(true)
+        },
         onError: () => {
             setIsSubmitted(false)
             //TODO: surface error to user (have some error div render?)

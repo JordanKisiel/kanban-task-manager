@@ -3,6 +3,7 @@
 import { useLocalStorage } from "@/hooks/useLocalStorage"
 import { useDarkMode } from "@/hooks/useDarkMode"
 import { useModal } from "@/hooks/useModal"
+import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import Image from "next/image"
@@ -14,7 +15,6 @@ import Modal from "@/components/Modal"
 import showIcon from "@/public/show-icon.svg"
 import { useQuery } from "@tanstack/react-query"
 import { boardsByUserOptions, taskByIdOptions } from "@/lib/queries"
-import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 import ViewTaskModal from "@/components/ViewTaskModal"
 import DeleteModal from "@/components/DeleteModal"
 import EditTaskModal from "@/components/EditTaskModal"
@@ -32,11 +32,6 @@ export default function Home({ params }: { params: { user: string } }) {
     const boards = useQuery(boardsByUserOptions(params.user))
 
     const task = useQuery(taskByIdOptions(taskId))
-
-    const { setNewBoardCreated } = useNewBoardCreated(
-        boards.isPending,
-        boards.data
-    )
 
     //if there is no board search param, route to a board index of 0
     useEffect(() => {
@@ -59,6 +54,11 @@ export default function Home({ params }: { params: { user: string } }) {
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "viewTask",
         false
+    )
+
+    const { setNewBoardCreated } = useNewBoardCreated(
+        boards.isPending,
+        boards.data
     )
 
     //set to an empty element since these modals
@@ -97,7 +97,6 @@ export default function Home({ params }: { params: { user: string } }) {
                     isBoard={false}
                     itemToDelete={task.isSuccess ? task.data : null}
                     changeSelectedBoardIndex={changeSelectedBoardIndex}
-                    selectedBoardIndex={selectedBoardIndex}
                     setIsModalOpen={setIsModalOpen}
                 />
             )
@@ -112,7 +111,8 @@ export default function Home({ params }: { params: { user: string } }) {
     )
 
     function changeSelectedBoardIndex(index: number) {
-        router.push(`/?board=${index}`)
+        console.log("change?")
+        router.push(`?board=${index}`)
     }
 
     function handleHideSideBar() {
@@ -151,7 +151,6 @@ export default function Home({ params }: { params: { user: string } }) {
                         numBoards={boards.isSuccess ? boards.data.length : 0}
                         boards={boards.isSuccess ? boards.data : []}
                         isPending={boards.isPending}
-                        taskId={taskId}
                         changeSelectedBoardIndex={changeSelectedBoardIndex}
                         isDarkMode={isDarkMode}
                         toggleDarkMode={toggleDarkMode}
@@ -187,6 +186,7 @@ export default function Home({ params }: { params: { user: string } }) {
                         isPending={boards.isPending}
                         isDarkMode={isDarkMode}
                         selectedBoardIndex={selectedBoardIndex}
+                        setNewBoardCreated={setNewBoardCreated}
                     />
                 </div>
             </div>

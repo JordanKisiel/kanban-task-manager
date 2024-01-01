@@ -3,7 +3,6 @@
 import { useState } from "react"
 import LoadingText from "./LoadingText"
 import { useModal } from "@/hooks/useModal"
-import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 import { Board } from "@/types"
 import AddTaskModal from "./AddTaskModal"
 import EditBoardModal from "./EditBoardModal"
@@ -20,7 +19,6 @@ type Props = {
     numBoards: number
     boards: Board[]
     isPending: boolean
-    taskId: number | null
     changeSelectedBoardIndex: Function
     isDarkMode: boolean
     toggleDarkMode: Function
@@ -31,14 +29,11 @@ export default function HeaderBar({
     numBoards,
     boards,
     isPending,
-    taskId,
     changeSelectedBoardIndex,
     isDarkMode,
     toggleDarkMode,
 }: Props) {
-    const board = boards[selectedBoardIndex]
-
-    const { setNewBoardCreated } = useNewBoardCreated(isPending, boards)
+    const board = boards[selectedBoardIndex] ?? null
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "addTask",
@@ -53,8 +48,10 @@ export default function HeaderBar({
             ellipsisLength={4}
             ellipsisSpeedInSec={0.7}
         />
-    ) : (
+    ) : board !== null ? (
         board.title
+    ) : (
+        ""
     )
 
     const isNoBoards = numBoards === 0
@@ -104,7 +101,6 @@ export default function HeaderBar({
                     isBoard={true}
                     itemToDelete={board}
                     changeSelectedBoardIndex={changeSelectedBoardIndex}
-                    selectedBoardIndex={selectedBoardIndex}
                     setIsModalOpen={setIsModalOpen}
                 />
             )

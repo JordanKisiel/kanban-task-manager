@@ -5,7 +5,6 @@ import {
     getTasksByColumn,
     getTaskById,
 } from "./dataUtils"
-import { Board, Task } from "@/types"
 
 export function boardsByUserOptions(userId: string) {
     return queryOptions({

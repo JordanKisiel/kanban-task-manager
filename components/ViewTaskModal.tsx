@@ -162,7 +162,6 @@ export default function ViewTaskModal({
         }
 
         if (!isPending && formData.columnId !== null) {
-            console.log("sent data to server")
             handleFormChange()
         }
     }, [formData, isPending])

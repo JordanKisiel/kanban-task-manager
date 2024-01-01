@@ -10,6 +10,7 @@ import addIconLight from "../public/plus-icon-gray.svg"
 import { useModal } from "@/hooks/useModal"
 import EditBoardModal from "./EditBoardModal"
 import { Board } from "@/types"
+import AddBoardModal from "./AddBoardModal"
 
 type Props = {
     board: Board | null
@@ -17,6 +18,7 @@ type Props = {
     numBoards: number
     isDarkMode: boolean
     selectedBoardIndex: number
+    setNewBoardCreated: Function
 }
 
 export default function Board({
@@ -25,6 +27,7 @@ export default function Board({
     numBoards,
     isDarkMode,
     selectedBoardIndex,
+    setNewBoardCreated,
 }: Props) {
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "editBoard",
@@ -155,18 +158,28 @@ export default function Board({
     )
 
     let content: React.ReactNode
-    if (isPending || board === null) {
+    if (isPending) {
         content = skeletonBoard
     } else if (numBoards === 0) {
         content = newUserPrompt
-    } else if (board.columns.length === 0) {
+    } else if (board && board.columns.length === 0) {
         content = emptyBoard
     } else {
         content = boardDisplay
     }
 
     let modalContent: React.ReactElement = <></>
-    if (board !== null) {
+
+    if (modalMode === "addBoard") {
+        modalContent = (
+            <AddBoardModal
+                setIsModalOpen={setIsModalOpen}
+                setNewBoardCreated={setNewBoardCreated}
+            />
+        )
+    }
+
+    if (modalMode === "editBoard" && board) {
         modalContent = (
             <EditBoardModal
                 board={board}

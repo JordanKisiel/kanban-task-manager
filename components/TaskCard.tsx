@@ -18,9 +18,6 @@ export default function TaskCard({ selectedBoardIndex, taskId }: Props) {
         isSuccess,
     } = useQuery(taskByIdOptions(taskId))
 
-    console.log(`task pending? ${isPending}`)
-    console.log(`task data ${JSON.stringify(task)}`)
-
     const completedSubTasks = isSuccess
         ? task.subTasks.reduce((accum, curr) => {
               if (curr.isComplete) {

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react"
-import { testUserId } from "@/testing/testingConsts"
 import { useRouter } from "next/navigation"
 import { Board } from "@/types"
 
@@ -13,7 +12,11 @@ export function useNewBoardCreated(
 
     useEffect(() => {
         if (newBoardCreated && !boardsQueryIsPending && boards) {
-            router.push(`/?board=${boards.length - 1}`)
+            if (boards.length > 0) {
+                router.push(`?board=${boards.length}`)
+            } else {
+                router.push(`?board=0`)
+            }
             setNewBoardCreated(false)
         }
     }, [newBoardCreated, boardsQueryIsPending])

@@ -3,11 +3,11 @@ import { useRouter } from "next/navigation"
 import ActionButton from "./ActionButton"
 import { deleteBoard, deleteTask } from "@/lib/dataUtils"
 import { Board, Task } from "@/types"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 type Props = {
     isBoard: boolean
     itemToDelete: Board | Task | null
-    selectedBoardIndex: number
     setIsModalOpen: Function
     changeSelectedBoardIndex: Function
 }
@@ -15,11 +15,26 @@ type Props = {
 export default function DeleteModal({
     isBoard,
     itemToDelete,
-    selectedBoardIndex,
     setIsModalOpen,
     changeSelectedBoardIndex,
 }: Props) {
-    const router = useRouter()
+    const queryClient = useQueryClient()
+
+    const deleteBoardMutation = useMutation({
+        mutationFn: deleteBoard,
+        onMutate: () => setIsSubmitted(true),
+        onSuccess: () => {
+            console.log("success?")
+            changeSelectedBoardIndex(0)
+            queryClient.invalidateQueries({ queryKey: ["boardsData"] })
+            setIsModalOpen(false)
+        },
+        onError: () => {
+            setIsSubmitted(false)
+            //TODO: surface error to user in UI
+            console.log("There was an error. Please try again.")
+        },
+    })
 
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
@@ -37,29 +52,13 @@ export default function DeleteModal({
     }
 
     async function handleDelete() {
-        setIsSubmitted(true)
-
         if (itemToDelete !== null) {
             if (isBoard) {
-                await deleteBoard(itemToDelete.id)
+                deleteBoardMutation.mutate(itemToDelete.id)
             } else {
                 await deleteTask(itemToDelete.id)
             }
         }
-
-        //revalidating all data regardless of whether
-        //we're deleting a task or board
-        // if (deleteRes && deleteRes.ok) {
-        //     mutate(boards, { revalidate: true })
-        // }
-
-        if (isBoard) {
-            changeSelectedBoardIndex(0)
-        }
-
-        setIsModalOpen(false)
-
-        router.push(`/?board=${selectedBoardIndex}`)
     }
 
     return (

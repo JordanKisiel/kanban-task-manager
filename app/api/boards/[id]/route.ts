@@ -1,21 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
-import { useParams } from "next/navigation"
 import prisma from "@/lib/prisma"
 
-//grab id from request URL -> '/boards/[id]'
-function getBoardId() {
-    const { id } = useParams()
-
-    const boardId = Number(id)
-
-    return boardId
-}
-
 //get board data associated with boardId
-export async function GET(request: NextRequest) {
+export async function GET(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
+    const boardId = Number(params.id)
+
     const board = await prisma.board.findUnique({
         where: {
-            id: getBoardId(),
+            id: boardId,
         },
         include: {
             columns: {
@@ -29,17 +24,27 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(board)
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
+    const boardId = Number(params.id)
+
     const result = await prisma.board.delete({
         where: {
-            id: getBoardId(),
+            id: boardId,
         },
     })
 
     return NextResponse.json(result)
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
+    const boardId = Number(params.id)
+
     const res = await request.json()
 
     let { title, columns } = res
@@ -58,7 +63,7 @@ export async function PUT(request: NextRequest) {
         prisma.board.update({
             //update board title
             where: {
-                id: getBoardId(),
+                id: boardId,
             },
             data: {
                 title,
@@ -86,7 +91,7 @@ export async function PUT(request: NextRequest) {
         prisma.board.update({
             //add new columns
             where: {
-                id: getBoardId(),
+                id: boardId,
             },
             data: {
                 columns: {

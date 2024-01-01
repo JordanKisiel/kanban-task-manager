@@ -2,7 +2,7 @@ import axios from "axios"
 import { config } from "./baseURL"
 import { Board, Task } from "@/types"
 
-const DELAY_TIME = 1000
+const DELAY_TIME = 3000
 
 function delay(ms: number) {
     return new Promise((resolve) => {
@@ -65,6 +65,8 @@ export async function addBoard(boardData: {
     title: string
     columnTitles: string[]
 }) {
+    //await delay(DELAY_TIME)
+
     let response
 
     const columns = boardData.columnTitles.map((name) => {
@@ -74,7 +76,7 @@ export async function addBoard(boardData: {
     })
 
     try {
-        response = await axios.post("${BASE_URL}/api/boards", {
+        response = await axios.post(`${BASE_URL}/api/boards`, {
             userId: boardData.userId,
             title: boardData.title,
             columns,
@@ -108,7 +110,7 @@ export async function addTask(formData: {
     let response
 
     try {
-        response = await axios.post("${BASE_URL}/api/tasks", task)
+        response = await axios.post(`${BASE_URL}/api/tasks`, task)
     } catch (error) {
         console.error(error)
     }
@@ -117,6 +119,8 @@ export async function addTask(formData: {
 }
 
 export async function deleteBoard(boardId: number) {
+    //await delay(DELAY_TIME)
+
     try {
         await axios.delete(`${BASE_URL}/api/boards/${boardId}`)
     } catch (error) {
