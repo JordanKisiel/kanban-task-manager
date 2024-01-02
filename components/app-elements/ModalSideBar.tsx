@@ -1,11 +1,11 @@
 "use client"
 
-import StyleToggle from "./StyleToggle"
-import Modal from "./Modal"
+import StyleToggle from "@/components/ui-elements/StyleToggle"
+import Modal from "@/components/modals/Modal"
 import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 import { useModal } from "@/hooks/useModal"
 import { Board } from "@/types"
-import AddBoardModal from "./AddBoardModal"
+import AddBoardModal from "@/components/modals/AddBoardModal"
 
 type Props = {
     selectedBoardIndex: number

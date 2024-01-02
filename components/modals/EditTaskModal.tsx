@@ -1,13 +1,12 @@
-import ActionButton from "./ActionButton"
-import MenuButton from "./MenuButton"
-import ModalHeader from "./ModalHeader"
-import ModalLabel from "./ModalLabel"
+import ActionButton from "@/components/ui-elements/ActionButton"
+import MenuButton from "@/components/ui-elements/MenuButton"
+import ModalHeader from "@/components/modals/ModalHeader"
+import ModalLabel from "@/components/modals/ModalLabel"
 import { editTask } from "@/lib/dataUtils"
-import DynamicInputList from "./DynamicInputList"
+import DynamicInputList from "@/components/ui-elements/DynamicInputList"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { taskByIdOptions } from "@/lib/queries"
 import { Column, Task } from "@/types"
 
 type Props = {

@@ -1,4 +1,4 @@
-import { SubTask } from "../types"
+import { SubTask } from "@/types"
 
 type Props = {
     subtask: SubTask

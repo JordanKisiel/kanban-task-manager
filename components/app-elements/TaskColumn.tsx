@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { Task } from "../types"
+import { Task } from "@/types"
 import TaskCard from "./TaskCard"
 import { tasksByColumnOptions } from "@/lib/queries"
 

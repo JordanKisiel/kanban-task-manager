@@ -2,12 +2,12 @@
 
 import { useState } from "react"
 import { addBoard } from "@/lib/dataUtils"
-import ActionButton from "./ActionButton"
-import MenuButton from "./MenuButton"
-import ModalHeader from "./ModalHeader"
-import ModalLabel from "./ModalLabel"
+import ActionButton from "@/components/ui-elements/ActionButton"
+import MenuButton from "@/components/ui-elements/MenuButton"
+import ModalHeader from "@/components/modals/ModalHeader"
+import ModalLabel from "@/components/modals/ModalLabel"
 import { testUserId } from "@/testing/testingConsts"
-import DynamicInputList from "./DynamicInputList"
+import DynamicInputList from "@/components/ui-elements/DynamicInputList"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 type Props = {

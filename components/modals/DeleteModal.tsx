@@ -1,5 +1,5 @@
 import { useState } from "react"
-import ActionButton from "./ActionButton"
+import ActionButton from "@/components/ui-elements/ActionButton"
 import { deleteBoard, deleteTask } from "@/lib/dataUtils"
 import { Board, Task } from "@/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"

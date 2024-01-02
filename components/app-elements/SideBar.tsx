@@ -1,13 +1,13 @@
 "use client"
 
 import Link from "next/link"
-import StyleToggle from "./StyleToggle"
-import Modal from "./Modal"
-import ItemSkeleton from "./ItemSkeleton"
+import StyleToggle from "@/components/ui-elements/StyleToggle"
+import Modal from "@/components/modals/Modal"
+import ItemSkeleton from "@/components/loading/ItemSkeleton"
 import { useModal } from "@/hooks/useModal"
 import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 import { Board } from "@/types"
-import AddBoardModal from "./AddBoardModal"
+import AddBoardModal from "@/components/modals/AddBoardModal"
 
 type Props = {
     handleHideSideBar: Function

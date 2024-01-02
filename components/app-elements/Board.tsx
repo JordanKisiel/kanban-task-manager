@@ -2,15 +2,15 @@
 
 import Image from "next/image"
 import TaskColumn from "./TaskColumn"
-import Modal from "./Modal"
-import ActionButton from "./ActionButton"
-import ColumnSkeleton from "./ColumnSkeleton"
+import Modal from "@/components/modals/Modal"
+import ActionButton from "@/components/ui-elements/ActionButton"
+import ColumnSkeleton from "@/components/loading/ColumnSkeleton"
 import addIconDark from "../public/plus-icon.svg"
 import addIconLight from "../public/plus-icon-gray.svg"
 import { useModal } from "@/hooks/useModal"
-import EditBoardModal from "./EditBoardModal"
+import EditBoardModal from "@/components/modals/EditBoardModal"
 import { Board } from "@/types"
-import AddBoardModal from "./AddBoardModal"
+import AddBoardModal from "@/components/modals/AddBoardModal"
 
 type Props = {
     board: Board | null
