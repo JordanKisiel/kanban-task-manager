@@ -4,10 +4,12 @@ import SubtaskCard from "@/components/app-elements/SubtaskCard"
 import MenuButton from "@/components/ui-elements/MenuButton"
 import ModalHeader from "@/components/modals/ModalHeader"
 import ModalLabel from "@/components/modals/ModalLabel"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Column } from "@/types"
 import { Task } from "@/types"
 import { useRouter } from "next/navigation"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { editTask } from "@/lib/dataUtils"
 
 type Props = {
     selectedBoardIndex: number
@@ -42,6 +44,59 @@ export default function ViewTaskModal({
 }: Props) {
     const router = useRouter()
 
+    const queryClient = useQueryClient()
+
+    const editTaskMutation = useMutation({
+        mutationFn: editTask,
+        onMutate: async (sentTaskData) => {
+            console.log("on mutate called")
+            //change shape of data to conform to Task type
+            const newTask = {
+                id: sentTaskData.taskId,
+                title: sentTaskData.title,
+                description: sentTaskData.description,
+                subTasks: [...sentTaskData.subTasks.update],
+                columnId: sentTaskData.columnId,
+            }
+
+            //cancel outgoing refetches to stop
+            //overwriting of optimistic update
+            await queryClient.cancelQueries({ queryKey: ["tasksData"] })
+            await queryClient.cancelQueries({
+                queryKey: ["taskData", newTask.id],
+            })
+
+            //snapshot the previous value
+            const previousTask = queryClient.getQueryData([
+                "taskData",
+                newTask.id,
+            ])
+
+            //optimistically update local cache to new task values
+            queryClient.setQueryData(["taskData", newTask.id], newTask)
+
+            //return context
+            return { previousTask, newTask }
+        },
+        // if mutation fails, use context returned from onMutate
+        onError: (err, newTask, context) => {
+            console.log(err)
+            if (context) {
+                queryClient.setQueryData(
+                    ["taskData", context.newTask.id],
+                    context.previousTask
+                )
+            }
+        },
+        //re-fetch regardless of error or success
+        onSettled: (newTask) => {
+            queryClient.invalidateQueries({ queryKey: ["tasksData"] })
+            queryClient.invalidateQueries({
+                queryKey: ["taskData", newTask.id],
+            })
+        },
+    })
+
     //the create & delete arrays will never be altered here
     //but are provided so the same editTask function can be re-used
     const [formData, setFormData] = useState<FormData>({
@@ -55,12 +110,12 @@ export default function ViewTaskModal({
         columnId: task.columnId,
     })
 
-    const numCompletedTasks = formData.subTasks.update.reduce((accum, curr) => {
+    const numCompletedTasks = task.subTasks.reduce((accum, curr) => {
         const valueToAdd = curr.isComplete ? 1 : 0
         return accum + valueToAdd
     }, 0)
 
-    const subTaskCards = formData.subTasks.update.map((subTask, index) => {
+    const subTaskCards = task.subTasks.map((subTask, index) => {
         return (
             <SubtaskCard
                 key={subTask.id}
@@ -71,17 +126,17 @@ export default function ViewTaskModal({
     })
 
     const currentColumn =
-        formData.columnId === null
+        task.columnId === null
             ? []
             : columns.filter((column) => {
-                  return column.id === formData.columnId
+                  return column.id === task.columnId
               })
 
     const otherColumns =
-        formData.columnId === null
+        task.columnId === null
             ? []
             : columns.filter((column) => {
-                  return column.id !== formData.columnId
+                  return column.id !== task.columnId
               })
 
     const columnOptions = [...currentColumn, ...otherColumns]
@@ -120,59 +175,63 @@ export default function ViewTaskModal({
     ]
 
     function handleCheck(inputIndex: number) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                subTasks: {
-                    create: [],
-                    update: prevFormData.subTasks.update.map(
-                        (subTask, index) => {
-                            if (inputIndex === index) {
-                                return {
-                                    ...subTask,
-                                    isComplete: !subTask.isComplete,
-                                }
-                            } else {
-                                return subTask
-                            }
+        console.log("handle check")
+        editTaskMutation.mutate({
+            taskId: task.id,
+            title: task.title,
+            description: task.description,
+            subTasks: {
+                create: [],
+                update: task.subTasks.map((subTask, index) => {
+                    if (inputIndex === index) {
+                        return {
+                            ...subTask,
+                            isComplete: !subTask.isComplete,
                         }
-                    ),
-                    delete: [],
-                },
-            }
+                    } else {
+                        return subTask
+                    }
+                }),
+                delete: [],
+            },
+            columnId: task.columnId,
         })
     }
 
     function handleStatusChange(event: React.ChangeEvent<HTMLSelectElement>) {
+        console.log("handle status called")
         const selectedOptionIndex = event.target.options.selectedIndex
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                columnId: Number(event.target.options[selectedOptionIndex].id),
-            }
+
+        editTaskMutation.mutate({
+            taskId: task.id,
+            title: task.title,
+            description: task.description,
+            subTasks: {
+                create: [],
+                update: [...task.subTasks],
+                delete: [],
+            },
+            columnId: Number(event.target.options[selectedOptionIndex].id),
         })
     }
 
     return (
         <form>
             <div className="flex flex-row mb-6 justify-between items-start">
-                <ModalHeader>{formData.title}</ModalHeader>
+                <ModalHeader>{task.title}</ModalHeader>
 
                 <MenuButton actions={menuOptions} />
             </div>
             <p className="text-neutral-500 text-sm leading-6 mb-6">
-                {formData.description}
+                {task.description}
             </p>
-
             <div className="mb-5">
                 <span
                     className="
                 text-neutral-500 dark:text-neutral-100 text-xs font-bold block mb-4"
                 >
                     {`Subtasks (${numCompletedTasks} of ${
-                        formData.subTasks.update
-                            ? formData.subTasks.update.length
-                            : 0
+                        task.subTasks.length ?? 0
                     })`}
                 </span>
 
