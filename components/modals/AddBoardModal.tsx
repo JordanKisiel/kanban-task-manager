@@ -9,8 +9,10 @@ import ModalLabel from "@/components/modals/ModalLabel"
 import { testUserId } from "@/testing/testingConsts"
 import DynamicInputList from "@/components/ui-elements/DynamicInputList"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useRouter } from "next/navigation"
 
 type Props = {
+    selectedBoardIndex: number
     setIsModalOpen: Function
     setNewBoardCreated: Function
 }
@@ -23,9 +25,12 @@ type FormData = {
 const TITLE_PLACEHOLDER = "e.g. Web Design"
 
 export default function AddBoardModal({
+    selectedBoardIndex,
     setIsModalOpen,
     setNewBoardCreated,
 }: Props) {
+    const router = useRouter()
+
     const queryClient = useQueryClient()
 
     const [formData, setFormData] = useState<FormData>({
@@ -56,7 +61,8 @@ export default function AddBoardModal({
         {
             actionName: "Close",
             action: () => {
-                setIsModalOpen()
+                setIsModalOpen(false)
+                router.push(`?board=${selectedBoardIndex}`)
             },
             isDisabled: false,
         },

@@ -76,7 +76,7 @@ export default function Home({ params }: { params: { user: string } }) {
                 <ViewTaskModal
                     selectedBoardIndex={selectedBoardIndex}
                     columns={boards.data[selectedBoardIndex].columns}
-                    taskId={taskId}
+                    task={task.data}
                     setIsModalOpen={setIsModalOpen}
                     setModalMode={setModalMode}
                 />

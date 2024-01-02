@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import smallLogo from "../public/kanban-app-logo.svg"
+import smallLogo from "@/public/kanban-app-logo.svg"
 
 type Props = {
     isDarkMode: boolean

@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import ActionButton from "@/components/ui-elements/ActionButton"
 import MenuButton from "@/components/ui-elements/MenuButton"
 import ModalHeader from "@/components/modals/ModalHeader"
@@ -9,6 +10,7 @@ import { Board } from "@/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 type Props = {
+    selectedBoardIndex: number
     board: Board
     setIsModalOpen: Function
 }
@@ -29,7 +31,13 @@ type FormData = {
 
 const TITLE_PLACEHOLDER = "e.g. Web Design"
 
-export default function EditBoardModal({ board, setIsModalOpen }: Props) {
+export default function EditBoardModal({
+    selectedBoardIndex,
+    board,
+    setIsModalOpen,
+}: Props) {
+    const router = useRouter()
+
     const queryClient = useQueryClient()
 
     const editBoardMutation = useMutation({
@@ -73,7 +81,10 @@ export default function EditBoardModal({ board, setIsModalOpen }: Props) {
     const menuOptions = [
         {
             actionName: "Close",
-            action: () => setIsModalOpen(),
+            action: () => {
+                setIsModalOpen(false)
+                router.push(`?board=${selectedBoardIndex}`)
+            },
             isDisabled: false,
         },
     ]

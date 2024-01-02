@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import ActionButton from "@/components/ui-elements/ActionButton"
 import MenuButton from "@/components/ui-elements/MenuButton"
 import ModalHeader from "@/components/modals/ModalHeader"
@@ -9,6 +10,7 @@ import { Column } from "@/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 type Props = {
+    selectedBoardIndex: number
     columns: Column[]
     setIsModalOpen: Function
 }
@@ -25,7 +27,13 @@ const TITLE_PLACEHOLDER = "e.g. Take coffee break"
 const DESCRIPTION_PLACEHOLDER =
     "e.g. It's always good to take a break. This 15 minute break will charge the batteries a little."
 
-export default function AddTaskModal({ columns, setIsModalOpen }: Props) {
+export default function AddTaskModal({
+    selectedBoardIndex,
+    columns,
+    setIsModalOpen,
+}: Props) {
+    const router = useRouter()
+
     const queryClient = useQueryClient()
 
     const addTaskMutation = useMutation({
@@ -66,7 +74,10 @@ export default function AddTaskModal({ columns, setIsModalOpen }: Props) {
     const menuOptions = [
         {
             actionName: "Close",
-            action: () => setIsModalOpen(),
+            action: () => {
+                setIsModalOpen(false)
+                router.push(`?board=${selectedBoardIndex}`)
+            },
             isDisabled: false,
         },
     ]

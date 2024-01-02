@@ -1,17 +1,17 @@
+"use client"
+
 import SubtaskCard from "@/components/app-elements/SubtaskCard"
 import MenuButton from "@/components/ui-elements/MenuButton"
 import ModalHeader from "@/components/modals/ModalHeader"
 import ModalLabel from "@/components/modals/ModalLabel"
-import { editTask } from "@/lib/dataUtils"
 import { useState, useEffect } from "react"
 import { Column } from "@/types"
-import ItemSkeleton from "@/components/loading/ItemSkeleton"
-import { taskByIdOptions } from "@/lib/queries"
-import { useQuery } from "@tanstack/react-query"
+import { Task } from "@/types"
+import { useRouter } from "next/navigation"
 
 type Props = {
     selectedBoardIndex: number
-    taskId: number
+    task: Task
     columns: Column[]
     setModalMode: Function
     setIsModalOpen: Function
@@ -35,29 +35,24 @@ type FormData = {
 }
 export default function ViewTaskModal({
     selectedBoardIndex,
-    taskId,
+    task,
     columns,
     setModalMode,
     setIsModalOpen,
 }: Props) {
-    const {
-        data: task,
-        isPending,
-        isError,
-        isSuccess,
-    } = useQuery(taskByIdOptions(taskId))
+    const router = useRouter()
 
     //the create & delete arrays will never be altered here
     //but are provided so the same editTask function can be re-used
     const [formData, setFormData] = useState<FormData>({
-        title: isSuccess ? task.title : "",
-        description: isSuccess ? task.description : "",
+        title: task.title,
+        description: task.description,
         subTasks: {
             create: [],
-            update: isSuccess ? task.subTasks : [],
+            update: [...task.subTasks],
             delete: [],
         },
-        columnId: isSuccess ? task.columnId : null,
+        columnId: task.columnId,
     })
 
     const numCompletedTasks = formData.subTasks.update.reduce((accum, curr) => {
@@ -65,27 +60,25 @@ export default function ViewTaskModal({
         return accum + valueToAdd
     }, 0)
 
-    const subTaskCards = isPending
-        ? []
-        : formData.subTasks.update.map((subTask, index) => {
-              return (
-                  <SubtaskCard
-                      key={subTask.id}
-                      subtask={subTask}
-                      handleCheck={() => handleCheck(index)}
-                  />
-              )
-          })
+    const subTaskCards = formData.subTasks.update.map((subTask, index) => {
+        return (
+            <SubtaskCard
+                key={subTask.id}
+                subtask={subTask}
+                handleCheck={() => handleCheck(index)}
+            />
+        )
+    })
 
     const currentColumn =
-        isPending || formData.columnId === null
+        formData.columnId === null
             ? []
             : columns.filter((column) => {
                   return column.id === formData.columnId
               })
 
     const otherColumns =
-        isPending || formData.columnId === null
+        formData.columnId === null
             ? []
             : columns.filter((column) => {
                   return column.id !== formData.columnId
@@ -120,51 +113,11 @@ export default function ViewTaskModal({
             actionName: "Close",
             action: () => {
                 setIsModalOpen(false)
+                router.push(`?board=${selectedBoardIndex}`)
             },
             isDisabled: false,
         },
     ]
-
-    //sets formData when loading is done
-    //this is required in cases where the taskId is already
-    //present in the search params so this component opens automatically
-    //possibly before the loading of data is complete
-    useEffect(() => {
-        if (!isPending && task !== null) {
-            setFormData((prevFormData) => {
-                return {
-                    ...prevFormData,
-                    title: isSuccess ? task.title : "",
-                    description: isSuccess ? task.description : "",
-                    subTasks: {
-                        ...prevFormData.subTasks,
-                        update: isSuccess ? task.subTasks : [],
-                    },
-                    columnId: isSuccess ? task.columnId : null,
-                }
-            })
-        }
-    }, [isPending, task])
-
-    //sends data to server whenever there's a form change
-    useEffect(() => {
-        async function handleFormChange() {
-            let res
-
-            if (isSuccess) {
-                res = await editTask(task.id, formData)
-            }
-
-            // if (res && res.ok) {
-            //     console.log("mutate called")
-            //     mutate(boards, { revalidate: true })
-            // }
-        }
-
-        if (!isPending && formData.columnId !== null) {
-            handleFormChange()
-        }
-    }, [formData, isPending])
 
     function handleCheck(inputIndex: number) {
         setFormData((prevFormData) => {
@@ -203,106 +156,41 @@ export default function ViewTaskModal({
     return (
         <form>
             <div className="flex flex-row mb-6 justify-between items-start">
-                {!isPending ? (
-                    <ModalHeader>{formData.title}</ModalHeader>
-                ) : (
-                    <ItemSkeleton
-                        bgColor="dark:bg-neutral-800"
-                        height="large"
-                        width="medium"
-                        margins=""
-                        opacity="opacity-100"
-                    />
-                )}
+                <ModalHeader>{formData.title}</ModalHeader>
 
-                <MenuButton
-                    actions={menuOptions}
-                    isDisabled={isPending}
-                />
+                <MenuButton actions={menuOptions} />
             </div>
-            {!isPending ? (
-                <p className="text-neutral-500 text-sm leading-6 mb-6">
-                    {formData.description}
-                </p>
-            ) : (
-                <ItemSkeleton
-                    bgColor="dark:bg-neutral-800"
-                    height="small"
-                    width="medium"
-                    margins="mb-6"
-                    opacity="opacity-100"
-                />
-            )}
+            <p className="text-neutral-500 text-sm leading-6 mb-6">
+                {formData.description}
+            </p>
 
             <div className="mb-5">
-                {!isPending ? (
-                    <span
-                        className="
+                <span
+                    className="
                 text-neutral-500 dark:text-neutral-100 text-xs font-bold block mb-4"
-                    >
-                        {`Subtasks (${numCompletedTasks} of ${
-                            formData.subTasks.update
-                                ? formData.subTasks.update.length
-                                : 0
-                        })`}
-                    </span>
-                ) : (
-                    <>
-                        <ItemSkeleton
-                            bgColor="dark:bg-neutral-800"
-                            height="small"
-                            width="small"
-                            margins="mb-4"
-                            opacity="opacity-100"
-                        />
-                        <ItemSkeleton
-                            bgColor="dark:bg-neutral-800"
-                            height="small"
-                            width="small"
-                            margins="mb-4"
-                            opacity="opacity-100"
-                        />
-                    </>
-                )}
+                >
+                    {`Subtasks (${numCompletedTasks} of ${
+                        formData.subTasks.update
+                            ? formData.subTasks.update.length
+                            : 0
+                    })`}
+                </span>
 
                 <ul className="flex flex-col gap-2">{subTaskCards}</ul>
             </div>
             <div>
-                {!isPending ? (
-                    <>
-                        <ModalLabel htmlFor="status-select">
-                            Current Status
-                        </ModalLabel>
-                        <select
-                            onChange={(e) => handleStatusChange(e)}
-                            className="appearance-none w-full bg-neutral-100 dark:bg-neutral-700 border-[1px] 
+                <ModalLabel htmlFor="status-select">Current Status</ModalLabel>
+                <select
+                    onChange={(e) => handleStatusChange(e)}
+                    className="appearance-none w-full bg-neutral-100 dark:bg-neutral-700 border-[1px] 
                                 border-neutral-300 dark:border-neutral-600 rounded text-sm text-neutral-900 
                                 dark:text-neutral-100 px-4 py-3 outline-2 dark:outline-purple-300 
                                 bg-[url('../public/arrow-down.svg')] bg-no-repeat bg-[center_right_1rem]"
-                            name="status"
-                            id="status-select"
-                        >
-                            {selectOptions}
-                        </select>
-                    </>
-                ) : (
-                    <>
-                        <ItemSkeleton
-                            bgColor="dark:bg-neutral-800"
-                            height="small"
-                            width="small"
-                            margins="mb-3"
-                            opacity="opacity-100"
-                        />
-                        <ItemSkeleton
-                            bgColor="dark:bg-neutral-800"
-                            height="large"
-                            width="medium"
-                            margins=""
-                            opacity="opacity-100"
-                        />
-                    </>
-                )}
+                    name="status"
+                    id="status-select"
+                >
+                    {selectOptions}
+                </select>
             </div>
         </form>
     )

@@ -44,6 +44,8 @@ export default function EditTaskModal({
     setModalMode,
     setIsModalOpen,
 }: Props) {
+    const router = useRouter()
+
     const queryClient = useQueryClient()
 
     const editTaskMutation = useMutation({
@@ -59,8 +61,6 @@ export default function EditTaskModal({
             console.log("There was an error. Please try again.")
         },
     })
-
-    const router = useRouter()
 
     const [formData, setFormData] = useState<FormData>({
         title: task.title,
@@ -119,7 +119,10 @@ export default function EditTaskModal({
         },
         {
             actionName: "Close",
-            action: () => setIsModalOpen(),
+            action: () => {
+                setIsModalOpen(false)
+                router.push(`?board=${selectedBoardIndex}`)
+            },
             isDisabled: false,
         },
     ]
