@@ -6,13 +6,13 @@ import { editTask } from "@/lib/dataUtils"
 import DynamicInputList from "./DynamicInputList"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { taskByIdOptions } from "@/lib/queries"
-import { Column } from "@/types"
+import { Column, Task } from "@/types"
 
 type Props = {
     selectedBoardIndex: number
-    taskId: number
+    task: Task
     columns: Column[]
     setModalMode: Function
     setIsModalOpen: Function
@@ -40,26 +40,35 @@ const DESCRIPTION_PLACEHOLDER =
 
 export default function EditTaskModal({
     selectedBoardIndex,
-    taskId,
+    task,
     columns,
     setModalMode,
     setIsModalOpen,
 }: Props) {
-    const {
-        data: task,
-        isPending,
-        isError,
-        isSuccess,
-    } = useQuery(taskByIdOptions(taskId))
+    const queryClient = useQueryClient()
+
+    const editTaskMutation = useMutation({
+        mutationFn: editTask,
+        onMutate: () => setIsSubmitted(true),
+        onSuccess: () => {
+            setIsModalOpen(false)
+            queryClient.invalidateQueries({ queryKey: ["tasksData"] })
+        },
+        onError: () => {
+            setIsSubmitted(false)
+            //TODO: surface error to user
+            console.log("There was an error. Please try again.")
+        },
+    })
 
     const router = useRouter()
 
     const [formData, setFormData] = useState<FormData>({
-        title: isSuccess ? task.title : "",
-        description: isSuccess ? task.description : "",
+        title: task.title,
+        description: task.description,
         subTasks: {
             create: [],
-            update: isSuccess ? [...task.subTasks] : [],
+            update: [...task.subTasks],
             delete: [],
         },
         columnId: task?.columnId || null,
@@ -76,11 +85,9 @@ export default function EditTaskModal({
         ...formData.subTasks.create,
     ]
 
-    const currentColumn = isSuccess
-        ? columns.filter((column) => {
-              return column.id === task.columnId
-          })
-        : []
+    const currentColumn = columns.filter((column) => {
+        return column.id === task.columnId
+    })
 
     const otherColumns = columns.filter((column) => {
         return task?.columnId !== column.id
@@ -252,20 +259,17 @@ export default function EditTaskModal({
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
-        setIsSubmitted(true)
-
-        let res
-
-        if (isSuccess) {
-            res = await editTask(task.id, formData)
-        }
-
-        // if (res && res.ok) {
-        //     mutate(boards, { revalidate: true })
-        // }
-
-        setIsModalOpen(false)
-        router.push(`/?board=${selectedBoardIndex}`)
+        editTaskMutation.mutate({
+            taskId: task.id,
+            title: formData.title,
+            description: formData.description,
+            subTasks: {
+                create: [...formData.subTasks.create],
+                update: [...formData.subTasks.update],
+                delete: [...formData.subTasks.delete],
+            },
+            columnId: formData.columnId,
+        })
     }
 
     return (

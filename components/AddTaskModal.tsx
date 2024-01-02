@@ -6,6 +6,7 @@ import { addTask } from "@/lib/dataUtils"
 import ModalLabel from "./ModalLabel"
 import DynamicInputList from "./DynamicInputList"
 import { Column } from "@/types"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 type Props = {
     columns: Column[]
@@ -25,6 +26,22 @@ const DESCRIPTION_PLACEHOLDER =
     "e.g. It's always good to take a break. This 15 minute break will charge the batteries a little."
 
 export default function AddTaskModal({ columns, setIsModalOpen }: Props) {
+    const queryClient = useQueryClient()
+
+    const addTaskMutation = useMutation({
+        mutationFn: addTask,
+        onMutate: () => setIsSubmitted(true),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["tasksData"] })
+            setIsModalOpen(false)
+        },
+        onError: () => {
+            setIsSubmitted(false)
+            //TODO: surface error to user
+            console.log("There was an error during submission")
+        },
+    })
+
     const [formData, setFormData] = useState<FormData>({
         title: "",
         description: "",
@@ -124,15 +141,7 @@ export default function AddTaskModal({ columns, setIsModalOpen }: Props) {
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
-        setIsSubmitted(true)
-
-        const res = await addTask(formData)
-
-        // if (res && res.ok) {
-        //     mutate(boards, { revalidate: true })
-        // }
-
-        setIsModalOpen()
+        addTaskMutation.mutate(formData)
     }
 
     return (

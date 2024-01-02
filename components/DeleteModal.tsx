@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import ActionButton from "./ActionButton"
 import { deleteBoard, deleteTask } from "@/lib/dataUtils"
 import { Board, Task } from "@/types"
@@ -24,9 +23,22 @@ export default function DeleteModal({
         mutationFn: deleteBoard,
         onMutate: () => setIsSubmitted(true),
         onSuccess: () => {
-            console.log("success?")
             changeSelectedBoardIndex(0)
             queryClient.invalidateQueries({ queryKey: ["boardsData"] })
+            setIsModalOpen(false)
+        },
+        onError: () => {
+            setIsSubmitted(false)
+            //TODO: surface error to user in UI
+            console.log("There was an error. Please try again.")
+        },
+    })
+
+    const deleteTaskMutation = useMutation({
+        mutationFn: deleteTask,
+        onMutate: () => setIsSubmitted(true),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["tasksData"] })
             setIsModalOpen(false)
         },
         onError: () => {
@@ -56,7 +68,7 @@ export default function DeleteModal({
             if (isBoard) {
                 deleteBoardMutation.mutate(itemToDelete.id)
             } else {
-                await deleteTask(itemToDelete.id)
+                deleteTaskMutation.mutate(itemToDelete.id)
             }
         }
     }

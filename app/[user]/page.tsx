@@ -70,7 +70,7 @@ export default function Home({ params }: { params: { user: string } }) {
     //        i.e. id not in the currently selected board
     let modalContent: React.ReactElement = <></>
 
-    if (taskId !== null && boards.isSuccess) {
+    if (task.isSuccess && boards.isSuccess) {
         if (modalMode === "viewTask") {
             modalContent = (
                 <ViewTaskModal
@@ -86,7 +86,7 @@ export default function Home({ params }: { params: { user: string } }) {
                 <EditTaskModal
                     selectedBoardIndex={selectedBoardIndex}
                     columns={boards.data[selectedBoardIndex].columns}
-                    taskId={taskId}
+                    task={task.data}
                     setIsModalOpen={setIsModalOpen}
                     setModalMode={setModalMode}
                 />

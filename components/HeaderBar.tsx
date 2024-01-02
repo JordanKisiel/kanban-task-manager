@@ -91,7 +91,6 @@ export default function HeaderBar({
             modalContent = (
                 <EditBoardModal
                     board={board}
-                    selectedBoardIndex={selectedBoardIndex}
                     setIsModalOpen={setIsModalOpen}
                 />
             )

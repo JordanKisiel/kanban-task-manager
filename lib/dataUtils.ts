@@ -95,6 +95,8 @@ export async function addTask(formData: {
     selectedIndex: number
     status: number
 }) {
+    await delay(DELAY_TIME)
+
     const task = {
         title: formData.title,
         description: formData.description,
@@ -136,32 +138,33 @@ export async function deleteTask(taskId: number) {
     }
 }
 
-export async function editBoard(
-    boardId: number,
-    formData: {
-        title: string
-        columns: {
-            create: string[]
-            update: {
-                id: number
-                title: string
-            }[]
-            delete: {
-                id: number
-            }[]
-        }
+export async function editBoard(boardData: {
+    boardId: number
+    title: string
+    columns: {
+        create: string[]
+        update: {
+            id: number
+            title: string
+        }[]
+        delete: {
+            id: number
+        }[]
     }
-) {
-    //await delay(DELAY_TIME)
+}) {
+    await delay(DELAY_TIME)
 
     let response
 
     try {
-        response = await axios.put(`${BASE_URL}/api/boards/${boardId}`, {
-            boardId,
-            title: formData.title,
-            columns: formData.columns,
-        })
+        response = await axios.put(
+            `${BASE_URL}/api/boards/${boardData.boardId}`,
+            {
+                boardId: boardData.boardId,
+                title: boardData.title,
+                columns: boardData.columns,
+            }
+        )
     } catch (error) {
         console.error(error)
     }
@@ -169,30 +172,37 @@ export async function editBoard(
     return response?.data
 }
 
-export async function editTask(
-    taskId: number,
-    formData: {
-        title: string
-        description: string
-        subTasks: {
-            create: string[]
-            update: { id: number; description: string }[]
-            delete: { id: number }[]
-        }
-        columnId: number | null
+export async function editTask(taskData: {
+    taskId: number
+    title: string
+    description: string
+    subTasks: {
+        create: string[]
+        update: {
+            id: number
+            description: string
+        }[]
+        delete: {
+            id: number
+        }[]
     }
-) {
-    //await delay(DELAY_TIME)
+    columnId: number | null
+}) {
+    await delay(DELAY_TIME)
 
     let response
 
     try {
-        response = await axios.put(`${BASE_URL}/api/tasks/${taskId}`, {
-            taskId,
-            title: formData.title,
-            description: formData.description,
-            subTasks: formData.subTasks,
-            columnId: formData.columnId,
+        response = await axios.put(`${BASE_URL}/api/tasks/${taskData.taskId}`, {
+            taskId: taskData.taskId,
+            title: taskData.title,
+            description: taskData.description,
+            subTasks: {
+                create: [...taskData.subTasks.create],
+                update: [...taskData.subTasks.update],
+                delete: [...taskData.subTasks.delete],
+            },
+            columnId: taskData.columnId,
         })
     } catch (error) {
         console.error(error)

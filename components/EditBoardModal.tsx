@@ -5,12 +5,10 @@ import ModalHeader from "./ModalHeader"
 import ModalLabel from "./ModalLabel"
 import DynamicInputList from "./DynamicInputList"
 import { editBoard } from "@/lib/dataUtils"
-import { useQuery } from "@tanstack/react-query"
-import { boardByIdOptions } from "@/lib/queries"
 import { Board } from "@/types"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 type Props = {
-    selectedBoardIndex: number
     board: Board
     setIsModalOpen: Function
 }
@@ -31,11 +29,23 @@ type FormData = {
 
 const TITLE_PLACEHOLDER = "e.g. Web Design"
 
-export default function EditBoardModal({
-    selectedBoardIndex,
-    board,
-    setIsModalOpen,
-}: Props) {
+export default function EditBoardModal({ board, setIsModalOpen }: Props) {
+    const queryClient = useQueryClient()
+
+    const editBoardMutation = useMutation({
+        mutationFn: editBoard,
+        onMutate: () => setIsSubmitted(true),
+        onSuccess: () => {
+            setIsModalOpen(false)
+            queryClient.invalidateQueries({ queryKey: ["boardsData"] })
+        },
+        onError: () => {
+            setIsSubmitted(false)
+            //TODO: surface error to user
+            console.log("There was an error. Please try again")
+        },
+    })
+
     //initialize with data from board
     //all existing columns are added to update
     const [formData, setFormData] = useState<FormData>({
@@ -176,15 +186,15 @@ export default function EditBoardModal({
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
-        setIsSubmitted(true)
-
-        const res = await editBoard(board.id, formData)
-
-        // if (res && res.ok) {
-        //     mutate(boards, { revalidate: true })
-        // }
-
-        setIsModalOpen()
+        editBoardMutation.mutate({
+            boardId: board.id,
+            title: formData.title,
+            columns: {
+                create: [...formData.columns.create],
+                update: [...formData.columns.update],
+                delete: [...formData.columns.delete],
+            },
+        })
     }
 
     return (
