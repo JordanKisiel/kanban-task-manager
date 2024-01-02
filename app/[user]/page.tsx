@@ -36,7 +36,7 @@ export default function Home({ params }: { params: { user: string } }) {
     //if there is no board search param, route to a board index of 0
     useEffect(() => {
         if (searchParams.get("board") === null) {
-            router.push("?boards=0")
+            router.push("?board=0")
         }
     }, [searchParams.get("board")])
 

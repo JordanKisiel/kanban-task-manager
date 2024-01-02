@@ -87,7 +87,7 @@ export default function HeaderBar({
                     setIsModalOpen={setIsModalOpen}
                 />
             )
-        } else if (modalMode === "editTask") {
+        } else if (modalMode === "editBoard") {
             modalContent = (
                 <EditBoardModal
                     board={board}

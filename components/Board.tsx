@@ -36,9 +36,17 @@ export default function Board({
 
     const NUM_SKELETON_COLS = 3
 
-    //TODO: add more colors (10) and function that loops the colors
-    //   -possible a good place for a generator function
-    const columnColors = ["bg-[#49C4E5]", "bg-[#8471F2]", "bg-[#67E2AE]"]
+    const columnColors = [
+        "bg-[#49C4E5]",
+        "bg-[#8471F2]",
+        "bg-[#67E2AE]",
+        "bg-[#E2B867]",
+        "bg-[#E26767]",
+        "bg-[#6782E2]",
+        "bg-[#96E267]",
+        "bg-[#D7D143]",
+        "bg-[#C543C8]",
+    ]
 
     const taskColumns =
         board !== null
@@ -49,7 +57,10 @@ export default function Board({
                           selectedBoardIndex={selectedBoardIndex}
                           columnId={column.id}
                           columnTitle={column.title}
-                          columnColor={columnColors[index]}
+                          columnColor={
+                              //mod the index so it loops back around to first color
+                              columnColors[index % columnColors.length]
+                          }
                       />
                   )
               })
@@ -183,7 +194,6 @@ export default function Board({
         modalContent = (
             <EditBoardModal
                 board={board}
-                selectedBoardIndex={selectedBoardIndex}
                 setIsModalOpen={setIsModalOpen}
             />
         )
