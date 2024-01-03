@@ -97,19 +97,6 @@ export default function ViewTaskModal({
         },
     })
 
-    //the create & delete arrays will never be altered here
-    //but are provided so the same editTask function can be re-used
-    const [formData, setFormData] = useState<FormData>({
-        title: task.title,
-        description: task.description,
-        subTasks: {
-            create: [],
-            update: [...task.subTasks],
-            delete: [],
-        },
-        columnId: task.columnId,
-    })
-
     const numCompletedTasks = task.subTasks.reduce((accum, curr) => {
         const valueToAdd = curr.isComplete ? 1 : 0
         return accum + valueToAdd
