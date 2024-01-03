@@ -3,6 +3,7 @@ import ActionButton from "@/components/ui-elements/ActionButton"
 import { deleteBoard, deleteTask } from "@/lib/dataUtils"
 import { Board, Task } from "@/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import ErrorMessage from "../ui-elements/ErrorMessage"
 
 type Props = {
     isBoard: boolean
@@ -21,7 +22,10 @@ export default function DeleteModal({
 
     const deleteBoardMutation = useMutation({
         mutationFn: deleteBoard,
-        onMutate: () => setIsSubmitted(true),
+        onMutate: () => {
+            setIsSubmitted(true)
+            setDisplayError(true)
+        },
         onSuccess: () => {
             changeSelectedBoardIndex(0)
             queryClient.invalidateQueries({ queryKey: ["boardsData"] })
@@ -29,26 +33,28 @@ export default function DeleteModal({
         },
         onError: () => {
             setIsSubmitted(false)
-            //TODO: surface error to user in UI
             console.log("There was an error. Please try again.")
         },
     })
 
     const deleteTaskMutation = useMutation({
         mutationFn: deleteTask,
-        onMutate: () => setIsSubmitted(true),
+        onMutate: () => {
+            setIsSubmitted(true)
+            setDisplayError(true)
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["tasksData"] })
             setIsModalOpen(false)
         },
         onError: () => {
             setIsSubmitted(false)
-            //TODO: surface error to user in UI
             console.log("There was an error. Please try again.")
         },
     })
 
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+    const [displayError, setDisplayError] = useState<boolean>(true)
 
     let userMessage =
         "There doesn't appear to be an item to delete. Try refreshing the page."
@@ -63,6 +69,11 @@ export default function DeleteModal({
         }
     }
 
+    function handleCloseError() {
+        setDisplayError(false)
+    }
+
+    //TODO: does this need to be an async function?
     async function handleDelete() {
         if (itemToDelete !== null) {
             if (isBoard) {
@@ -75,6 +86,18 @@ export default function DeleteModal({
 
     return (
         <div className="flex flex-col gap-6 bg-neutral-100 dark:bg-neutral-700">
+            {deleteBoardMutation.isError && displayError && (
+                <ErrorMessage
+                    message="There was a problem deleting the board. Please try again."
+                    close={handleCloseError}
+                />
+            )}
+            {deleteTaskMutation.isError && displayError && (
+                <ErrorMessage
+                    message="There was a problem deleting the task. Please try again."
+                    close={handleCloseError}
+                />
+            )}
             <h4 className="font-bold text-red-300 text-lg">
                 {`Delete this ${isBoard ? "board" : "task"}?`}
             </h4>

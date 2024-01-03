@@ -8,6 +8,7 @@ import ModalLabel from "@/components/modals/ModalLabel"
 import DynamicInputList from "@/components/ui-elements/DynamicInputList"
 import { Column } from "@/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import ErrorMessage from "../ui-elements/ErrorMessage"
 
 type Props = {
     selectedBoardIndex: number
@@ -38,15 +39,19 @@ export default function AddTaskModal({
 
     const addTaskMutation = useMutation({
         mutationFn: addTask,
-        onMutate: () => setIsSubmitted(true),
+        onMutate: () => {
+            setIsSubmitted(true)
+            setDisplayError(true)
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["tasksData"] })
             setIsModalOpen(false)
         },
         onError: () => {
             setIsSubmitted(false)
-            //TODO: surface error to user
-            console.log("There was an error during submission")
+            console.log(
+                "There was an error during submission. Please try again."
+            )
         },
     })
 
@@ -57,7 +62,9 @@ export default function AddTaskModal({
         selectedIndex: 0,
         status: columns[0].id,
     })
+
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+    const [displayError, setDisplayError] = useState<boolean>(true)
 
     const selectOptions = columns.map((column, index) => {
         return (
@@ -149,6 +156,10 @@ export default function AddTaskModal({
         })
     }
 
+    function handleCloseError() {
+        setDisplayError(false)
+    }
+
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
@@ -157,16 +168,22 @@ export default function AddTaskModal({
 
     return (
         <div className={`${isSubmitted ? "opacity-50" : "opacity-100"}`}>
-            <div className="flex flex-row justify-between">
-                <ModalHeader>Add New Task</ModalHeader>
-                <MenuButton actions={menuOptions} />
-            </div>
             <form
                 onSubmit={(e) => {
                     handleSubmit(e)
                 }}
                 className="flex flex-col gap-6"
             >
+                {addTaskMutation.isError && displayError && (
+                    <ErrorMessage
+                        message="There was a problem adding the task. Please try again."
+                        close={handleCloseError}
+                    />
+                )}
+                <div className="flex flex-row justify-between">
+                    <ModalHeader>Add New Task</ModalHeader>
+                    <MenuButton actions={menuOptions} />
+                </div>
                 <div>
                     <ModalLabel htmlFor="title-input">Title</ModalLabel>
                     <input

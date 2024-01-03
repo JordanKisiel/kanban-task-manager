@@ -6,6 +6,7 @@ import ActionButton from "@/components/ui-elements/ActionButton"
 import MenuButton from "@/components/ui-elements/MenuButton"
 import ModalHeader from "@/components/modals/ModalHeader"
 import ModalLabel from "@/components/modals/ModalLabel"
+import ErrorMessage from "@/components/ui-elements/ErrorMessage"
 import { testUserId } from "@/testing/testingConsts"
 import DynamicInputList from "@/components/ui-elements/DynamicInputList"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -39,10 +40,14 @@ export default function AddBoardModal({
     })
 
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+    const [displayError, setDisplayError] = useState<boolean>(true)
 
     const addBoardMutation = useMutation({
         mutationFn: addBoard,
-        onMutate: () => setIsSubmitted(true),
+        onMutate: () => {
+            setIsSubmitted(true)
+            setDisplayError(true)
+        },
         onSuccess: () => {
             setIsModalOpen(false)
             queryClient.invalidateQueries({ queryKey: ["boardsData"] })
@@ -50,7 +55,6 @@ export default function AddBoardModal({
         },
         onError: () => {
             setIsSubmitted(false)
-            //TODO: surface error to user (have some error div render?)
             console.log(
                 "There was an error during submission. Please try again."
             )
@@ -116,6 +120,10 @@ export default function AddBoardModal({
         })
     }
 
+    function handleCloseError() {
+        setDisplayError(false)
+    }
+
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
@@ -135,6 +143,12 @@ export default function AddBoardModal({
                 isSubmitted ? "opacity-50" : "opacity-100"
             } flex flex-col gap-6`}
         >
+            {addBoardMutation.isError && displayError && (
+                <ErrorMessage
+                    message="There was a problem adding the board. Please try again."
+                    close={handleCloseError}
+                />
+            )}
             <div className="flex flex-row justify-between">
                 <ModalHeader>Add New Board</ModalHeader>
                 <MenuButton actions={menuOptions} />

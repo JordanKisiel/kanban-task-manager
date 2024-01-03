@@ -31,8 +31,6 @@ export async function getBoardById(boardId: number) {
 }
 
 export async function getBoardsByUser(userId: string) {
-    randomError("Random testing error", 0.9)
-
     let response
 
     try {
@@ -73,7 +71,7 @@ export async function addBoard(boardData: {
     title: string
     columnTitles: string[]
 }) {
-    //await delay(DELAY_TIME)
+    await delay(DELAY_TIME)
 
     let response
 
@@ -139,6 +137,8 @@ export async function deleteBoard(boardId: number) {
 }
 
 export async function deleteTask(taskId: number) {
+    //await delay(DELAY_TIME)
+
     try {
         await axios.delete(`${BASE_URL}/api/tasks/${taskId}`)
     } catch (error) {
