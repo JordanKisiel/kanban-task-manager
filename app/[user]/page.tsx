@@ -18,6 +18,7 @@ import { boardsByUserOptions, taskByIdOptions } from "@/lib/queries"
 import ViewTaskModal from "@/components/modals/ViewTaskModal"
 import DeleteModal from "@/components/modals/DeleteModal"
 import EditTaskModal from "@/components/modals/EditTaskModal"
+import ErrorModal from "@/components/modals/ErrorModal"
 
 export default function Home({ params }: { params: { user: string } }) {
     const router = useRouter()
@@ -32,6 +33,23 @@ export default function Home({ params }: { params: { user: string } }) {
     const boards = useQuery(boardsByUserOptions(params.user))
 
     const task = useQuery(taskByIdOptions(taskId))
+
+    const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
+        "viewTask",
+        false
+    )
+
+    const { setNewBoardCreated } = useNewBoardCreated(
+        boards.isPending,
+        boards.data
+    )
+
+    const [isDarkMode, toggleDarkMode] = useDarkMode("kanban-isDarkMode")
+
+    const [showSideBar, setShowSideBar] = useLocalStorage(
+        "kanban-show-sidebar",
+        true
+    )
 
     //if there is no board search param, route to a board index of 0
     useEffect(() => {
@@ -51,15 +69,13 @@ export default function Home({ params }: { params: { user: string } }) {
         }
     }, [taskId])
 
-    const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
-        "viewTask",
-        false
-    )
-
-    const { setNewBoardCreated } = useNewBoardCreated(
-        boards.isPending,
-        boards.data
-    )
+    //if error, open modal to
+    //display error modal
+    useEffect(() => {
+        if (boards.isError) {
+            setIsModalOpen(true)
+        }
+    }, [boards.isError, isModalOpen])
 
     //set to an empty element since these modals
     //should never be open if taskId is null
@@ -102,13 +118,6 @@ export default function Home({ params }: { params: { user: string } }) {
             )
         }
     }
-
-    const [isDarkMode, toggleDarkMode] = useDarkMode("kanban-isDarkMode")
-
-    const [showSideBar, setShowSideBar] = useLocalStorage(
-        "kanban-show-sidebar",
-        true
-    )
 
     function changeSelectedBoardIndex(index: number) {
         console.log("change?")
@@ -208,7 +217,14 @@ export default function Home({ params }: { params: { user: string } }) {
                     selectedBoardIndex={selectedBoardIndex}
                     setIsModalOpen={setIsModalOpen}
                 >
-                    {modalContent}
+                    {!boards.isError ? (
+                        modalContent
+                    ) : (
+                        <ErrorModal
+                            refetch={boards.refetch}
+                            setIsModalOpen={setIsModalOpen}
+                        />
+                    )}
                 </Modal>
             )}
         </main>

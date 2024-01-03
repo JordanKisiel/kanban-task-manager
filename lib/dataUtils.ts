@@ -10,6 +10,12 @@ function delay(ms: number) {
     })
 }
 
+function randomError(errorMessage: string, failureProbability: number) {
+    if (Math.random() < failureProbability) {
+        throw new Error(errorMessage)
+    }
+}
+
 const BASE_URL = config.url
 
 export async function getBoardById(boardId: number) {
@@ -25,6 +31,8 @@ export async function getBoardById(boardId: number) {
 }
 
 export async function getBoardsByUser(userId: string) {
+    randomError("Random testing error", 0.9)
+
     let response
 
     try {
