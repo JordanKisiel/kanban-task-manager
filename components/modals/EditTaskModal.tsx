@@ -4,6 +4,7 @@ import ModalHeader from "@/components/modals/ModalHeader"
 import ModalLabel from "@/components/modals/ModalLabel"
 import { editTask } from "@/lib/dataUtils"
 import DynamicInputList from "@/components/ui-elements/DynamicInputList"
+import ErrorMessage from "@/components/ui-elements/ErrorMessage"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -50,14 +51,16 @@ export default function EditTaskModal({
 
     const editTaskMutation = useMutation({
         mutationFn: editTask,
-        onMutate: () => setIsSubmitted(true),
+        onMutate: () => {
+            setIsSubmitted(true)
+            setDisplayError(true)
+        },
         onSuccess: () => {
             setIsModalOpen(false)
             queryClient.invalidateQueries({ queryKey: ["tasksData"] })
         },
         onError: () => {
             setIsSubmitted(false)
-            //TODO: surface error to user
             console.log("There was an error. Please try again.")
         },
     })
@@ -74,6 +77,7 @@ export default function EditTaskModal({
     })
 
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+    const [displayError, setDisplayError] = useState<boolean>(true)
 
     //subTask descriptions to render
     //always render update subTasks first
@@ -258,6 +262,10 @@ export default function EditTaskModal({
         })
     }
 
+    function handleCloseError() {
+        setDisplayError(false)
+    }
+
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
@@ -276,14 +284,20 @@ export default function EditTaskModal({
 
     return (
         <div className={`${isSubmitted ? "opacity-50" : "opacity-100"}`}>
-            <div className="flex flex-row justify-between">
-                <ModalHeader>Edit Task</ModalHeader>
-                <MenuButton actions={menuOptions} />
-            </div>
             <form
                 onSubmit={(e) => handleSubmit(e)}
                 className="flex flex-col gap-6"
             >
+                {editTaskMutation.isError && displayError && (
+                    <ErrorMessage
+                        message="There was a problem adding the board. Please try again."
+                        close={handleCloseError}
+                    />
+                )}
+                <div className="flex flex-row justify-between">
+                    <ModalHeader>Edit Task</ModalHeader>
+                    <MenuButton actions={menuOptions} />
+                </div>
                 <div>
                     <ModalLabel htmlFor="title-input">Title</ModalLabel>
                     <input

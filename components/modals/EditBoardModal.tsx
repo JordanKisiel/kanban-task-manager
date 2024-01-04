@@ -5,6 +5,7 @@ import MenuButton from "@/components/ui-elements/MenuButton"
 import ModalHeader from "@/components/modals/ModalHeader"
 import ModalLabel from "@/components/modals/ModalLabel"
 import DynamicInputList from "@/components/ui-elements/DynamicInputList"
+import ErrorMessage from "@/components/ui-elements/ErrorMessage"
 import { editBoard } from "@/lib/dataUtils"
 import { Board } from "@/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -42,14 +43,16 @@ export default function EditBoardModal({
 
     const editBoardMutation = useMutation({
         mutationFn: editBoard,
-        onMutate: () => setIsSubmitted(true),
+        onMutate: () => {
+            setIsSubmitted(true)
+            setDisplayError(true)
+        },
         onSuccess: () => {
             setIsModalOpen(false)
             queryClient.invalidateQueries({ queryKey: ["boardsData"] })
         },
         onError: () => {
             setIsSubmitted(false)
-            //TODO: surface error to user
             console.log("There was an error. Please try again")
         },
     })
@@ -71,7 +74,8 @@ export default function EditBoardModal({
         },
     })
 
-    const [isSubmitted, setIsSubmitted] = useState<boolean>()
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+    const [displayError, setDisplayError] = useState<boolean>(true)
 
     const columnTitles: string[] = [
         ...formData.columns.update.map((column) => column.title),
@@ -194,6 +198,10 @@ export default function EditBoardModal({
         })
     }
 
+    function handleCloseError() {
+        setDisplayError(false)
+    }
+
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
@@ -210,16 +218,22 @@ export default function EditBoardModal({
 
     return (
         <div className={`${isSubmitted ? "opacity-50" : "opacity-100"}`}>
-            <div className="flex flex-row justify-between">
-                <ModalHeader>Edit Board</ModalHeader>
-                <MenuButton actions={menuOptions} />
-            </div>
             <form
                 onSubmit={(e) => {
                     handleSubmit(e)
                 }}
                 className="flex flex-col gap-6"
             >
+                {editBoardMutation.isError && displayError && (
+                    <ErrorMessage
+                        message="There was a problem editing the board. Please try again."
+                        close={handleCloseError}
+                    />
+                )}
+                <div className="flex flex-row justify-between">
+                    <ModalHeader>Edit Board</ModalHeader>
+                    <MenuButton actions={menuOptions} />
+                </div>
                 <div>
                     <ModalLabel htmlFor="title-input">Board Name</ModalLabel>
                     <input
