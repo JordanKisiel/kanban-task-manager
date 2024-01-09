@@ -83,6 +83,7 @@ export default function HeaderBar({
         if (modalMode === "addTask") {
             modalContent = (
                 <AddTaskModal
+                    selectedBoardIndex={selectedBoardIndex}
                     columns={board.columns}
                     setIsModalOpen={setIsModalOpen}
                 />
@@ -90,6 +91,7 @@ export default function HeaderBar({
         } else if (modalMode === "editBoard") {
             modalContent = (
                 <EditBoardModal
+                    selectedBoardIndex={selectedBoardIndex}
                     board={board}
                     setIsModalOpen={setIsModalOpen}
                 />
