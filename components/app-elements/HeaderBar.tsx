@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { signIn, signOut, useSession } from "next-auth/react"
 import LoadingText from "@/components/loading/LoadingText"
 import { useModal } from "@/hooks/useModal"
 import { Board } from "@/types"
@@ -13,6 +14,7 @@ import Modal from "@/components/modals/Modal"
 import ModalSideBar from "@/components/app-elements/ModalSideBar"
 import Image from "next/image"
 import addIcon from "@/public/plus-icon.svg"
+import { redirect } from "next/navigation"
 
 type Props = {
     selectedBoardIndex: number
@@ -33,6 +35,8 @@ export default function HeaderBar({
     isDarkMode,
     toggleDarkMode,
 }: Props) {
+    const { data: session, status } = useSession()
+
     const board = boards[selectedBoardIndex] ?? null
 
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
@@ -73,6 +77,18 @@ export default function HeaderBar({
                 setModalMode("deleteBoard")
             },
             isDisabled: numBoards === 0,
+        },
+        {
+            actionName: status === "authenticated" ? "Sign Out" : "Sign In",
+            action: () => {
+                if (status === "authenticated") {
+                    signOut()
+                    redirect("/api/auth/sigin")
+                } else {
+                    signIn()
+                }
+            },
+            isDisabled: status !== "authenticated",
         },
     ]
 
