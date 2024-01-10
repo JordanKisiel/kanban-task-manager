@@ -5,7 +5,6 @@ import { Plus_Jakarta_Sans } from "next/font/google"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { getServerSession } from "next-auth"
 import SessionProvider from "@/contexts/SessionProvider"
-import { redirect } from "next/navigation"
 
 const font = Plus_Jakarta_Sans({ subsets: ["latin"] })
 
@@ -21,12 +20,6 @@ export default async function RootLayout({
     children: React.ReactNode
 }) {
     const session = await getServerSession()
-
-    //if user isn't signed in, immediately redirect them to
-    //the signin page
-    if (!session) {
-        redirect("/api/auth/signin")
-    }
 
     return (
         <html

@@ -184,6 +184,7 @@ export default function Board({
     if (modalMode === "addBoard") {
         modalContent = (
             <AddBoardModal
+                selectedBoardIndex={selectedBoardIndex}
                 setIsModalOpen={setIsModalOpen}
                 setNewBoardCreated={setNewBoardCreated}
             />
@@ -193,6 +194,7 @@ export default function Board({
     if (modalMode === "editBoard" && board) {
         modalContent = (
             <EditBoardModal
+                selectedBoardIndex={selectedBoardIndex}
                 board={board}
                 setIsModalOpen={setIsModalOpen}
             />
