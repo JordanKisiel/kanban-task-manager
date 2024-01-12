@@ -1,12 +1,21 @@
-import { testUserId } from "@/testing/testingConsts"
 import { redirect } from "next/navigation"
-import { config } from "@/lib/baseURL"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { getUserIdByEmail } from "@/lib/dataUtils"
 
-export default function Home() {
-    const BASE_URL = config.url
+export default async function Home() {
+    const session = await getServerSession(authOptions)
+    const sessionEmail = session?.user?.email
 
-    //TODO:
-    // -make this a login page
+    console.log(sessionEmail)
 
-    redirect(`/${testUserId}`)
+    if (sessionEmail === null || sessionEmail === undefined) {
+        //theoretically a user with a session from google or github
+        //should have an email associated with their account
+        redirect("/signin")
+    }
+
+    const userId = await getUserIdByEmail(sessionEmail)
+
+    redirect(`/${userId}`)
 }

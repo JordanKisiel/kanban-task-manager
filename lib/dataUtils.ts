@@ -1,6 +1,7 @@
 import axios from "axios"
 import { config } from "./baseURL"
 import { Board, Task } from "@/types"
+import prisma from "@/lib/prisma"
 
 const DELAY_TIME = 3000
 
@@ -17,6 +18,33 @@ function randomError(errorMessage: string, failureProbability: number) {
 }
 
 const BASE_URL = config.url
+
+export async function getUserIdByEmail(sessionEmail: string) {
+    //try to find already existing user
+    const user = await prisma.user.findUnique({
+        where: {
+            email: sessionEmail,
+        },
+    })
+
+    //user will be null if not found
+    //in which case, create new user
+    //TODO: maybe split this off into its
+    //own function
+    let newUser
+    if (user === null) {
+        newUser = await prisma.user.create({
+            data: {
+                email: sessionEmail,
+            },
+        })
+
+        return newUser.id
+    }
+
+    //otherwise, we found a user
+    return user.id
+}
 
 export async function getBoardById(boardId: number) {
     let response

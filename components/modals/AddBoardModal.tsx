@@ -1,13 +1,13 @@
 "use client"
 
 import { useState } from "react"
+import { useParams } from "next/navigation"
 import { addBoard } from "@/lib/dataUtils"
 import ActionButton from "@/components/ui-elements/ActionButton"
 import MenuButton from "@/components/ui-elements/MenuButton"
 import ModalHeader from "@/components/modals/ModalHeader"
 import ModalLabel from "@/components/modals/ModalLabel"
 import ErrorMessage from "@/components/ui-elements/ErrorMessage"
-import { testUserId } from "@/testing/testingConsts"
 import DynamicInputList from "@/components/ui-elements/DynamicInputList"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
@@ -31,6 +31,8 @@ export default function AddBoardModal({
     setNewBoardCreated,
 }: Props) {
     const router = useRouter()
+    const params = useParams<{ user: string }>()
+    console.log(params)
 
     const queryClient = useQueryClient()
 
@@ -128,7 +130,7 @@ export default function AddBoardModal({
         event.preventDefault()
 
         addBoardMutation.mutate({
-            userId: testUserId,
+            userId: params.user,
             title: formData.title,
             columnTitles: formData.columnTitles,
         })
