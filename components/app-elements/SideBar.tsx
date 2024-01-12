@@ -133,6 +133,7 @@ export default function SideBar({
                     setIsModalOpen={setIsModalOpen}
                 >
                     <AddBoardModal
+                        selectedBoardIndex={selectedBoardIndex}
                         setIsModalOpen={setIsModalOpen}
                         setNewBoardCreated={setNewBoardCreated}
                     />

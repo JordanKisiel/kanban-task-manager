@@ -102,6 +102,7 @@ export default function ModalSideBar({
                     setIsModalOpen={setIsModalOpen}
                 >
                     <AddBoardModal
+                        selectedBoardIndex={selectedBoardIndex}
                         setIsModalOpen={setIsModalOpen}
                         setNewBoardCreated={setNewBoardCreated}
                     />
