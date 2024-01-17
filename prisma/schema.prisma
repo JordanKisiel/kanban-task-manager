@@ -25,11 +25,12 @@ model Board {
 }
 
 model Column {
-  id      Int    @id @default(autoincrement())
-  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  boardId Int
-  title   String
-  tasks   Task[]
+  id           Int    @id @default(autoincrement())
+  board        Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  boardId      Int
+  title        String
+  tasks        Task[]
+  taskOrdering Int[]
 }
 
 model Task {
