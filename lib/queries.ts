@@ -4,6 +4,7 @@ import {
     getBoardById,
     getTasksByColumn,
     getTaskById,
+    getTaskOrderingByColumns,
 } from "./dataUtils"
 
 export function boardsByUserOptions(userId: string) {
@@ -34,5 +35,12 @@ export function taskByIdOptions(taskId: number | null) {
         queryKey: ["taskData", taskId],
         queryFn: () => getTaskById(taskId),
         enabled: taskId !== null,
+    })
+}
+
+export function taskOrderingByColumnsOptions(columnIds: number[]) {
+    return queryOptions({
+        queryKey: ["orderingData", columnIds],
+        queryFn: () => getTaskOrderingByColumns(columnIds),
     })
 }

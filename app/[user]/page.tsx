@@ -51,6 +51,9 @@ export default function Home({ params }: { params: { user: string } }) {
         true
     )
 
+    //on first load, write taskOrdering data to localStorage
+    useEffect(() => {}, [])
+
     //if there is no board search param, route to a board index of 0
     useEffect(() => {
         if (searchParams.get("board") === null) {

@@ -16,6 +16,7 @@ export type Column = {
     id: number
     title: string
     tasks: Task[]
+    taskOrdering: number[]
 }
 
 export type Board = {

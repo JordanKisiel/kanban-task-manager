@@ -1,6 +1,6 @@
 import axios from "axios"
 import { config } from "./baseURL"
-import { Board, Task } from "@/types"
+import { Board, Task, Column } from "@/types"
 import prisma from "@/lib/prisma"
 
 const DELAY_TIME = 3000
@@ -245,4 +245,28 @@ export async function editTask(taskData: {
     }
 
     return response?.data
+}
+
+export async function getTaskOrderingByColumns(columnIds: number[]) {
+    await delay(DELAY_TIME)
+
+    const serializedIds = JSON.stringify(columnIds)
+
+    let taskOrderingData
+
+    try {
+        const response = await axios.get(
+            `${BASE_URL}/api/columns/${serializedIds}`
+        )
+        taskOrderingData = response.data.map((column: Column) => {
+            return {
+                id: column.id,
+                taskOrdering: column.taskOrdering,
+            }
+        })
+    } catch (error) {
+        console.error(error)
+    }
+
+    return taskOrderingData
 }
