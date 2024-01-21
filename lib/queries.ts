@@ -37,10 +37,3 @@ export function taskByIdOptions(taskId: number | null) {
         enabled: taskId !== null,
     })
 }
-
-export function taskOrderingByColumnsOptions(columnIds: number[]) {
-    return queryOptions({
-        queryKey: ["orderingData", columnIds],
-        queryFn: () => getTaskOrderingByColumns(columnIds),
-    })
-}
