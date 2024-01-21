@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query"
-import { Task } from "@/types"
 import TaskCard from "./TaskCard"
 import { tasksByColumnOptions } from "@/lib/queries"
 
@@ -7,6 +6,7 @@ type Props = {
     selectedBoardIndex: number
     columnId: number
     columnTitle: string
+    taskOrdering: number[]
     columnColor: string
 }
 
@@ -14,6 +14,7 @@ export default function TaskColumn({
     selectedBoardIndex,
     columnId,
     columnTitle,
+    taskOrdering,
     columnColor,
 }: Props) {
     const {
@@ -21,7 +22,7 @@ export default function TaskColumn({
         isPending,
         isError,
         isSuccess,
-    } = useQuery(tasksByColumnOptions(columnId))
+    } = useQuery(tasksByColumnOptions(columnId, taskOrdering))
 
     const taskCards = isSuccess
         ? tasks.map((task) => {

@@ -4,7 +4,6 @@ import {
     getBoardById,
     getTasksByColumn,
     getTaskById,
-    getTaskOrderingByColumns,
 } from "./dataUtils"
 
 export function boardsByUserOptions(userId: string) {
@@ -23,10 +22,15 @@ export function boardByIdOptions(boardId: number) {
     })
 }
 
-export function tasksByColumnOptions(colId: number) {
+export function tasksByColumnOptions(colId: number, taskOrdering: number[]) {
     return queryOptions({
         queryKey: ["tasksData", colId],
         queryFn: () => getTasksByColumn(colId),
+        //this sort is O(n^2) but the numbers we're dealing with are small
+        select: (data) =>
+            data.toSorted((a, b) => {
+                return taskOrdering.indexOf(a.id) - taskOrdering.indexOf(b.id)
+            }),
     })
 }
 

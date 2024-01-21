@@ -57,6 +57,7 @@ export default function Board({
                           selectedBoardIndex={selectedBoardIndex}
                           columnId={column.id}
                           columnTitle={column.title}
+                          taskOrdering={column.taskOrdering}
                           columnColor={
                               //mod the index so it loops back around to first color
                               columnColors[index % columnColors.length]
