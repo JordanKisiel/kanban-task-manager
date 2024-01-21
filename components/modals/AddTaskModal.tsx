@@ -44,6 +44,7 @@ export default function AddTaskModal({
             setDisplayError(true)
         },
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["boardsData"] })
             queryClient.invalidateQueries({ queryKey: ["tasksData"] })
             setIsModalOpen(false)
         },
