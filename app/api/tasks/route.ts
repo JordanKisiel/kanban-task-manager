@@ -46,5 +46,18 @@ export async function POST(request: NextRequest) {
         },
     })
 
+    //add id of newly created task to the associated
+    //column's taskOrdering
+    await prisma.column.update({
+        where: {
+            id: columnId,
+        },
+        data: {
+            taskOrdering: {
+                push: result.id,
+            },
+        },
+    })
+
     return NextResponse.json(result)
 }
