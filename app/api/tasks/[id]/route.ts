@@ -22,6 +22,8 @@ export async function GET(
     return NextResponse.json(task)
 }
 
+//TODO: change this so that I can remove the task id from taskOrdering
+//this require something like taskOrdering: {set: taskOrdering.filter(id) => id !== task.id}
 export async function DELETE(
     request: NextRequest,
     { params }: { params: { id: string } }
@@ -29,6 +31,25 @@ export async function DELETE(
     const result = await prisma.task.delete({
         where: {
             id: Number(params.id),
+        },
+    })
+
+    const columnResult = await prisma.column.findUnique({
+        where: {
+            id: result.columnId,
+        },
+    })
+
+    await prisma.column.update({
+        where: {
+            id: result.columnId,
+        },
+        data: {
+            taskOrdering: {
+                set: columnResult?.taskOrdering.filter(
+                    (id) => id !== result.id
+                ),
+            },
         },
     })
 
