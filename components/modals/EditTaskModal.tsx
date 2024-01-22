@@ -57,6 +57,8 @@ export default function EditTaskModal({
         },
         onSuccess: () => {
             setIsModalOpen(false)
+            router.push(`?board=${selectedBoardIndex}`)
+            queryClient.invalidateQueries({ queryKey: ["boardsData"] })
             queryClient.invalidateQueries({ queryKey: ["tasksData"] })
         },
         onError: () => {

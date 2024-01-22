@@ -90,6 +90,7 @@ export default function ViewTaskModal({
         },
         //re-fetch regardless of error or success
         onSettled: (newTask) => {
+            queryClient.invalidateQueries({ queryKey: ["boardsData"] })
             queryClient.invalidateQueries({ queryKey: ["tasksData"] })
             queryClient.invalidateQueries({
                 queryKey: ["taskData", newTask.id],

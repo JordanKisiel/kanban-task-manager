@@ -115,6 +115,7 @@ export default function HeaderBar({
         } else {
             modalContent = (
                 <DeleteModal
+                    selectedBoardIndex={selectedBoardIndex}
                     isBoard={true}
                     itemToDelete={board}
                     changeSelectedBoardIndex={changeSelectedBoardIndex}

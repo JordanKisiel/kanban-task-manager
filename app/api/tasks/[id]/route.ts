@@ -22,8 +22,10 @@ export async function GET(
     return NextResponse.json(task)
 }
 
-//TODO: change this so that I can remove the task id from taskOrdering
-//this require something like taskOrdering: {set: taskOrdering.filter(id) => id !== task.id}
+//ideally task ids would be removed from taskOrdering
+//in same transaction as the deletion of a task
+//but there doesn't seem to be a way to do that (at least not easily)
+//within the same transaction
 export async function DELETE(
     request: NextRequest,
     { params }: { params: { id: string } }
@@ -73,6 +75,19 @@ export async function PUT(
             description: subTask,
             isComplete: false,
         }
+    })
+
+    //grab the task's current colId to check and see if incoming columnId
+    //is the same as the current colId
+    //also include the associated column data for updating the taskOrdering
+    //of the old column if necessary
+    const initialTaskData = await prisma.task.findUnique({
+        where: {
+            id: Number(params.id),
+        },
+        include: {
+            column: true,
+        },
     })
 
     const result = await prisma.$transaction([
@@ -130,6 +145,33 @@ export async function PUT(
             },
         }),
     ])
+
+    //only change taskOrdering if the colId changes
+    if (initialTaskData?.columnId !== columnId) {
+        //add taskId to end of new column
+        await prisma.column.update({
+            where: {
+                id: columnId,
+            },
+            data: {
+                taskOrdering: {
+                    push: initialTaskData?.id,
+                },
+            },
+        })
+
+        //remove taskId from taskOrdering of old column
+        await prisma.column.update({
+            where: {
+                id: initialTaskData?.columnId,
+            },
+            data: {
+                taskOrdering: initialTaskData?.column.taskOrdering.filter(
+                    (id: number) => id !== initialTaskData.id
+                ),
+            },
+        })
+    }
 
     return NextResponse.json(result)
 }

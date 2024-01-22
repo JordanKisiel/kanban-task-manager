@@ -113,6 +113,7 @@ export default function Home({ params }: { params: { user: string } }) {
         } else {
             modalContent = (
                 <DeleteModal
+                    selectedBoardIndex={selectedBoardIndex}
                     isBoard={false}
                     itemToDelete={task.isSuccess ? task.data : null}
                     changeSelectedBoardIndex={changeSelectedBoardIndex}

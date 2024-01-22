@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import ActionButton from "@/components/ui-elements/ActionButton"
 import { deleteBoard, deleteTask } from "@/lib/dataUtils"
 import { Board, Task } from "@/types"
@@ -6,6 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import ErrorMessage from "../ui-elements/ErrorMessage"
 
 type Props = {
+    selectedBoardIndex: number
     isBoard: boolean
     itemToDelete: Board | Task | null
     setIsModalOpen: Function
@@ -13,12 +15,15 @@ type Props = {
 }
 
 export default function DeleteModal({
+    selectedBoardIndex,
     isBoard,
     itemToDelete,
     setIsModalOpen,
     changeSelectedBoardIndex,
 }: Props) {
     const queryClient = useQueryClient()
+
+    const router = useRouter()
 
     const deleteBoardMutation = useMutation({
         mutationFn: deleteBoard,
@@ -46,6 +51,7 @@ export default function DeleteModal({
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["tasksData"] })
             setIsModalOpen(false)
+            router.push(`?board=${selectedBoardIndex}`)
         },
         onError: () => {
             setIsSubmitted(false)
