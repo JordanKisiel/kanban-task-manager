@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import TaskCard from "./TaskCard"
 import { tasksByColumnOptions } from "@/lib/queries"
+import { SortableContext } from "@dnd-kit/sortable"
 
 type Props = {
     selectedBoardIndex: number
@@ -49,7 +50,11 @@ export default function TaskColumn({
                     {`${columnTitle} (${isSuccess ? tasks.length : 0})`}
                 </h3>
             </div>
-            <div className="flex flex-col gap-6">{taskCards}</div>
+            <div className="flex flex-col gap-6">
+                <SortableContext items={taskOrdering}>
+                    {taskCards}
+                </SortableContext>
+            </div>
         </div>
     )
 }

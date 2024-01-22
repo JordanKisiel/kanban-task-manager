@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Image from "next/image"
 import TaskColumn from "@/components/app-elements/TaskColumn"
 import Modal from "@/components/modals/Modal"
@@ -9,8 +10,11 @@ import addIconDark from "@/public/plus-icon.svg"
 import addIconLight from "@/public/plus-icon-gray.svg"
 import { useModal } from "@/hooks/useModal"
 import EditBoardModal from "@/components/modals/EditBoardModal"
-import { Board } from "@/types"
+import { Board, Task } from "@/types"
 import AddBoardModal from "@/components/modals/AddBoardModal"
+import { DndContext, DragOverlay, DragStartEvent } from "@dnd-kit/core"
+import TaskCard from "./TaskCard"
+import Portal from "@/components/utilities/Portal"
 
 type Props = {
     board: Board | null
@@ -33,6 +37,8 @@ export default function Board({
         "editBoard",
         false
     )
+
+    const [activeTask, setActiveTask] = useState<Task | null>(null)
 
     const NUM_SKELETON_COLS = 3
 
@@ -80,7 +86,19 @@ export default function Board({
 
     const boardDisplay = (
         <div className="grid grid-flow-col auto-cols-[16rem] px-6 py-20 gap-6 overflow-auto md:pt-5 md:pb-20">
-            {taskColumns}
+            <DndContext onDragStart={onDragStart}>
+                {taskColumns}
+                <Portal>
+                    <DragOverlay>
+                        {activeTask && (
+                            <TaskCard
+                                selectedBoardIndex={selectedBoardIndex}
+                                taskId={activeTask.id}
+                            />
+                        )}
+                    </DragOverlay>
+                </Portal>
+            </DndContext>
             <div className="flex flex-col pt-[2.3rem] h-full justify-center">
                 <button
                     onClick={() => {
@@ -200,6 +218,14 @@ export default function Board({
                 setIsModalOpen={setIsModalOpen}
             />
         )
+    }
+
+    function onDragStart(event: DragStartEvent) {
+        console.log("DRAG START", event)
+        if (event.active.data.current?.type === "Task") {
+            setActiveTask(event.active.data.current.task)
+            return
+        }
     }
 
     return (
