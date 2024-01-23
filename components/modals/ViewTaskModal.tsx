@@ -49,7 +49,6 @@ export default function ViewTaskModal({
     const editTaskMutation = useMutation({
         mutationFn: editTask,
         onMutate: async (sentTaskData) => {
-            console.log("on mutate called")
             //change shape of data to conform to Task type
             const newTask = {
                 id: sentTaskData.taskId,

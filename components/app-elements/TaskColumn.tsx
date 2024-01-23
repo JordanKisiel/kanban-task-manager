@@ -10,6 +10,7 @@ type Props = {
     columnTitle: string
     taskOrdering: number[]
     columnColor: string
+    dragDisabled: boolean
 }
 
 export default function TaskColumn({
@@ -18,6 +19,7 @@ export default function TaskColumn({
     columnTitle,
     taskOrdering,
     columnColor,
+    dragDisabled,
 }: Props) {
     const {
         data: tasks,
@@ -33,17 +35,11 @@ export default function TaskColumn({
                       key={`${task.id}`}
                       selectedBoardIndex={selectedBoardIndex}
                       taskId={task.id}
+                      dragDisabled={dragDisabled}
                   />
               )
           })
         : []
-
-    // const { setNodeRef, isOver } = useDroppable({
-    //     id: columnId,
-    //     data: {
-    //         type: "Column",
-    //     },
-    // })
 
     return (
         <div>

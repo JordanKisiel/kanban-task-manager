@@ -10,9 +10,14 @@ import { usePathname } from "next/navigation"
 type Props = {
     selectedBoardIndex: number
     taskId: number
+    dragDisabled: boolean
 }
 
-export default function TaskCard({ selectedBoardIndex, taskId }: Props) {
+export default function TaskCard({
+    selectedBoardIndex,
+    taskId,
+    dragDisabled,
+}: Props) {
     const {
         data: task,
         isPending,
@@ -33,6 +38,7 @@ export default function TaskCard({ selectedBoardIndex, taskId }: Props) {
             type: "Task",
             task: task ?? null,
         },
+        disabled: dragDisabled,
     })
 
     const style = {

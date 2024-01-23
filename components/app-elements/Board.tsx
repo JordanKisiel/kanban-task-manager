@@ -18,11 +18,12 @@ import {
     DragOverlay,
     DragStartEvent,
 } from "@dnd-kit/core"
-import TaskCard from "./TaskCard"
+import TaskCard from "@/components/app-elements/TaskCard"
 import Portal from "@/components/utilities/Portal"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { editTaskOrdering } from "@/lib/dataUtils"
 import { arrayMove } from "@dnd-kit/sortable"
+import { useParams } from "next/navigation"
 
 type Props = {
     board: Board | null
@@ -48,20 +49,77 @@ export default function Board({
 
     const [activeTask, setActiveTask] = useState<Task | null>(null)
 
+    const [dragDisabled, setDragDisabled] = useState(false)
+
+    const params = useParams<{ user: string }>()
+
     const queryClient = useQueryClient()
 
-    //TODO: make this optimistic after getting non-optimistic to work
     const editTaskOrderingMutation = useMutation({
         mutationFn: editTaskOrdering,
-        onMutate: () => {
-            //disable dragging?
+        onMutate: async (sentOrderingData) => {
+            //disable dragging while mutation in progress
+            setDragDisabled(true)
+
+            //snapshot the previous boards
+            //to use in case of rollback
+            const previousBoards: Board[] | undefined =
+                queryClient.getQueryData(["boardsData", params.user])
+
+            //create new boards data to use for optimistic update
+            let newBoards: Board[] = []
+            if (previousBoards) {
+                console.log(previousBoards)
+
+                newBoards = previousBoards.map((prevBoard) => {
+                    if (prevBoard.id !== board?.id) {
+                        return prevBoard
+                    }
+                    return {
+                        ...prevBoard,
+                        columns: prevBoard.columns.map((prevColumn) => {
+                            if (prevColumn.id !== sentOrderingData.columnId) {
+                                return prevColumn
+                            }
+                            return {
+                                ...prevColumn,
+                                taskOrdering: sentOrderingData.taskOrdering,
+                            }
+                        }),
+                    }
+                })
+            }
+
+            //cancel outgoing refetches to stop
+            //overwriting of optimistic update
+            await queryClient.cancelQueries({
+                queryKey: ["boardsData", params.user],
+            })
+
+            //optimistically update to the new value
+            queryClient.setQueryData(["boardsData", params.user], newBoards)
+
+            //return context
+            return { previousBoards, newBoards }
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["boardsData"] })
+        onError: (err, newBoards, context) => {
+            //rollback on error
+            console.log(err)
+            if (context) {
+                queryClient.setQueryData(
+                    ["boardsData", params.user],
+                    context.previousBoards
+                )
+            }
         },
-        onError: () => {
-            //in final version, rollback on error
-            console.log("There was an error. Please try again")
+        //refetch regardless of error or success
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["boardsData", params.user],
+            })
+
+            //re-enable dragging
+            setDragDisabled(false)
         },
     })
 
@@ -93,6 +151,7 @@ export default function Board({
                               //mod the index so it loops back around to first color
                               columnColors[index % columnColors.length]
                           }
+                          dragDisabled={dragDisabled}
                       />
                   )
               })
@@ -122,6 +181,7 @@ export default function Board({
                             <TaskCard
                                 selectedBoardIndex={selectedBoardIndex}
                                 taskId={activeTask.id}
+                                dragDisabled={dragDisabled}
                             />
                         )}
                     </DragOverlay>
