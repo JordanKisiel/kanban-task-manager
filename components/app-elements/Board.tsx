@@ -57,7 +57,7 @@ export default function Board({
 
     const editTaskOrderingMutation = useMutation({
         mutationFn: editTaskOrdering,
-        onMutate: async (sentOrderingData) => {
+        onMutate: (sentOrderingData) => {
             //disable dragging while mutation in progress
             setDragDisabled(true)
 
@@ -69,8 +69,6 @@ export default function Board({
             //create new boards data to use for optimistic update
             let newBoards: Board[] = []
             if (previousBoards) {
-                console.log(previousBoards)
-
                 newBoards = previousBoards.map((prevBoard) => {
                     if (prevBoard.id !== board?.id) {
                         return prevBoard
@@ -90,14 +88,10 @@ export default function Board({
                 })
             }
 
-            //cancel outgoing refetches to stop
-            //overwriting of optimistic update
-            await queryClient.cancelQueries({
-                queryKey: ["boardsData", params.user],
-            })
-
             //optimistically update to the new value
             queryClient.setQueryData(["boardsData", params.user], newBoards)
+
+            console.log("mutate STARTED")
 
             //return context
             return { previousBoards, newBoards }
@@ -120,6 +114,8 @@ export default function Board({
 
             //re-enable dragging
             setDragDisabled(false)
+
+            console.log("mutate COMPLETE")
         },
     })
 
@@ -176,7 +172,9 @@ export default function Board({
             >
                 {taskColumns}
                 <Portal>
-                    <DragOverlay>
+                    {/* dropAnimation being set to null here fixes issue with item moving back
+                        to original position for a few frames before ordering updating */}
+                    <DragOverlay dropAnimation={null}>
                         {activeTask && (
                             <TaskCard
                                 selectedBoardIndex={selectedBoardIndex}
@@ -308,9 +306,19 @@ export default function Board({
         )
     }
 
-    function onDragStart(event: DragStartEvent) {
+    async function onDragStart(event: DragStartEvent) {
+        //store the dragged task in state
         if (event.active.data.current?.type === "Task") {
             setActiveTask(event.active.data.current.task)
+
+            //cancel any outgoing queries to avoid refreshes
+            //interrupting user dragging
+            //cancel outgoing refetches to stop
+            //overwriting of optimistic update
+            await queryClient.cancelQueries({
+                queryKey: ["boardsData", params.user],
+            })
+
             return
         }
     }

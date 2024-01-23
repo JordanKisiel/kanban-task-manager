@@ -99,8 +99,6 @@ export async function addBoard(boardData: {
     title: string
     columnTitles: string[]
 }) {
-    await delay(DELAY_TIME)
-
     let response
 
     const columns = boardData.columnTitles.map((name) => {
@@ -129,7 +127,7 @@ export async function addTask(formData: {
     selectedIndex: number
     status: number
 }) {
-    await delay(DELAY_TIME)
+    //await delay(DELAY_TIME)
 
     const task = {
         title: formData.title,
@@ -188,7 +186,7 @@ export async function editBoard(boardData: {
         }[]
     }
 }) {
-    await delay(DELAY_TIME)
+    //await delay(DELAY_TIME)
 
     let response
 
@@ -224,7 +222,7 @@ export async function editTask(taskData: {
     }
     columnId: number | null
 }) {
-    await delay(DELAY_TIME)
+    //await delay(DELAY_TIME)
 
     let response
 

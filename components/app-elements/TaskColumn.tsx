@@ -41,6 +41,8 @@ export default function TaskColumn({
           })
         : []
 
+    console.log(`taskOrdering: ${taskOrdering}`)
+
     return (
         <div>
             <div className="flex flex-row items-center gap-3 mb-4">
