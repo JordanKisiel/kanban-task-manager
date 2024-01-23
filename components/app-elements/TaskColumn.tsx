@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
 import TaskCard from "./TaskCard"
 import { tasksByColumnOptions } from "@/lib/queries"
-import { SortableContext } from "@dnd-kit/sortable"
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
+import { useDroppable } from "@dnd-kit/core"
 
 type Props = {
     selectedBoardIndex: number
@@ -37,6 +38,13 @@ export default function TaskColumn({
           })
         : []
 
+    // const { setNodeRef, isOver } = useDroppable({
+    //     id: columnId,
+    //     data: {
+    //         type: "Column",
+    //     },
+    // })
+
     return (
         <div>
             <div className="flex flex-row items-center gap-3 mb-4">
@@ -51,7 +59,10 @@ export default function TaskColumn({
                 </h3>
             </div>
             <div className="flex flex-col gap-6">
-                <SortableContext items={taskOrdering}>
+                <SortableContext
+                    items={taskOrdering}
+                    strategy={verticalListSortingStrategy}
+                >
                     {taskCards}
                 </SortableContext>
             </div>

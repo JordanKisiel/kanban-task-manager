@@ -12,9 +12,17 @@ import { useModal } from "@/hooks/useModal"
 import EditBoardModal from "@/components/modals/EditBoardModal"
 import { Board, Task } from "@/types"
 import AddBoardModal from "@/components/modals/AddBoardModal"
-import { DndContext, DragOverlay, DragStartEvent } from "@dnd-kit/core"
+import {
+    DndContext,
+    DragEndEvent,
+    DragOverlay,
+    DragStartEvent,
+} from "@dnd-kit/core"
 import TaskCard from "./TaskCard"
 import Portal from "@/components/utilities/Portal"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { editTaskOrdering } from "@/lib/dataUtils"
+import { arrayMove } from "@dnd-kit/sortable"
 
 type Props = {
     board: Board | null
@@ -39,6 +47,23 @@ export default function Board({
     )
 
     const [activeTask, setActiveTask] = useState<Task | null>(null)
+
+    const queryClient = useQueryClient()
+
+    //TODO: make this optimistic after getting non-optimistic to work
+    const editTaskOrderingMutation = useMutation({
+        mutationFn: editTaskOrdering,
+        onMutate: () => {
+            //disable dragging?
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["boardsData"] })
+        },
+        onError: () => {
+            //in final version, rollback on error
+            console.log("There was an error. Please try again")
+        },
+    })
 
     const NUM_SKELETON_COLS = 3
 
@@ -86,7 +111,10 @@ export default function Board({
 
     const boardDisplay = (
         <div className="grid grid-flow-col auto-cols-[16rem] px-6 py-20 gap-6 overflow-auto md:pt-5 md:pb-20">
-            <DndContext onDragStart={onDragStart}>
+            <DndContext
+                onDragStart={onDragStart}
+                onDragEnd={onDragEnd}
+            >
                 {taskColumns}
                 <Portal>
                     <DragOverlay>
@@ -221,10 +249,52 @@ export default function Board({
     }
 
     function onDragStart(event: DragStartEvent) {
-        console.log("DRAG START", event)
         if (event.active.data.current?.type === "Task") {
             setActiveTask(event.active.data.current.task)
             return
+        }
+    }
+
+    function onDragEnd(event: DragEndEvent) {
+        const { active, over } = event
+
+        //if not over a valid element, do nothing
+        if (!over) return
+
+        const activeTaskId = active.id
+        const overTaskId = over.id
+
+        //if the task is over itself, do nothing
+        if (activeTaskId === overTaskId) return
+
+        //grab the columnId associated with the task
+        //and use it get a reference to the current column
+        const activeColumnId = active.data.current?.task.columnId
+        const activeColumn = board?.columns.find(
+            (column) => column.id === activeColumnId
+        )
+
+        const activeTaskIndex = activeColumn?.taskOrdering.findIndex(
+            (taskId) => taskId === activeTaskId
+        )
+        const overTaskIndex = activeColumn?.taskOrdering.findIndex(
+            (taskId) => taskId === overTaskId
+        )
+
+        //use data to mutate the taskOrdering field of the given column
+        if (
+            activeColumn?.taskOrdering &&
+            activeTaskIndex !== undefined &&
+            overTaskIndex !== undefined
+        ) {
+            editTaskOrderingMutation.mutate({
+                columnId: activeColumnId,
+                taskOrdering: arrayMove(
+                    activeColumn?.taskOrdering,
+                    activeTaskIndex,
+                    overTaskIndex
+                ),
+            })
         }
     }
 
