@@ -24,12 +24,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { editTaskOrdering } from "@/lib/dataUtils"
 import { arrayMove } from "@dnd-kit/sortable"
 import { useParams } from "next/navigation"
+import { useDarkMode } from "@/contexts/DarkModeProvider"
 
 type Props = {
     board: Board | null
     isPending: boolean
     numBoards: number
-    isDarkMode: boolean
     selectedBoardIndex: number
     setNewBoardCreated: Function
 }
@@ -38,7 +38,6 @@ export default function Board({
     board,
     isPending,
     numBoards,
-    isDarkMode,
     selectedBoardIndex,
     setNewBoardCreated,
 }: Props) {
@@ -50,6 +49,8 @@ export default function Board({
     const [activeTask, setActiveTask] = useState<Task | null>(null)
 
     const [dragDisabled, setDragDisabled] = useState(false)
+
+    const { isDarkMode } = useDarkMode()
 
     const params = useParams<{ user: string }>()
 

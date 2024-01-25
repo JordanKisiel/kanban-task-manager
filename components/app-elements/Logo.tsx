@@ -2,12 +2,11 @@
 
 import Image from "next/image"
 import smallLogo from "@/public/kanban-app-logo.svg"
+import { useDarkMode } from "@/contexts/DarkModeProvider"
 
-type Props = {
-    isDarkMode: boolean
-}
+export default function Logo() {
+    const { isDarkMode } = useDarkMode()
 
-export default function Logo({ isDarkMode }: Props) {
     return (
         <picture className="mr-1 dark:bg-neutral-700 flex flex-row justify-center items-center">
             <source

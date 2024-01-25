@@ -15,6 +15,7 @@ import ModalSideBar from "@/components/app-elements/ModalSideBar"
 import Image from "next/image"
 import addIcon from "@/public/plus-icon.svg"
 import { redirect } from "next/navigation"
+import { useDarkMode } from "@/contexts/DarkModeProvider"
 
 type Props = {
     selectedBoardIndex: number
@@ -22,8 +23,6 @@ type Props = {
     boards: Board[]
     isPending: boolean
     changeSelectedBoardIndex: Function
-    isDarkMode: boolean
-    toggleDarkMode: Function
 }
 
 export default function HeaderBar({
@@ -32,8 +31,6 @@ export default function HeaderBar({
     boards,
     isPending,
     changeSelectedBoardIndex,
-    isDarkMode,
-    toggleDarkMode,
 }: Props) {
     const { data: session, status } = useSession()
 
@@ -180,8 +177,6 @@ export default function HeaderBar({
                     selectedBoardIndex={selectedBoardIndex}
                     setShowModalSideBar={setShowModalSideBar}
                     boards={boards}
-                    isDarkMode={isDarkMode}
-                    toggleDarkMode={toggleDarkMode}
                     isPending={isPending}
                 />
             )}

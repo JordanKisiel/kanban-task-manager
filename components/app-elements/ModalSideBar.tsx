@@ -6,14 +6,13 @@ import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 import { useModal } from "@/hooks/useModal"
 import { Board } from "@/types"
 import AddBoardModal from "@/components/modals/AddBoardModal"
+import { useDarkMode } from "@/contexts/DarkModeProvider"
 
 type Props = {
     selectedBoardIndex: number
     boards: Board[]
     isPending: boolean
     setShowModalSideBar: Function
-    isDarkMode: boolean
-    toggleDarkMode: Function
 }
 
 export default function ModalSideBar({
@@ -21,8 +20,6 @@ export default function ModalSideBar({
     boards,
     isPending,
     setShowModalSideBar,
-    isDarkMode,
-    toggleDarkMode,
 }: Props) {
     const { setNewBoardCreated } = useNewBoardCreated(isPending, boards)
 
@@ -30,6 +27,8 @@ export default function ModalSideBar({
         "addBoard",
         false
     )
+
+    const { isDarkMode, toggleDarkMode } = useDarkMode()
 
     const numBoards = isPending ? 0 : boards.length
 

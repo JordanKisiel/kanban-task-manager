@@ -5,6 +5,7 @@ import { Plus_Jakarta_Sans } from "next/font/google"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { getServerSession } from "next-auth"
 import SessionProvider from "@/contexts/SessionProvider"
+import { DarkModeProvider } from "@/contexts/DarkModeProvider"
 
 const font = Plus_Jakarta_Sans({ subsets: ["latin"] })
 
@@ -29,12 +30,14 @@ export default async function RootLayout({
             <body
                 className={`${font.className} antialiased bg-neutral-200 dark:bg-neutral-800 min-h-screen m-0 md:overflow-hidden`}
             >
-                <QueryProvider>
-                    <SessionProvider session={session}>
-                        {children}
-                    </SessionProvider>
-                    <ReactQueryDevtools initialIsOpen={false} />
-                </QueryProvider>
+                <DarkModeProvider>
+                    <QueryProvider>
+                        <SessionProvider session={session}>
+                            {children}
+                        </SessionProvider>
+                        <ReactQueryDevtools initialIsOpen={false} />
+                    </QueryProvider>
+                </DarkModeProvider>
             </body>
         </html>
     )

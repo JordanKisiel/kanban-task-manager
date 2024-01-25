@@ -6,6 +6,8 @@ import { CSS } from "@dnd-kit/utilities"
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import GrabIcon from "@/components/icons/GrabIcon"
+import { useDarkMode } from "@/contexts/DarkModeProvider"
 
 type Props = {
     selectedBoardIndex: number
@@ -45,6 +47,8 @@ export default function TaskCard({
         transition,
         transform: CSS.Transform.toString(transform),
     }
+
+    const { isDarkMode } = useDarkMode()
 
     const completedSubTasks = isSuccess
         ? task.subTasks.reduce((accum, curr) => {
@@ -90,21 +94,31 @@ export default function TaskCard({
             <Link
                 ref={setNodeRef}
                 style={style}
-                {...attributes}
-                {...listeners}
                 href={taskCardHref}
             >
                 <div
                     className="
-                bg-neutral-100 dark:bg-neutral-700 rounded py-5 px-4 
+                flex flex-row justify-between bg-neutral-100 dark:bg-neutral-700 rounded py-5 px-4 
                 shadow-[0_4px_6px_0_rgba(54,78,126,0.10)] dark:shadow-none"
                 >
-                    <h4 className="font-bold dark:text-neutral-100">
-                        {isSuccess ? task.title : ""}
-                    </h4>
-                    <span className="text-xs font-bold text-neutral-500">{`${completedSubTasks} of ${
-                        isSuccess ? task.subTasks.length : 0
-                    } subtasks`}</span>
+                    <div>
+                        <h4 className="font-bold dark:text-neutral-100">
+                            {isSuccess ? task.title : ""}
+                        </h4>
+                        <span className="text-xs font-bold text-neutral-500">{`${completedSubTasks} of ${
+                            isSuccess ? task.subTasks.length : 0
+                        } subtasks`}</span>
+                    </div>
+                    <div
+                        {...attributes}
+                        {...listeners}
+                        className="opacity-40 h-1/2 px-2 pt-1 pb-3 cursor-grab"
+                    >
+                        <GrabIcon
+                            fill={isDarkMode ? "#FFFFFF" : "#000000"}
+                            scale={0.1}
+                        />
+                    </div>
                 </div>
             </Link>
         </>

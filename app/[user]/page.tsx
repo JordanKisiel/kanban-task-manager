@@ -1,7 +1,6 @@
 "use client"
 
 import { useLocalStorage } from "@/hooks/useLocalStorage"
-import { useDarkMode } from "@/hooks/useDarkMode"
 import { useModal } from "@/hooks/useModal"
 import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -43,8 +42,6 @@ export default function Home({ params }: { params: { user: string } }) {
         boards.isPending,
         boards.data
     )
-
-    const [isDarkMode, toggleDarkMode] = useDarkMode("kanban-isDarkMode")
 
     const [showSideBar, setShowSideBar] = useLocalStorage(
         "kanban-show-sidebar",
@@ -149,7 +146,7 @@ export default function Home({ params }: { params: { user: string } }) {
                             !showSideBar && "md:border-b-[1px]"
                         }`}
                 >
-                    <Logo isDarkMode={isDarkMode} />
+                    <Logo />
                 </div>
                 <div
                     className="
@@ -157,7 +154,7 @@ export default function Home({ params }: { params: { user: string } }) {
                     md:relative md:border-b-[1px] md:dark:border-neutral-600 md:border-neutral-300"
                 >
                     <div className="flex flex-row justify-center items-center md:hidden">
-                        <Logo isDarkMode={isDarkMode} />
+                        <Logo />
                     </div>
                     <HeaderBar
                         selectedBoardIndex={selectedBoardIndex}
@@ -165,8 +162,6 @@ export default function Home({ params }: { params: { user: string } }) {
                         boards={boards.isSuccess ? boards.data : []}
                         isPending={boards.isPending}
                         changeSelectedBoardIndex={changeSelectedBoardIndex}
-                        isDarkMode={isDarkMode}
-                        toggleDarkMode={toggleDarkMode}
                     />
                 </div>
                 <div
@@ -177,8 +172,6 @@ export default function Home({ params }: { params: { user: string } }) {
                     <SideBar
                         handleHideSideBar={handleHideSideBar}
                         handleShowSideBar={handleShowSideBar}
-                        isDarkMode={isDarkMode}
-                        toggleDarkMode={toggleDarkMode}
                         selectedBoardIndex={selectedBoardIndex}
                         boards={boards.isSuccess ? boards.data : []}
                         isPending={boards.isPending}
@@ -197,7 +190,6 @@ export default function Home({ params }: { params: { user: string } }) {
                         }
                         numBoards={boards.isSuccess ? boards.data.length : 0}
                         isPending={boards.isPending}
-                        isDarkMode={isDarkMode}
                         selectedBoardIndex={selectedBoardIndex}
                         setNewBoardCreated={setNewBoardCreated}
                     />

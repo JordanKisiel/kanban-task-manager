@@ -8,12 +8,11 @@ import { useModal } from "@/hooks/useModal"
 import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 import { Board } from "@/types"
 import AddBoardModal from "@/components/modals/AddBoardModal"
+import { useDarkMode } from "@/contexts/DarkModeProvider"
 
 type Props = {
     handleHideSideBar: Function
     handleShowSideBar: Function
-    isDarkMode: boolean
-    toggleDarkMode: Function
     selectedBoardIndex: number
     boards: Board[]
     isPending: boolean
@@ -22,8 +21,6 @@ type Props = {
 export default function SideBar({
     handleHideSideBar,
     handleShowSideBar,
-    isDarkMode,
-    toggleDarkMode,
     selectedBoardIndex,
     boards,
     isPending,
@@ -34,6 +31,8 @@ export default function SideBar({
         "addBoard",
         false
     )
+
+    const { isDarkMode, toggleDarkMode } = useDarkMode()
 
     const NUM_SKELETON_ITEMS = 3
 
