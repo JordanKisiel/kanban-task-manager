@@ -26,6 +26,8 @@ const config: Config = {
             animation: {
                 "pulse-fast":
                     "pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                "pulse-loading":
+                    "pulse 1.5s cubic-bezier(0.46, 0.02, 0.93, 0.48) infinite",
             },
         },
     },

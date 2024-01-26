@@ -15,7 +15,6 @@ import ModalSideBar from "@/components/app-elements/ModalSideBar"
 import Image from "next/image"
 import addIcon from "@/public/plus-icon.svg"
 import { redirect } from "next/navigation"
-import { useDarkMode } from "@/contexts/DarkModeProvider"
 
 type Props = {
     selectedBoardIndex: number
@@ -125,7 +124,7 @@ export default function HeaderBar({
     return (
         <>
             <section className="bg-neutral-100 dark:bg-neutral-700 flex flex-row p-4 justify-between items-center w-full">
-                <div className="relative pr-4">
+                <div className="flex flex-row gap-3 items-baseline relative pr-4">
                     <h1 className="text-neutral-900 dark:text-neutral-100 text-lg font-bold">
                         {selectedBoardTitle}
                     </h1>

@@ -1,11 +1,15 @@
 type Props = {
     fill: string
     scale: number
+    isLoading: boolean
 }
 
-export default function GrabIcon({ fill, scale }: Props) {
+export default function GrabIcon({ fill, scale, isLoading }: Props) {
     return (
         <svg
+            className={`${
+                isLoading ? "animate-pulse-loading" : "animate-none"
+            }`}
             width={`${scale * 88}`}
             height={`${scale * 133}`}
             viewBox="0 0 88 133"
