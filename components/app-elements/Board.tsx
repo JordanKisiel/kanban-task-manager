@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import TaskColumn from "@/components/app-elements/TaskColumn"
 import Modal from "@/components/modals/Modal"
@@ -15,6 +15,7 @@ import AddBoardModal from "@/components/modals/AddBoardModal"
 import {
     DndContext,
     DragEndEvent,
+    DragOverEvent,
     DragOverlay,
     DragStartEvent,
 } from "@dnd-kit/core"
@@ -25,6 +26,7 @@ import { editTaskOrdering } from "@/lib/dataUtils"
 import { arrayMove } from "@dnd-kit/sortable"
 import { useParams } from "next/navigation"
 import { useDarkMode } from "@/contexts/DarkModeProvider"
+import { columnColors } from "@/lib/config"
 
 type Props = {
     board: Board | null
@@ -41,6 +43,25 @@ export default function Board({
     selectedBoardIndex,
     setNewBoardCreated,
 }: Props) {
+    const [localBoard, setLocalBoard] = useState<
+        | { columnId: number; columnTitle: string; taskOrdering: number[] }[]
+        | null
+    >(null)
+
+    useEffect(() => {
+        if (board !== null) {
+            setLocalBoard(
+                board.columns.map((column) => {
+                    return {
+                        columnId: column.id,
+                        columnTitle: column.title,
+                        taskOrdering: column.taskOrdering,
+                    }
+                })
+            )
+        }
+    }, [board])
+
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "editBoard",
         false
@@ -122,27 +143,15 @@ export default function Board({
 
     const NUM_SKELETON_COLS = 3
 
-    const columnColors = [
-        "bg-[#49C4E5]",
-        "bg-[#8471F2]",
-        "bg-[#67E2AE]",
-        "bg-[#E2B867]",
-        "bg-[#E26767]",
-        "bg-[#6782E2]",
-        "bg-[#96E267]",
-        "bg-[#D7D143]",
-        "bg-[#C543C8]",
-    ]
-
     const taskColumns =
-        board !== null
-            ? board.columns.map((column, index) => {
+        localBoard !== null
+            ? localBoard.map((column, index) => {
                   return (
                       <TaskColumn
-                          key={column.title}
+                          key={column.columnId}
                           selectedBoardIndex={selectedBoardIndex}
-                          columnId={column.id}
-                          columnTitle={column.title}
+                          columnId={column.columnId}
+                          columnTitle={column.columnTitle}
                           taskOrdering={column.taskOrdering}
                           columnColor={
                               //mod the index so it loops back around to first color
@@ -324,7 +333,33 @@ export default function Board({
         }
     }
 
+    // function onDragOver(event: DragOverEvent) {
+    //     const { active, over } = event
+
+    //     //if not over a valid element, do nothing
+    //     if (!over) return
+
+    //     const activeTaskId = active.id
+    //     const overId = over.id
+
+    //     //if the task is over itself, do nothing
+    //     if (activeTaskId === overId) return
+
+    //     //check if the over element is a task
+    //     //active element should always be a task
+    //     const isOverATask = over.data.current?.type === "Task"
+
+    //     //dropping task over another task
+    //     if (isOverATask) {
+    //     }
+
+    //     //dropping task over column
+    // }
+
     function onDragEnd(event: DragEndEvent) {
+        //remove overlay as it's no longer needed
+        setActiveTask(null)
+
         const { active, over } = event
 
         //if not over a valid element, do nothing

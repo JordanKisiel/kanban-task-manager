@@ -249,7 +249,7 @@ export async function editTaskOrdering(orderingData: {
     columnId: number
     taskOrdering: number[]
 }) {
-    await delay(DELAY_TIME)
+    //await delay(DELAY_TIME)
 
     let response
 
