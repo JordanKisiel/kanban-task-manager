@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useRef } from "react"
 import Image from "next/image"
 import TaskColumn from "@/components/app-elements/TaskColumn"
 import Modal from "@/components/modals/Modal"
@@ -18,12 +18,13 @@ import {
     DragOverEvent,
     DragOverlay,
     DragStartEvent,
+    pointerWithin,
 } from "@dnd-kit/core"
 import TaskCard from "@/components/app-elements/TaskCard"
 import Portal from "@/components/utilities/Portal"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { editTaskOrdering } from "@/lib/dataUtils"
-import { arrayMove } from "@dnd-kit/sortable"
+import { QueryKey, useMutation, useQueryClient } from "@tanstack/react-query"
+import { editTaskOrderings } from "@/lib/dataUtils"
+import { arraySwap } from "@dnd-kit/sortable"
 import { useParams } from "next/navigation"
 import { useDarkMode } from "@/contexts/DarkModeProvider"
 import { columnColors } from "@/lib/config"
@@ -43,25 +44,6 @@ export default function Board({
     selectedBoardIndex,
     setNewBoardCreated,
 }: Props) {
-    const [localBoard, setLocalBoard] = useState<
-        | { columnId: number; columnTitle: string; taskOrdering: number[] }[]
-        | null
-    >(null)
-
-    useEffect(() => {
-        if (board !== null) {
-            setLocalBoard(
-                board.columns.map((column) => {
-                    return {
-                        columnId: column.id,
-                        columnTitle: column.title,
-                        taskOrdering: column.taskOrdering,
-                    }
-                })
-            )
-        }
-    }, [board])
-
     const [isModalOpen, setIsModalOpen, modalMode, setModalMode] = useModal(
         "editBoard",
         false
@@ -69,7 +51,16 @@ export default function Board({
 
     const [activeTask, setActiveTask] = useState<Task | null>(null)
 
+    //used to hold snapshot of previous boards data in case of having to revert
+    let preDragBoardSnapShot = useRef<Board[] | undefined | null>(null)
+
+    //used to hold snapshot of previous boards data in case of having to revert
+    let preDragTasksSnapShot = useRef<[QueryKey, unknown][] | undefined | null>(
+        null
+    )
+
     const [dragDisabled, setDragDisabled] = useState(false)
+    const [isDragging, setIsDragging] = useState(false)
 
     const { isDarkMode } = useDarkMode()
 
@@ -78,45 +69,13 @@ export default function Board({
     const queryClient = useQueryClient()
 
     const editTaskOrderingMutation = useMutation({
-        mutationFn: editTaskOrdering,
+        mutationFn: editTaskOrderings,
         onMutate: (sentOrderingData) => {
             //disable dragging while mutation in progress
             setDragDisabled(true)
 
-            //snapshot the previous boards
-            //to use in case of rollback
-            const previousBoards: Board[] | undefined =
-                queryClient.getQueryData(["boardsData", params.user])
-
-            //create new boards data to use for optimistic update
-            let newBoards: Board[] = []
-            if (previousBoards) {
-                newBoards = previousBoards.map((prevBoard) => {
-                    if (prevBoard.id !== board?.id) {
-                        return prevBoard
-                    }
-                    return {
-                        ...prevBoard,
-                        columns: prevBoard.columns.map((prevColumn) => {
-                            if (prevColumn.id !== sentOrderingData.columnId) {
-                                return prevColumn
-                            }
-                            return {
-                                ...prevColumn,
-                                taskOrdering: sentOrderingData.taskOrdering,
-                            }
-                        }),
-                    }
-                })
-            }
-
-            //optimistically update to the new value
-            queryClient.setQueryData(["boardsData", params.user], newBoards)
-
-            console.log("mutate STARTED")
-
             //return context
-            return { previousBoards, newBoards }
+            return { preDragBoardSnapShot }
         },
         onError: (err, newBoards, context) => {
             //rollback on error
@@ -124,7 +83,7 @@ export default function Board({
             if (context) {
                 queryClient.setQueryData(
                     ["boardsData", params.user],
-                    context.previousBoards
+                    context.preDragBoardSnapShot
                 )
             }
         },
@@ -136,28 +95,27 @@ export default function Board({
 
             //re-enable dragging
             setDragDisabled(false)
-
-            console.log("mutate COMPLETE")
         },
     })
 
     const NUM_SKELETON_COLS = 3
 
     const taskColumns =
-        localBoard !== null
-            ? localBoard.map((column, index) => {
+        board !== null
+            ? board.columns.map((column, index) => {
                   return (
                       <TaskColumn
-                          key={column.columnId}
+                          key={column.id}
                           selectedBoardIndex={selectedBoardIndex}
-                          columnId={column.columnId}
-                          columnTitle={column.columnTitle}
+                          columnId={column.id}
+                          columnTitle={column.title}
                           taskOrdering={column.taskOrdering}
                           columnColor={
                               //mod the index so it loops back around to first color
                               columnColors[index % columnColors.length]
                           }
                           dragDisabled={dragDisabled}
+                          isDragging={isDragging}
                       />
                   )
               })
@@ -178,7 +136,9 @@ export default function Board({
         <div className="grid grid-flow-col auto-cols-[16rem] px-6 py-20 gap-6 overflow-auto md:pt-5 md:pb-20">
             <DndContext
                 onDragStart={onDragStart}
+                onDragOver={onDragOver}
                 onDragEnd={onDragEnd}
+                collisionDetection={pointerWithin} //pointerWithin fixes infinite re-rendering issues
             >
                 {taskColumns}
                 <Portal>
@@ -187,8 +147,8 @@ export default function Board({
                     <DragOverlay dropAnimation={null}>
                         {activeTask && (
                             <TaskCard
+                                task={activeTask}
                                 selectedBoardIndex={selectedBoardIndex}
-                                taskId={activeTask.id}
                                 dragDisabled={dragDisabled}
                             />
                         )}
@@ -317,88 +277,305 @@ export default function Board({
     }
 
     async function onDragStart(event: DragStartEvent) {
+        console.log("START")
+
+        setIsDragging(true)
+        //cancel any outgoing queries to avoid refreshes
+        //interrupting user dragging
+        //cancel outgoing refetches to stop
+        //overwriting of optimistic update
+        //await queryClient.cancelQueries()
+
         //store the dragged task in state
         if (event.active.data.current?.type === "Task") {
             setActiveTask(event.active.data.current.task)
-
-            //cancel any outgoing queries to avoid refreshes
-            //interrupting user dragging
-            //cancel outgoing refetches to stop
-            //overwriting of optimistic update
-            await queryClient.cancelQueries({
-                queryKey: ["boardsData", params.user],
-            })
-
-            return
         }
+
+        //snapshot the previous tasks
+        //specifically the tasks arrays for each column
+        // const previousTasks: [QueryKey, unknown][] | undefined =
+        //     queryClient.getQueriesData({ queryKey: ["tasksData"] })
+        // preDragTasksSnapShot.current = previousTasks
+
+        //     //snapshot the previous boards
+        //     //specifically the taskOrdering data
+        //     const previousBoards: Board[] | undefined =
+        //         queryClient.getQueryData(["boardsData", params.user])
+        //     preDragBoardSnapShot.current = previousBoards
+
+        //     //snapshot the previous tasks
+        //     //specifically the tasks arrays for each column
+        //     const previousTasks: [QueryKey, unknown][] | undefined =
+        //         queryClient.getQueriesData({ queryKey: ["tasksData"] })
+        //     preDragTasksSnapShot.current = previousTasks
+
+        //     //cancel any outgoing queries to avoid refreshes
+        //     //interrupting user dragging
+        //     //cancel outgoing refetches to stop
+        //     //overwriting of optimistic update
+        //     await queryClient.cancelQueries()
+
+        //     return
+        // }
     }
 
-    // function onDragOver(event: DragOverEvent) {
-    //     const { active, over } = event
+    function onDragOver(event: DragOverEvent) {
+        console.log("OVER")
 
-    //     //if not over a valid element, do nothing
-    //     if (!over) return
+        const {
+            over,
+            activeTask,
+            isOverTask,
+            isActiveOverSelf,
+            isSameColumn,
+            isOverDifferentColumn,
+            isOverColumnEmpty,
+            overTask,
+            isDifferentContainingCol,
+        } = getDragEventData(event)
 
-    //     const activeTaskId = active.id
-    //     const overId = over.id
+        //get references to cache data for local manipulation
+        //newBoards used for taskOrdering
+        // let newBoards: Board[] | undefined = queryClient.getQueryData([
+        //     "boardsData",
+        //     params.user,
+        // ])
 
-    //     //if the task is over itself, do nothing
-    //     if (activeTaskId === overId) return
+        //get reference to cached task data for local manipulation
+        let newTasks = queryClient.getQueriesData<Task[]>({
+            queryKey: ["tasksData"],
+        })
 
-    //     //check if the over element is a task
-    //     //active element should always be a task
-    //     const isOverATask = over.data.current?.type === "Task"
-
-    //     //dropping task over another task
-    //     if (isOverATask) {
-    //     }
-
-    //     //dropping task over column
-    // }
-
-    function onDragEnd(event: DragEndEvent) {
-        //remove overlay as it's no longer needed
-        setActiveTask(null)
-
-        const { active, over } = event
+        //Guard against certain conditions:
 
         //if not over a valid element, do nothing
         if (!over) return
 
-        const activeTaskId = active.id
-        const overTaskId = over.id
-
         //if the task is over itself, do nothing
-        if (activeTaskId === overTaskId) return
+        if (isActiveOverSelf) return
 
-        //grab the columnId associated with the task
-        //and use it get a reference to the current column
-        const activeColumnId = active.data.current?.task.columnId
-        const activeColumn = board?.columns.find(
-            (column) => column.id === activeColumnId
-        )
+        const {
+            activeTaskData,
+            activeTaskItems,
+            overColTaskData,
+            overColTaskItems,
+        } = getTaskDragData(newTasks, event)
 
-        const activeTaskIndex = activeColumn?.taskOrdering.findIndex(
-            (taskId) => taskId === activeTaskId
-        )
-        const overTaskIndex = activeColumn?.taskOrdering.findIndex(
-            (taskId) => taskId === overTaskId
-        )
+        // Account for 4 conditions when dragging and dropping:
 
-        //use data to mutate the taskOrdering field of the given column
-        if (
-            activeColumn?.taskOrdering &&
-            activeTaskIndex !== undefined &&
-            overTaskIndex !== undefined
-        ) {
-            editTaskOrderingMutation.mutate({
-                columnId: activeColumnId,
-                taskOrdering: arrayMove(
-                    activeColumn?.taskOrdering,
-                    activeTaskIndex,
-                    overTaskIndex
-                ),
+        // Condition 1 - task is over task in same column
+
+        if (isOverTask && isSameColumn && activeTaskData && activeTaskItems) {
+            const activeTaskIndex = activeTaskItems.findIndex((task) => {
+                return task.id === activeTask.id
             })
+
+            const overTaskIndex = activeTaskItems.findIndex((task) => {
+                return task.id === over.id
+            })
+
+            //swap positions of active and over task
+            activeTaskData[1] = arraySwap(
+                activeTaskItems,
+                activeTaskIndex,
+                overTaskIndex
+            )
+        }
+
+        //Condition 2 - Task is over different empty column
+
+        if (
+            isOverDifferentColumn &&
+            isOverColumnEmpty &&
+            activeTaskData &&
+            activeTaskItems &&
+            overColTaskData &&
+            overColTaskItems
+        ) {
+            //remove task from current column
+
+            const activeTaskIndex = activeTaskItems.findIndex((task) => {
+                return task.id === activeTask.id
+            })
+
+            activeTaskItems.splice(activeTaskIndex, 1)
+
+            //add task to over column
+
+            overColTaskItems.push(activeTask)
+
+            activeTask.columnId = over.id
+        }
+
+        // Condition 3 - Task is over task in different column
+
+        if (
+            isOverTask &&
+            isDifferentContainingCol &&
+            activeTaskData &&
+            activeTaskItems &&
+            overColTaskData &&
+            overColTaskItems
+        ) {
+            //remove active task from original containing column
+            const activeTaskIndex = activeTaskItems.findIndex((item) => {
+                return item.id === activeTask.id
+            })
+
+            activeTaskItems.splice(activeTaskIndex, 1)
+
+            // splice active task in at index of over task
+
+            const overTaskIndex = overColTaskItems.findIndex((item) => {
+                return item.id === overTask.id
+            })
+
+            overColTaskItems.splice(overTaskIndex, 0, activeTask)
+
+            console.log(JSON.stringify(overColTaskItems))
+
+            // also make sure to change col id so that condition 1
+            // can trigger for subsequent dragover events
+
+            activeTask.columnId = overTask.columnId
+        }
+
+        // Condition 4 - Task is over different & non-empty column
+        if (
+            isOverDifferentColumn &&
+            !isOverColumnEmpty &&
+            activeTaskData &&
+            activeTaskItems &&
+            overColTaskData &&
+            overColTaskItems
+        ) {
+            //remove active task from original containing column
+            const activeTaskIndex = activeTaskItems.findIndex((item) => {
+                return item.id === activeTask.id
+            })
+
+            activeTaskItems.splice(activeTaskIndex, 1)
+
+            //push active task to end of over containing column
+            overColTaskItems.push(activeTask)
+
+            // also make sure to change col id so that condition 1
+            // can trigger for subsequent dragover events
+            activeTask.columnId = over.id
+        }
+
+        //update the local cache with the new task items data
+        newTasks.forEach((taskData) => {
+            queryClient.setQueryData(["tasksData", taskData[0][1]], taskData[1])
+        })
+
+        // //update the local cache with the new ordering
+        // queryClient.setQueryData(["boardsData", params.user], newBoards)
+    }
+
+    function onDragEnd(event: DragEndEvent) {
+        console.log("END")
+
+        setIsDragging(false)
+
+        //remove overlay as it's no longer needed
+        setActiveTask(null)
+
+        //get boards data after changes made by onDragOver
+        const newBoards: Board[] | undefined = queryClient.getQueryData([
+            "boardsData",
+            params.user,
+        ])
+
+        if (newBoards) {
+            const activeBoard = newBoards.filter(
+                (newBoard) => newBoard.id === board?.id
+            )[0]
+
+            //DISABLE writing to server while debugging
+            //updates all task orderings for the active board
+            // editTaskOrderingMutation.mutate({
+            //     taskOrderings: activeBoard.columns.map((column) => {
+            //         return {
+            //             id: column.id,
+            //             taskOrdering: column.taskOrdering,
+            //         }
+            //     }),
+            // })
+        }
+    }
+
+    //derive data to be used in drag handler
+    function getDragEventData(event: DragOverEvent) {
+        const { active, over } = event
+
+        const activeTask = active.data.current?.task
+        const overId = over ? over.id : -1
+        const isOverTask = over?.data.current?.type === "Task"
+        const isActiveOverSelf = activeTask.id === overId && isOverTask
+        const isSameColumn =
+            activeTask.columnId === over?.data.current?.task?.columnId
+        const isOverColumn = over?.data.current?.type === "Column"
+        const isOverDifferentColumn =
+            isOverColumn && activeTask.columnId !== overId
+        const isOverColumnEmpty = over?.data.current?.tasks?.length === 0
+        const overTask = over?.data.current?.task
+        const isDifferentContainingCol = isOverTask
+            ? activeTask.columnId !== overTask.columnId
+            : false
+
+        return {
+            active,
+            over,
+            overTask,
+            activeTask,
+            isOverTask,
+            isActiveOverSelf,
+            isSameColumn,
+            isOverColumn,
+            isOverDifferentColumn,
+            isOverColumnEmpty,
+            isDifferentContainingCol,
+        }
+    }
+
+    //returns the active and over data based on task data and dragover event
+    function getTaskDragData(
+        cachedTaskData: [QueryKey, Task[] | undefined][],
+        event: DragOverEvent
+    ) {
+        //get the column and tasks associated with the active task
+        const activeTaskData = cachedTaskData.find((queryData) => {
+            const query = queryData[0]
+            const colId = query[1]
+
+            return colId === activeTask?.columnId
+        })
+
+        const activeTaskItems = activeTaskData ? activeTaskData[1] : null
+
+        //get the column and tasks associated with the over item
+        const overColTaskData = cachedTaskData.find((queryData) => {
+            const isOverTask = event.over?.data.current?.type === "Task"
+            const overTask = event.over?.data.current?.task
+
+            const query = queryData[0]
+            const colId = query[1]
+
+            //over a task? match the colId
+            //over a column? match the id
+            return isOverTask
+                ? colId === overTask.columnId
+                : colId === event.over?.id
+        })
+
+        const overColTaskItems = overColTaskData ? overColTaskData[1] : null
+
+        return {
+            activeTaskData,
+            activeTaskItems,
+            overColTaskData,
+            overColTaskItems,
         }
     }
 

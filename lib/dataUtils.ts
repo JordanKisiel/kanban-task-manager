@@ -245,21 +245,17 @@ export async function editTask(taskData: {
     return response?.data
 }
 
-export async function editTaskOrdering(orderingData: {
-    columnId: number
-    taskOrdering: number[]
+export async function editTaskOrderings(orderingData: {
+    taskOrderings: { id: number; taskOrdering: number[] }[]
 }) {
     //await delay(DELAY_TIME)
 
     let response
 
     try {
-        response = await axios.put(
-            `${BASE_URL}/api/columns/${orderingData.columnId}`,
-            {
-                taskOrdering: orderingData.taskOrdering,
-            }
-        )
+        response = await axios.put(`${BASE_URL}/api/columns`, {
+            taskOrderings: orderingData.taskOrderings,
+        })
     } catch (error) {
         console.error(error)
     }

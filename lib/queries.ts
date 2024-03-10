@@ -26,12 +26,6 @@ export function tasksByColumnOptions(colId: number, taskOrdering: number[]) {
     return queryOptions({
         queryKey: ["tasksData", colId],
         queryFn: () => getTasksByColumn(colId),
-        //this sort is O(n^2) but the numbers we're dealing with are small
-        //there is a better sorting algo available if needed
-        select: (data) =>
-            data.toSorted((a, b) => {
-                return taskOrdering.indexOf(a.id) - taskOrdering.indexOf(b.id)
-            }),
     })
 }
 

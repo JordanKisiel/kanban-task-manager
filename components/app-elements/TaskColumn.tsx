@@ -11,6 +11,7 @@ type Props = {
     taskOrdering: number[]
     columnColor: string
     dragDisabled: boolean
+    isDragging: boolean
 }
 
 export default function TaskColumn({
@@ -20,6 +21,7 @@ export default function TaskColumn({
     taskOrdering,
     columnColor,
     dragDisabled,
+    isDragging,
 }: Props) {
     const {
         data: tasks,
@@ -28,13 +30,29 @@ export default function TaskColumn({
         isSuccess,
     } = useQuery(tasksByColumnOptions(columnId, taskOrdering))
 
+    const { setNodeRef } = useDroppable({
+        id: columnId,
+        data: {
+            type: "Column",
+            tasks: tasks ?? null,
+        },
+    })
+
+    // const sortedTasks = isSuccess
+    //     ? tasks.toSorted((a, b) => {
+    //           return taskOrdering.indexOf(a.id) - taskOrdering.indexOf(b.id)
+    //       })
+    //     : []
+
     const taskCards = isSuccess
         ? tasks.map((task) => {
+              // console.log(columnId)
+              // console.log(JSON.stringify(task))
               return (
                   <TaskCard
                       key={`${task.id}`}
+                      task={task}
                       selectedBoardIndex={selectedBoardIndex}
-                      taskId={task.id}
                       dragDisabled={dragDisabled}
                   />
               )
@@ -54,13 +72,20 @@ export default function TaskColumn({
                     {`${columnTitle} (${isSuccess ? tasks.length : 0})`}
                 </h3>
             </div>
-            <div className="flex flex-col gap-6">
-                <SortableContext
-                    items={taskOrdering}
-                    strategy={verticalListSortingStrategy}
-                >
-                    {taskCards}
-                </SortableContext>
+            <div
+                ref={setNodeRef}
+                className={`h-full rounded ${
+                    isDragging && "border border-neutral-600 border-dashed"
+                }`}
+            >
+                <div className="flex flex-col gap-6">
+                    <SortableContext
+                        items={tasks ?? []}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        {taskCards}
+                    </SortableContext>
+                </div>
             </div>
         </div>
     )

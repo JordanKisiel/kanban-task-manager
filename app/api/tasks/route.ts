@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
+import { Task } from "@/types"
 
 //get all task associated with given columnId
 export async function GET(request: NextRequest) {
@@ -14,15 +15,34 @@ export async function GET(request: NextRequest) {
             columnId: colId,
         },
         include: {
-            subTasks: {
-                orderBy: {
-                    id: "asc",
-                },
-            },
+            subTasks: true,
+        },
+        orderBy: {
+            id: "asc",
         },
     })
 
-    return NextResponse.json(tasks)
+    const col = await prisma.column.findUnique({
+        where: {
+            id: colId,
+        },
+    })
+
+    //sort tasks by taskOrdering
+    //algorithm is N^2 and should be changed at scale
+    let response: Task[]
+    if (col?.taskOrdering) {
+        response = tasks.toSorted((a, b) => {
+            return (
+                col?.taskOrdering.indexOf(a.id) -
+                col?.taskOrdering.indexOf(b.id)
+            )
+        })
+    } else {
+        response = []
+    }
+
+    return NextResponse.json(response)
 }
 
 //create task

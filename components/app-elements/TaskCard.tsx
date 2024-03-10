@@ -8,25 +8,19 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import GrabIcon from "@/components/icons/GrabIcon"
 import { useDarkMode } from "@/contexts/DarkModeProvider"
+import { Task } from "@/types"
 
 type Props = {
+    task: Task
     selectedBoardIndex: number
-    taskId: number
     dragDisabled: boolean
 }
 
 export default function TaskCard({
+    task,
     selectedBoardIndex,
-    taskId,
     dragDisabled,
 }: Props) {
-    const {
-        data: task,
-        isPending,
-        isError,
-        isSuccess,
-    } = useQuery(taskByIdOptions(taskId))
-
     const {
         setNodeRef,
         attributes,
@@ -35,7 +29,7 @@ export default function TaskCard({
         transition,
         isDragging,
     } = useSortable({
-        id: taskId,
+        id: task.id,
         data: {
             type: "Task",
             task: task ?? null,
@@ -50,26 +44,20 @@ export default function TaskCard({
 
     const { isDarkMode } = useDarkMode()
 
-    const completedSubTasks = isSuccess
-        ? task.subTasks.reduce((accum, curr) => {
-              if (curr.isComplete) {
-                  accum += 1
-              }
-              return accum
-          }, 0)
-        : 0
+    const completedSubTasks = task.subTasks.reduce((accum, curr) => {
+        if (curr.isComplete) {
+            accum += 1
+        }
+        return accum
+    }, 0)
 
     const pathname = usePathname()
 
-    const taskCardHref = isSuccess
-        ? `${pathname}?board=${selectedBoardIndex}&task=${task.id}`
-        : `#`
+    const taskCardHref = `${pathname}?board=${selectedBoardIndex}&task=${task.id}`
 
     //represents the UI of the TaskCard copy that moves within
     //the draggable area in the background when user is dragging
     //the chosen task in the foreground
-    //content is still rendered but visually hidden to maintain
-    //the vertical size of the task card copy
     if (isDragging) {
         return (
             <div
@@ -79,12 +67,10 @@ export default function TaskCard({
                              shadow-[0_4px_6px_0_rgba(54,78,126,0.10)] dark:shadow-none border-2 
                            border-purple-600 opacity-40"
             >
-                <h4 className="font-bold dark:text-neutral-100 invisible">
-                    {isSuccess ? task.title : ""}
+                <h4 className="font-bold dark:text-neutral-100">
+                    {task.title}
                 </h4>
-                <span className="text-xs font-bold text-neutral-500 invisible">{`${completedSubTasks} of ${
-                    isSuccess ? task.subTasks.length : 0
-                } subtasks`}</span>
+                <span className="text-xs font-bold text-neutral-500">{`${completedSubTasks} of ${task.subTasks.length} subtasks`}</span>
             </div>
         )
     }
@@ -103,11 +89,11 @@ export default function TaskCard({
                 >
                     <div>
                         <h4 className="font-bold dark:text-neutral-100">
-                            {isSuccess ? task.title : ""}
+                            {task.title}
                         </h4>
-                        <span className="text-xs font-bold text-neutral-500">{`${completedSubTasks} of ${
-                            isSuccess ? task.subTasks.length : 0
-                        } subtasks`}</span>
+                        <span className="text-xs font-bold text-neutral-500">
+                            {`${completedSubTasks} of ${task.subTasks.length} subtasks`}
+                        </span>
                     </div>
                     <div
                         {...attributes}
