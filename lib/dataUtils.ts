@@ -249,7 +249,8 @@ export async function editTaskOrderAndGrouping(orderingAndGroupingData: {
     ordering: { id: number; taskOrdering: number[] }[]
     grouping: ({ taskId: number; columnId: number } | null)[]
 }) {
-    //await delay(DELAY_TIME)
+    await delay(DELAY_TIME)
+    randomError("Random Error Triggered", 1)
 
     let response
 

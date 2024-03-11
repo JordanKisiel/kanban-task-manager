@@ -78,7 +78,7 @@ export default function Board({
             if (context) {
                 queryClient.setQueryData(
                     ["boardsData", params.user],
-                    context.preDragBoardSnapShot
+                    context.preDragBoardSnapShot.current
                 )
             }
         },
