@@ -245,8 +245,9 @@ export async function editTask(taskData: {
     return response?.data
 }
 
-export async function editTaskOrderings(orderingData: {
-    taskOrderings: { id: number; taskOrdering: number[] }[]
+export async function editTaskOrderAndGrouping(orderingAndGroupingData: {
+    ordering: { id: number; taskOrdering: number[] }[]
+    grouping: ({ taskId: number; columnId: number } | null)[]
 }) {
     //await delay(DELAY_TIME)
 
@@ -254,7 +255,8 @@ export async function editTaskOrderings(orderingData: {
 
     try {
         response = await axios.put(`${BASE_URL}/api/columns`, {
-            taskOrderings: orderingData.taskOrderings,
+            taskOrderings: orderingAndGroupingData.ordering,
+            taskGroupings: orderingAndGroupingData.grouping,
         })
     } catch (error) {
         console.error(error)

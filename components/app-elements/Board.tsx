@@ -23,7 +23,7 @@ import {
 import TaskCard from "@/components/app-elements/TaskCard"
 import Portal from "@/components/utilities/Portal"
 import { QueryKey, useMutation, useQueryClient } from "@tanstack/react-query"
-import { editTaskOrderings } from "@/lib/dataUtils"
+import { editTaskOrderAndGrouping } from "@/lib/dataUtils"
 import { arraySwap } from "@dnd-kit/sortable"
 import { useParams } from "next/navigation"
 import { useDarkMode } from "@/contexts/DarkModeProvider"
@@ -49,15 +49,10 @@ export default function Board({
         false
     )
 
-    const [activeTask, setActiveTask] = useState<Task | null>(null)
+    const [overlayTask, setOverlayTask] = useState<Task | null>(null)
 
     //used to hold snapshot of previous boards data in case of having to revert
     let preDragBoardSnapShot = useRef<Board[] | undefined | null>(null)
-
-    //used to hold snapshot of previous boards data in case of having to revert
-    let preDragTasksSnapShot = useRef<[QueryKey, unknown][] | undefined | null>(
-        null
-    )
 
     const [dragDisabled, setDragDisabled] = useState(false)
     const [isDragging, setIsDragging] = useState(false)
@@ -69,7 +64,7 @@ export default function Board({
     const queryClient = useQueryClient()
 
     const editTaskOrderingMutation = useMutation({
-        mutationFn: editTaskOrderings,
+        mutationFn: editTaskOrderAndGrouping,
         onMutate: (sentOrderingData) => {
             //disable dragging while mutation in progress
             setDragDisabled(true)
@@ -89,9 +84,11 @@ export default function Board({
         },
         //refetch regardless of error or success
         onSettled: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["boardsData", params.user],
-            })
+            // queryClient.invalidateQueries({
+            //     queryKey: ["boardsData", params.user],
+            // })
+
+            queryClient.invalidateQueries()
 
             //re-enable dragging
             setDragDisabled(false)
@@ -145,9 +142,9 @@ export default function Board({
                     {/* dropAnimation being set to null here fixes issue with item moving back
                         to original position for a few frames before ordering updating */}
                     <DragOverlay dropAnimation={null}>
-                        {activeTask && (
+                        {overlayTask && (
                             <TaskCard
-                                task={activeTask}
+                                task={overlayTask}
                                 selectedBoardIndex={selectedBoardIndex}
                                 dragDisabled={dragDisabled}
                             />
@@ -280,43 +277,30 @@ export default function Board({
         console.log("START")
 
         setIsDragging(true)
-        //cancel any outgoing queries to avoid refreshes
-        //interrupting user dragging
-        //cancel outgoing refetches to stop
-        //overwriting of optimistic update
-        //await queryClient.cancelQueries()
 
         //store the dragged task in state
         if (event.active.data.current?.type === "Task") {
-            setActiveTask(event.active.data.current.task)
+            setOverlayTask(event.active.data.current.task)
         }
 
         //snapshot the previous tasks
-        //specifically the tasks arrays for each column
         // const previousTasks: [QueryKey, unknown][] | undefined =
         //     queryClient.getQueriesData({ queryKey: ["tasksData"] })
         // preDragTasksSnapShot.current = previousTasks
 
-        //     //snapshot the previous boards
-        //     //specifically the taskOrdering data
-        //     const previousBoards: Board[] | undefined =
-        //         queryClient.getQueryData(["boardsData", params.user])
-        //     preDragBoardSnapShot.current = previousBoards
+        //snapshot the previous boards
+        //specifically the taskOrdering data
+        const previousBoards: Board[] | undefined = queryClient.getQueryData([
+            "boardsData",
+            params.user,
+        ])
+        preDragBoardSnapShot.current = previousBoards
 
-        //     //snapshot the previous tasks
-        //     //specifically the tasks arrays for each column
-        //     const previousTasks: [QueryKey, unknown][] | undefined =
-        //         queryClient.getQueriesData({ queryKey: ["tasksData"] })
-        //     preDragTasksSnapShot.current = previousTasks
-
-        //     //cancel any outgoing queries to avoid refreshes
-        //     //interrupting user dragging
-        //     //cancel outgoing refetches to stop
-        //     //overwriting of optimistic update
-        //     await queryClient.cancelQueries()
-
-        //     return
-        // }
+        //cancel any outgoing queries to avoid refreshes
+        //interrupting user dragging
+        //cancel outgoing refetches to stop
+        //overwriting of optimistic update
+        await queryClient.cancelQueries()
     }
 
     function onDragOver(event: DragOverEvent) {
@@ -333,13 +317,6 @@ export default function Board({
             overTask,
             isDifferentContainingCol,
         } = getDragEventData(event)
-
-        //get references to cache data for local manipulation
-        //newBoards used for taskOrdering
-        // let newBoards: Board[] | undefined = queryClient.getQueryData([
-        //     "boardsData",
-        //     params.user,
-        // ])
 
         //get reference to cached task data for local manipulation
         let newTasks = queryClient.getQueriesData<Task[]>({
@@ -469,8 +446,35 @@ export default function Board({
             queryClient.setQueryData(["tasksData", taskData[0][1]], taskData[1])
         })
 
-        // //update the local cache with the new ordering
-        // queryClient.setQueryData(["boardsData", params.user], newBoards)
+        //get reference to board cache data for local manipulation
+        //specifically to write taskOrderings
+        let newBoards: Board[] | undefined = queryClient.getQueryData([
+            "boardsData",
+            params.user,
+        ])
+
+        //write updated ordering to local cache
+        if (newBoards) {
+            const newActiveBoard = newBoards.filter((newBoard) => {
+                return newBoard.id === board?.id
+            })[0]
+
+            //write taskOrdering to each column
+            newActiveBoard.columns.forEach((column) => {
+                const columnTaskData = newTasks.find((tasks) => {
+                    const tasksColId = tasks[0][1]
+
+                    return tasksColId === column.id
+                })
+
+                const columnTasks =
+                    columnTaskData && columnTaskData[1] ? columnTaskData[1] : []
+
+                column.taskOrdering = columnTasks.map((task) => {
+                    return task.id
+                })
+            })
+        }
     }
 
     function onDragEnd(event: DragEndEvent) {
@@ -479,7 +483,7 @@ export default function Board({
         setIsDragging(false)
 
         //remove overlay as it's no longer needed
-        setActiveTask(null)
+        setOverlayTask(null)
 
         //get boards data after changes made by onDragOver
         const newBoards: Board[] | undefined = queryClient.getQueryData([
@@ -487,21 +491,43 @@ export default function Board({
             params.user,
         ])
 
-        if (newBoards) {
+        //get tasks data after changes made by onDragOver
+        const newTasks = queryClient.getQueriesData<Task[]>({
+            queryKey: ["tasksData"],
+        })
+
+        if (newBoards && newTasks) {
             const activeBoard = newBoards.filter(
                 (newBoard) => newBoard.id === board?.id
             )[0]
 
-            //DISABLE writing to server while debugging
+            const activeTaskColumns = newTasks.map((queryData) => {
+                const tasks = queryData[1]
+
+                return tasks
+            })
+
+            const activeTasks = activeTaskColumns.flat().map((task) => {
+                if (task && task.columnId) {
+                    return {
+                        taskId: task.id,
+                        columnId: task.columnId,
+                    }
+                }
+
+                return null
+            })
+
             //updates all task orderings for the active board
-            // editTaskOrderingMutation.mutate({
-            //     taskOrderings: activeBoard.columns.map((column) => {
-            //         return {
-            //             id: column.id,
-            //             taskOrdering: column.taskOrdering,
-            //         }
-            //     }),
-            // })
+            editTaskOrderingMutation.mutate({
+                ordering: activeBoard.columns.map((column) => {
+                    return {
+                        id: column.id,
+                        taskOrdering: column.taskOrdering,
+                    }
+                }),
+                grouping: activeTasks,
+            })
         }
     }
 
@@ -544,6 +570,8 @@ export default function Board({
         cachedTaskData: [QueryKey, Task[] | undefined][],
         event: DragOverEvent
     ) {
+        const activeTask = event.active?.data.current?.task
+
         //get the column and tasks associated with the active task
         const activeTaskData = cachedTaskData.find((queryData) => {
             const query = queryData[0]

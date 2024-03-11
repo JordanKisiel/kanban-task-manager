@@ -38,16 +38,8 @@ export default function TaskColumn({
         },
     })
 
-    // const sortedTasks = isSuccess
-    //     ? tasks.toSorted((a, b) => {
-    //           return taskOrdering.indexOf(a.id) - taskOrdering.indexOf(b.id)
-    //       })
-    //     : []
-
     const taskCards = isSuccess
         ? tasks.map((task) => {
-              // console.log(columnId)
-              // console.log(JSON.stringify(task))
               return (
                   <TaskCard
                       key={`${task.id}`}
@@ -74,8 +66,8 @@ export default function TaskColumn({
             </div>
             <div
                 ref={setNodeRef}
-                className={`h-full rounded ${
-                    isDragging && "border border-neutral-600 border-dashed"
+                className={`h-full rounded border border-dashed ${
+                    isDragging ? "border-neutral-600" : "border-neutral-800"
                 }`}
             >
                 <div className="flex flex-col gap-6">

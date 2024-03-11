@@ -17,6 +17,18 @@ export async function PUT(request: NextRequest) {
                 })
             }
         ),
+        ...req.taskGroupings.map(
+            (groupingData: { taskId: number; columnId: number }) => {
+                return prisma.task.update({
+                    where: {
+                        id: groupingData.taskId,
+                    },
+                    data: {
+                        columnId: groupingData.columnId,
+                    },
+                })
+            }
+        ),
     ])
 
     return NextResponse.json(result)
