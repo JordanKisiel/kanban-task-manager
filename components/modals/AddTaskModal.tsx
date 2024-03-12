@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useReducer } from "react"
 import { useRouter } from "next/navigation"
 import ActionButton from "@/components/ui-elements/ActionButton"
 import MenuButton from "@/components/ui-elements/MenuButton"
@@ -6,6 +6,7 @@ import ModalHeader from "@/components/modals/ModalHeader"
 import { addTask } from "@/lib/dataUtils"
 import ModalLabel from "@/components/modals/ModalLabel"
 import DynamicInputList from "@/components/ui-elements/DynamicInputList"
+import { addTaskReducer } from "@/reducers/formReducers"
 import { Column } from "@/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import ErrorMessage from "../ui-elements/ErrorMessage"
@@ -37,6 +38,17 @@ export default function AddTaskModal({
 
     const queryClient = useQueryClient()
 
+    const [formData, dispatch] = useReducer(addTaskReducer, {
+        title: "",
+        description: "",
+        subTasks: [],
+        selectedIndex: 0,
+        status: columns[0].id,
+    })
+
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+    const [displayError, setDisplayError] = useState<boolean>(true)
+
     const addTaskMutation = useMutation({
         mutationFn: addTask,
         onMutate: () => {
@@ -55,17 +67,6 @@ export default function AddTaskModal({
             )
         },
     })
-
-    const [formData, setFormData] = useState<FormData>({
-        title: "",
-        description: "",
-        subTasks: [],
-        selectedIndex: 0,
-        status: columns[0].id,
-    })
-
-    const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
-    const [displayError, setDisplayError] = useState<boolean>(true)
 
     const selectOptions = columns.map((column, index) => {
         return (
@@ -91,69 +92,48 @@ export default function AddTaskModal({
     ]
 
     function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                title: event.target.value,
-            }
+        dispatch({
+            type: "change_title",
+            title: event.target.value,
         })
     }
 
     function handleDescriptionChange(
         event: React.ChangeEvent<HTMLTextAreaElement>
     ) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                description: event.target.value,
-            }
+        dispatch({
+            type: "change_description",
+            description: event.target.value,
         })
     }
 
     function handleAddSubTask() {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                subTasks: [...prevFormData.subTasks, ""],
-            }
+        dispatch({
+            type: "add_subTask",
+            text: "",
         })
     }
 
     function handleChangeSubTask(event: React.ChangeEvent<HTMLInputElement>) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                subTasks: prevFormData.subTasks.map((subTask, index) => {
-                    if (`${index}` === event.target.id) {
-                        return event.target.value
-                    } else {
-                        return subTask
-                    }
-                }),
-            }
+        dispatch({
+            type: "change_subTask",
+            id: event.target.id,
+            text: event.target.value,
         })
     }
 
     function handleRemoveSubTask(subTaskIndex: number) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                subTasks: prevFormData.subTasks.filter((subTask, index) => {
-                    return index !== subTaskIndex
-                }),
-            }
+        dispatch({
+            type: "remove_subTask",
+            index: subTaskIndex,
         })
     }
 
     function handleStatusChange(event: React.ChangeEvent<HTMLSelectElement>) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                selectedIndex: event.target.selectedIndex,
-                status: Number(
-                    event.target.options[event.target.selectedIndex].id
-                ),
-            }
+        dispatch({
+            type: "change_status",
+            index: event.target.selectedIndex,
+            status: Number(event.target.options[event.target.selectedIndex].id),
         })
     }
 

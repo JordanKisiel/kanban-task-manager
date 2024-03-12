@@ -1,9 +1,7 @@
 "use client"
 
-import { taskByIdOptions } from "@/lib/queries"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import GrabIcon from "@/components/icons/GrabIcon"

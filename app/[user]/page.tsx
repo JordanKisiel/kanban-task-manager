@@ -4,7 +4,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage"
 import { useModal } from "@/hooks/useModal"
 import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import Image from "next/image"
 import Logo from "@/components/app-elements/Logo"
 import HeaderBar from "@/components/app-elements/HeaderBar"
@@ -48,9 +48,6 @@ export default function Home({ params }: { params: { user: string } }) {
         true
     )
 
-    //on first load, write taskOrdering data to localStorage
-    useEffect(() => {}, [])
-
     //if there is no board search param, route to a board index of 0
     useEffect(() => {
         if (searchParams.get("board") === null) {
@@ -83,7 +80,6 @@ export default function Home({ params }: { params: { user: string } }) {
     //  is probably better to account for the situation in which
     //  the url is being manipulated manually
     //    ex. taskId set to a non-valid id
-    //        i.e. id not in the currently selected board
     let modalContent: React.ReactElement = <></>
 
     if (task.isSuccess && boards.isSuccess) {
