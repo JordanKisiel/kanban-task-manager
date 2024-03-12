@@ -228,8 +228,6 @@ export function useDragAndDrop(
     }
 
     function onDragEnd(event: DragEndEvent) {
-        console.log("END")
-
         setIsDragging(false)
 
         //remove overlay as it's no longer needed

@@ -5,11 +5,16 @@ import { useModal } from "@/hooks/useModal"
 import EditBoardModal from "@/components/modals/EditBoardModal"
 import { Board } from "@/types"
 import AddBoardModal from "@/components/modals/AddBoardModal"
-import BoardContent from "@/components/app-elements/BoardContent"
+import DefaultBoardContent from "@/components/app-elements/DefaultBoardContent"
+import EmptyBoardContent from "@/components/app-elements/EmptyBoardContent"
+import NewUserBoardContent from "@/components/app-elements/NewUserBoardContent"
+import BoardSkeleton from "@/components/loading/BoardSkeleton"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { editTaskOrderAndGrouping } from "@/lib/dataUtils"
 import { useParams } from "next/navigation"
 import { useDragAndDrop } from "@/hooks/useDragAndDrop"
+import { useDarkMode } from "@/contexts/DarkModeProvider"
+import { NUM_SKELETON_COLS } from "@/lib/config"
 
 type Props = {
     board: Board | null
@@ -30,6 +35,8 @@ export default function Board({
         "editBoard",
         false
     )
+
+    const { isDarkMode } = useDarkMode()
 
     const queryClient = useQueryClient()
     const params = useParams<{ user: string }>()
@@ -108,22 +115,46 @@ export default function Board({
         )
     }
 
-    return (
-        <>
-            <BoardContent
+    let content: React.ReactNode
+    if (isPending) {
+        content = <BoardSkeleton numColumns={NUM_SKELETON_COLS} />
+    } else if (numBoards === 0) {
+        content = (
+            <NewUserBoardContent
+                setIsModalOpen={setIsModalOpen}
+                setModalMode={setModalMode}
+                isDarkMode={isDarkMode}
+            />
+        )
+    } else if (board && board.columns.length === 0) {
+        content = (
+            <EmptyBoardContent
+                setIsModalOpen={setIsModalOpen}
+                setModalMode={setModalMode}
+                isDarkMode={isDarkMode}
+            />
+        )
+    } else {
+        content = (
+            <DefaultBoardContent
                 board={board}
-                isPending={isPending}
-                numBoards={numBoards}
-                selectedBoardIndex={selectedBoardIndex}
                 onDragStart={onDragStart}
                 onDragOver={onDragOver}
                 onDragEnd={onDragEnd}
-                isDragging={isDragging}
-                dragDisabled={dragDisabled}
                 overlayTask={overlayTask}
+                dragDisabled={dragDisabled}
+                isDragging={isDragging}
+                selectedBoardIndex={selectedBoardIndex}
                 setIsModalOpen={setIsModalOpen}
                 setModalMode={setModalMode}
+                isDarkMode={isDarkMode}
             />
+        )
+    }
+
+    return (
+        <>
+            {content}
             {isModalOpen && (
                 <Modal
                     selectedBoardIndex={selectedBoardIndex}

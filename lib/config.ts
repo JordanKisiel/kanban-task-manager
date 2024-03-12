@@ -9,3 +9,5 @@ export const columnColors = [
     "bg-[#D7D143]",
     "bg-[#C543C8]",
 ]
+
+export const NUM_SKELETON_COLS = 3
