@@ -3,12 +3,11 @@
 import Modal from "@/components/modals/Modal"
 import { useModal } from "@/hooks/useModal"
 import EditBoardModal from "@/components/modals/EditBoardModal"
-import { Board, Task } from "@/types"
+import { Board } from "@/types"
 import AddBoardModal from "@/components/modals/AddBoardModal"
 import BoardContent from "@/components/app-elements/BoardContent"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { editTaskOrderAndGrouping } from "@/lib/dataUtils"
-import { arraySwap } from "@dnd-kit/sortable"
 import { useParams } from "next/navigation"
 import { useDragAndDrop } from "@/hooks/useDragAndDrop"
 
@@ -69,6 +68,8 @@ export default function Board({
 
     //use data manipulation and user data to
     //produce drag and drop handlers and state
+    //not very re-usable but at least extracts the
+    //dnd logic
     const {
         onDragStart,
         onDragOver,
