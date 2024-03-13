@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useReducer } from "react"
 import { useParams } from "next/navigation"
 import { addBoard } from "@/lib/dataUtils"
 import ActionButton from "@/components/ui-elements/ActionButton"
@@ -9,6 +9,7 @@ import ModalHeader from "@/components/modals/ModalHeader"
 import ModalLabel from "@/components/modals/ModalLabel"
 import ErrorMessage from "@/components/ui-elements/ErrorMessage"
 import DynamicInputList from "@/components/ui-elements/DynamicInputList"
+import { addBoardReducer } from "@/reducers/formReducers"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 
@@ -16,11 +17,6 @@ type Props = {
     selectedBoardIndex: number
     setIsModalOpen: Function
     setNewBoardCreated: Function
-}
-
-type FormData = {
-    title: string
-    columnTitles: string[]
 }
 
 const TITLE_PLACEHOLDER = "e.g. Web Design"
@@ -32,11 +28,10 @@ export default function AddBoardModal({
 }: Props) {
     const router = useRouter()
     const params = useParams<{ user: string }>()
-    console.log(params)
 
     const queryClient = useQueryClient()
 
-    const [formData, setFormData] = useState<FormData>({
+    const [formData, dispatch] = useReducer(addBoardReducer, {
         title: "",
         columnTitles: [],
     })
@@ -75,50 +70,31 @@ export default function AddBoardModal({
     ]
 
     function handleAddColumn() {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                columnTitles: [...prevFormData.columnTitles, ""],
-            }
+        dispatch({
+            type: "add_column",
+            text: "",
         })
     }
 
     function handleChangeColumn(event: React.ChangeEvent<HTMLInputElement>) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                columnTitles: prevFormData.columnTitles.map(
-                    (columnTitle, index) => {
-                        if (index.toString() === event.target.id) {
-                            return event.target.value
-                        } else {
-                            return columnTitle
-                        }
-                    }
-                ),
-            }
+        dispatch({
+            type: "change_column",
+            id: event.target.id,
+            text: event.target.value,
         })
     }
 
     function handleDeleteColumn(colIndex: number) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                columnTitles: prevFormData.columnTitles.filter(
-                    (columnTitle, index) => {
-                        return index !== colIndex
-                    }
-                ),
-            }
+        dispatch({
+            type: "delete_column",
+            index: colIndex,
         })
     }
 
     function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                title: event.target.value,
-            }
+        dispatch({
+            type: "change_title",
+            text: event.target.value,
         })
     }
 

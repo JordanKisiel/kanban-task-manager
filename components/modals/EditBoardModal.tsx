@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useReducer } from "react"
 import { useRouter } from "next/navigation"
 import ActionButton from "@/components/ui-elements/ActionButton"
 import MenuButton from "@/components/ui-elements/MenuButton"
@@ -7,6 +7,7 @@ import ModalLabel from "@/components/modals/ModalLabel"
 import DynamicInputList from "@/components/ui-elements/DynamicInputList"
 import ErrorMessage from "@/components/ui-elements/ErrorMessage"
 import { editBoard } from "@/lib/dataUtils"
+import { editBoardReducer } from "@/reducers/formReducers"
 import { Board } from "@/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
@@ -14,20 +15,6 @@ type Props = {
     selectedBoardIndex: number
     board: Board
     setIsModalOpen: Function
-}
-
-type FormData = {
-    title: string
-    columns: {
-        create: string[]
-        update: {
-            id: number
-            title: string
-        }[]
-        delete: {
-            id: number
-        }[]
-    }
 }
 
 const TITLE_PLACEHOLDER = "e.g. Web Design"
@@ -40,6 +27,22 @@ export default function EditBoardModal({
     const router = useRouter()
 
     const queryClient = useQueryClient()
+
+    //initialize with data from board
+    //all existing columns are added to update
+    const [formData, dispatch] = useReducer(editBoardReducer, {
+        title: board.title,
+        columns: {
+            create: [],
+            update: board.columns.map((column) => {
+                return {
+                    id: column.id,
+                    title: column.title,
+                }
+            }),
+            delete: [],
+        },
+    })
 
     const editBoardMutation = useMutation({
         mutationFn: editBoard,
@@ -54,23 +57,6 @@ export default function EditBoardModal({
         onError: () => {
             setIsSubmitted(false)
             console.log("There was an error. Please try again")
-        },
-    })
-
-    //initialize with data from board
-    //all existing columns are added to update
-    const [formData, setFormData] = useState<FormData>({
-        title: board.title,
-        columns: {
-            create: [],
-            update: board.columns.map((column) => {
-                //TODO: could I just spread the cols here?
-                return {
-                    id: column.id,
-                    title: column.title,
-                }
-            }),
-            delete: [],
         },
     })
 
@@ -94,107 +80,34 @@ export default function EditBoardModal({
     ]
 
     function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                title: event.target.value,
-            }
+        dispatch({
+            type: "change_title",
+            text: event.target.value,
         })
     }
 
     function handleAddColumn() {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                columns: {
-                    ...prevFormData.columns,
-                    create: [...prevFormData.columns.create, ""],
-                },
-            }
+        dispatch({
+            type: "add_column",
+            text: "",
         })
     }
 
-    // mapping the CREATE array:
-    //   -we look for (inputIndex - UPDATE.length) === index
-    //   -because the update array is always rendered before the create array
-    // mapping the UPDATE array:
-    //   -we look for inputIndex === index
-    // and there is never mapping for DELETE
-    //   -because it's never rendered
     function handleChangeColumn(
         event: React.ChangeEvent<HTMLInputElement>,
         inputIndex: number
     ) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                columns: {
-                    create: prevFormData.columns.create.map((column, index) => {
-                        if (
-                            inputIndex - prevFormData.columns.update.length ===
-                            index
-                        ) {
-                            return event.target.value
-                        } else {
-                            return column
-                        }
-                    }),
-                    update: prevFormData.columns.update.map((column, index) => {
-                        if (inputIndex === index) {
-                            return {
-                                id: column.id,
-                                title: event.target.value,
-                            }
-                        } else {
-                            return column
-                        }
-                    }),
-                    delete: [...prevFormData.columns.delete],
-                },
-            }
+        dispatch({
+            type: "change_column",
+            index: inputIndex,
+            text: event.target.value,
         })
     }
 
-    // filtering the CREATE array:
-    //   -we look for (inputIndex - UPDATE.length) !== index
-    //   -because the update array is always rendered before the create array
-    // filtering the UPDATE array:
-    //   -we look for inputIndex !== index
-    // for the DELETE array:
-    //   -we look for inputIndex === index in the UPDATE array
-    //   -because that's the item that already exists in the DB that will
-    //    have to be removed
-    //   -DELETE is also processed first so we can find the item to remove
-    //    before filtering it from UPDATE
     function handleRemoveColumn(inputIndex: number) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                columns: {
-                    create: prevFormData.columns.create.filter(
-                        (column, index) => {
-                            return (
-                                inputIndex -
-                                    prevFormData.columns.update.length !==
-                                index
-                            )
-                        }
-                    ),
-                    delete: [
-                        ...prevFormData.columns.delete,
-                        ...prevFormData.columns.update.filter(
-                            (column, index) => {
-                                return inputIndex === index
-                            }
-                        ),
-                    ],
-                    update: prevFormData.columns.update.filter(
-                        (column, index) => {
-                            return inputIndex !== index
-                        }
-                    ),
-                },
-            }
+        dispatch({
+            type: "remove_column",
+            index: inputIndex,
         })
     }
 

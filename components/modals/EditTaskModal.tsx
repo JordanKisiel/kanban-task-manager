@@ -1,3 +1,4 @@
+import { useState, useReducer } from "react"
 import ActionButton from "@/components/ui-elements/ActionButton"
 import MenuButton from "@/components/ui-elements/MenuButton"
 import ModalHeader from "@/components/modals/ModalHeader"
@@ -5,9 +6,9 @@ import ModalLabel from "@/components/modals/ModalLabel"
 import { editTask } from "@/lib/dataUtils"
 import DynamicInputList from "@/components/ui-elements/DynamicInputList"
 import ErrorMessage from "@/components/ui-elements/ErrorMessage"
-import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { editTaskReducer } from "@/reducers/formReducers"
 import { Column, Task } from "@/types"
 
 type Props = {
@@ -49,6 +50,17 @@ export default function EditTaskModal({
 
     const queryClient = useQueryClient()
 
+    const [formData, dispatch] = useReducer(editTaskReducer, {
+        title: task.title,
+        description: task.description,
+        subTasks: {
+            create: [],
+            update: [...task.subTasks],
+            delete: [],
+        },
+        columnId: task?.columnId || null,
+    })
+
     const editTaskMutation = useMutation({
         mutationFn: editTask,
         onMutate: () => {
@@ -65,17 +77,6 @@ export default function EditTaskModal({
             setIsSubmitted(false)
             console.log("There was an error. Please try again.")
         },
-    })
-
-    const [formData, setFormData] = useState<FormData>({
-        title: task.title,
-        description: task.description,
-        subTasks: {
-            create: [],
-            update: [...task.subTasks],
-            delete: [],
-        },
-        columnId: task?.columnId || null,
     })
 
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
@@ -134,133 +135,51 @@ export default function EditTaskModal({
     ]
 
     function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                title: event.target.value,
-            }
+        dispatch({
+            type: "change_title",
+            text: event.target.value,
         })
     }
 
     function handleDescriptionChange(
         event: React.ChangeEvent<HTMLTextAreaElement>
     ) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                description: event.target.value,
-            }
+        dispatch({
+            type: "change_description",
+            text: event.target.value,
         })
     }
 
     function handleAddSubTask() {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                subTasks: {
-                    ...prevFormData.subTasks,
-                    create: [...prevFormData.subTasks.create, ""],
-                },
-            }
+        dispatch({
+            type: "add_subTask",
+            text: "",
         })
     }
 
-    // mapping the CREATE array:
-    //   -we look for (inputIndex - UPDATE.length) === index
-    //   -because the update array is always rendered before the create array
-    // mapping the UPDATE array:
-    //   -we look for inputIndex === index
-    // and there is never mapping for DELETE
-    //   -because it's never rendered
     function handleChangeSubTask(
         event: React.ChangeEvent<HTMLInputElement>,
         inputIndex: number
     ) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                subTasks: {
-                    create: prevFormData.subTasks.create.map(
-                        (subTask, index) => {
-                            if (
-                                inputIndex -
-                                    prevFormData.subTasks.update.length ===
-                                index
-                            ) {
-                                return event.target.value
-                            } else {
-                                return subTask
-                            }
-                        }
-                    ),
-                    update: prevFormData.subTasks.update.map(
-                        (subTask, index) => {
-                            if (inputIndex === index) {
-                                return {
-                                    id: subTask.id,
-                                    description: event.target.value,
-                                }
-                            } else {
-                                return subTask
-                            }
-                        }
-                    ),
-                    delete: [...prevFormData.subTasks.delete],
-                },
-            }
+        dispatch({
+            type: "change_subTask",
+            index: inputIndex,
+            text: event.target.value,
         })
     }
 
-    // filtering the CREATE array:
-    //   -we look for (inputIndex - UPDATE.length) !== index
-    //   -because the update array is always rendered before the create array
-    // filtering the UPDATE array:
-    //   -we look for inputIndex !== index
-    // for the DELETE array:
-    //   -we look for inputIndex === index in the UPDATE array
-    //   -because that's the item that already exists in the DB that will
-    //    have to be removed
-    //   -DELETE is also processed first so we can find the item to remove
-    //    before filtering it from UPDATE
     function handleRemoveSubTask(inputIndex: number) {
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                subTasks: {
-                    create: prevFormData.subTasks.create.filter(
-                        (subTask, index) => {
-                            return (
-                                inputIndex -
-                                    prevFormData.subTasks.update.length !==
-                                index
-                            )
-                        }
-                    ),
-                    delete: [
-                        ...prevFormData.subTasks.delete,
-                        ...prevFormData.subTasks.update.filter(
-                            (subTask, index) => {
-                                return inputIndex === index
-                            }
-                        ),
-                    ],
-                    update: prevFormData.subTasks.update.filter(
-                        (subTask, index) => {
-                            return inputIndex !== index
-                        }
-                    ),
-                },
-            }
+        dispatch({
+            type: "remove_subTask",
+            index: inputIndex,
         })
     }
 
     function handleStatusChange(event: React.ChangeEvent<HTMLSelectElement>) {
-        const selectedOptionIndex = event.target.options.selectedIndex
-        setFormData((prevFormData) => {
-            return {
-                ...prevFormData,
-                columnId: Number(event.target.options[selectedOptionIndex].id),
-            }
+        const selectedIndex = event.target.options.selectedIndex
+        dispatch({
+            type: "change_status",
+            id: Number(event.target.options[selectedIndex].id),
         })
     }
 
