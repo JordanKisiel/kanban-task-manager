@@ -25,6 +25,7 @@ export default function ErrorModal({ refetch, setIsModalOpen }: Props) {
                 <ActionButton
                     isWidthFull={true}
                     bgColor="bg-red-300"
+                    bgHoverColor="hover:bg-red-100"
                     textColor="text-neutral-100"
                     textSize="text-sm"
                     handler={() => {

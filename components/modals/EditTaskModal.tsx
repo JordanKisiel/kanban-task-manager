@@ -19,22 +19,6 @@ type Props = {
     setIsModalOpen: Function
 }
 
-type FormData = {
-    title: string
-    description: string
-    subTasks: {
-        create: string[]
-        update: {
-            id: number
-            description: string
-        }[]
-        delete: {
-            id: number
-        }[]
-    }
-    columnId: number | null
-}
-
 const TITLE_PLACEHOLDER = "e.g. Take coffee break"
 const DESCRIPTION_PLACEHOLDER =
     "e.g. It's always good to take a break. This 15 minute break will charge the batteries a little."
@@ -279,6 +263,7 @@ export default function EditTaskModal({
                 <ActionButton
                     isWidthFull={true}
                     bgColor="bg-purple-600"
+                    bgHoverColor="hover:bg-purple-300"
                     textColor="text-neutral-100"
                     textSize="text-sm"
                     isSubmit={true}

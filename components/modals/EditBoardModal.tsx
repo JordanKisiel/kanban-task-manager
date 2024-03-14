@@ -175,6 +175,7 @@ export default function EditBoardModal({
                     <ActionButton
                         isWidthFull={true}
                         bgColor="bg-purple-600"
+                        bgHoverColor="hover:bg-purple-300"
                         textColor="text-neutral-100"
                         textSize="text-sm"
                         isSubmit={true}

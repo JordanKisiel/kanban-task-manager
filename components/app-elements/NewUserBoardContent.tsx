@@ -23,6 +23,7 @@ export default function NewUserBoardContent({
                 <ActionButton
                     isWidthFull={false}
                     bgColor="bg-purple-600"
+                    bgHoverColor="hover:bg-purple-300"
                     textColor="text-neutral-100"
                     textSize="text-base"
                     handler={() => {

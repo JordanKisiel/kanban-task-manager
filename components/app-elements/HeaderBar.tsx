@@ -141,6 +141,7 @@ export default function HeaderBar({
                     <ActionButton
                         isWidthFull={false}
                         bgColor="bg-purple-600"
+                        bgHoverColor="hover:bg-purple-300"
                         textColor="text-neutral-100 dark:text-neutral-100"
                         textSize="text-base"
                         isDisabled={isNoBoards || isNoColumns}

@@ -217,6 +217,7 @@ export default function AddTaskModal({
                 <ActionButton
                     isWidthFull={true}
                     bgColor="dark:bg-purple-600"
+                    bgHoverColor="hover:bg-purple-300"
                     textColor="dark:text-neutral-100"
                     textSize="text-sm"
                     isSubmit={true}

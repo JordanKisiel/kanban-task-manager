@@ -4,6 +4,7 @@ import spinnerIcon from "@/public/spinner.svg"
 type Props = {
     isWidthFull: boolean
     bgColor: string
+    bgHoverColor?: string
     textColor: string
     textSize: string
     isDisabled?: boolean
@@ -16,6 +17,7 @@ type Props = {
 export default function ActionButton({
     isWidthFull,
     bgColor,
+    bgHoverColor,
     textColor,
     textSize,
     isDisabled,
@@ -28,7 +30,7 @@ export default function ActionButton({
 
     const styles = `relative py-2 px-5 rounded-full flex justify-center gap-1 items-center font-bold disabled:opacity-50 ${
         isWidthFull && "w-full"
-    }  ${bgColor} ${textColor} ${textSize}`
+    }  ${bgColor} ${textColor} ${textSize} ${bgHoverColor ?? ""}`
 
     if (isSubmit) {
         return (

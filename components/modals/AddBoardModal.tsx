@@ -158,6 +158,7 @@ export default function AddBoardModal({
             <div>
                 <ActionButton
                     bgColor="bg-purple-600"
+                    bgHoverColor="hover:bg-purple-300"
                     textColor="text-neutral-100"
                     textSize="text-sm"
                     isWidthFull={true}
