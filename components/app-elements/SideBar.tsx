@@ -8,6 +8,7 @@ import { useModal } from "@/hooks/useModal"
 import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 import { Board } from "@/types"
 import AddBoardModal from "@/components/modals/AddBoardModal"
+import { truncate } from "@/lib/utils"
 import { useDarkMode } from "@/contexts/DarkModeProvider"
 
 type Props = {
@@ -35,8 +36,19 @@ export default function SideBar({
     const { isDarkMode, toggleDarkMode } = useDarkMode()
 
     const NUM_SKELETON_ITEMS = 3
+    const MAX_TITLE_LENGTH = 23
 
     const numBoards = isPending ? 0 : boards.length
+
+    const boardTitles = isPending
+        ? []
+        : boards &&
+          boards.map((board) => {
+              return {
+                  id: board.id,
+                  title: truncate(board.title, MAX_TITLE_LENGTH, 3),
+              }
+          })
 
     const boardsList = isPending
         ? Array(NUM_SKELETON_ITEMS)
@@ -53,8 +65,7 @@ export default function SideBar({
                       />
                   )
               })
-        : boards &&
-          boards.map((board, index) => {
+        : boardTitles.map((boardTitle, index) => {
               const isSelected = index === selectedBoardIndex
 
               const normalStyles = "bg-[url('../public/board-icon.svg')]"
@@ -64,14 +75,14 @@ export default function SideBar({
               return (
                   <Link
                       href={`?board=${index}`}
-                      key={board.id}
+                      key={boardTitle.id}
                   >
                       <li
                           className={`py-3 pl-[3.4rem] mr-6 bg-no-repeat bg-[center_left_1.5rem] ${
                               isSelected ? selectedStyles : normalStyles
                           }`}
                       >
-                          {board.title}
+                          {boardTitle.title}
                       </li>
                   </Link>
               )
