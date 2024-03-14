@@ -133,7 +133,7 @@ export default function Home({ params }: { params: { user: string } }) {
         <main className="flex flex-col min-h-screen">
             <div
                 className="
-                flex w-full md:grid md:grid-rows-[1fr_18fr] md:grid-cols-[16.5rem_24fr] md:h-full md:fixed 
+                flex w-full min-h-screen md:grid md:grid-rows-[1fr_18fr] md:grid-cols-[16.5rem_24fr] md:h-full md:fixed 
                 lg:grid-cols-[17rem_3fr] xl:grid-cols-[17rem_6fr]"
             >
                 <div
