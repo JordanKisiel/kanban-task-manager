@@ -4,6 +4,7 @@ import { useState } from "react"
 import { signIn, signOut, useSession } from "next-auth/react"
 import LoadingText from "@/components/loading/LoadingText"
 import { useModal } from "@/hooks/useModal"
+import { useWindow } from "@/hooks/useWindow"
 import { Board } from "@/types"
 import AddTaskModal from "@/components/modals/AddTaskModal"
 import EditBoardModal from "@/components/modals/EditBoardModal"
@@ -16,7 +17,10 @@ import Image from "next/image"
 import addIcon from "@/public/plus-icon.svg"
 import { redirect } from "next/navigation"
 import {
-    MAX_HEADER_BOARD_TITLE_LENGTH,
+    MAX_DESKTOP_HEADER_BOARD_TITLE_LENGTH,
+    MAX_LAPTOP_HEADER_BOARD_TITLE_LENGTH,
+    MAX_MOBILE_HEADER_BOARD_TITLE_LENGTH,
+    MAX_TABLET_HEADER_BOARD_TITLE_LENGTH,
     NUM_TRUNCATION_ELLIPSIS,
 } from "@/lib/config"
 import { truncate } from "@/lib/utils"
@@ -45,6 +49,21 @@ export default function HeaderBar({
         false
     )
 
+    const { windowWidth } = useWindow()
+    let maxTitleLength = MAX_DESKTOP_HEADER_BOARD_TITLE_LENGTH
+    if (windowWidth < 1920) {
+        console.log("laptop")
+        maxTitleLength = MAX_LAPTOP_HEADER_BOARD_TITLE_LENGTH
+    }
+    if (windowWidth < 1024) {
+        console.log("tablet")
+        maxTitleLength = MAX_TABLET_HEADER_BOARD_TITLE_LENGTH
+    }
+    if (windowWidth < 768) {
+        console.log("mobile")
+        maxTitleLength = MAX_MOBILE_HEADER_BOARD_TITLE_LENGTH
+    }
+
     const [showModalSideBar, setShowModalSideBar] = useState(false)
 
     const selectedBoardTitle = isPending ? (
@@ -54,11 +73,7 @@ export default function HeaderBar({
             ellipsisSpeedInSec={0.7}
         />
     ) : board !== null ? (
-        truncate(
-            board.title,
-            MAX_HEADER_BOARD_TITLE_LENGTH,
-            NUM_TRUNCATION_ELLIPSIS
-        )
+        truncate(board.title, maxTitleLength, NUM_TRUNCATION_ELLIPSIS)
     ) : (
         ""
     )

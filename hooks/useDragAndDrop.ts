@@ -159,8 +159,6 @@ export function useDragAndDrop(
 
             overColTaskItems.splice(overTaskIndex, 0, activeTask)
 
-            console.log(JSON.stringify(overColTaskItems))
-
             // also make sure to change col id so that condition 1
             // can trigger for subsequent dragover events
 
