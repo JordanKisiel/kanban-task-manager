@@ -15,6 +15,11 @@ import ModalSideBar from "@/components/app-elements/ModalSideBar"
 import Image from "next/image"
 import addIcon from "@/public/plus-icon.svg"
 import { redirect } from "next/navigation"
+import {
+    MAX_HEADER_BOARD_TITLE_LENGTH,
+    NUM_TRUNCATION_ELLIPSIS,
+} from "@/lib/config"
+import { truncate } from "@/lib/utils"
 
 type Props = {
     selectedBoardIndex: number
@@ -49,7 +54,11 @@ export default function HeaderBar({
             ellipsisSpeedInSec={0.7}
         />
     ) : board !== null ? (
-        board.title
+        truncate(
+            board.title,
+            MAX_HEADER_BOARD_TITLE_LENGTH,
+            NUM_TRUNCATION_ELLIPSIS
+        )
     ) : (
         ""
     )
