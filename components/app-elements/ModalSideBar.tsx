@@ -7,6 +7,12 @@ import { useModal } from "@/hooks/useModal"
 import { Board } from "@/types"
 import AddBoardModal from "@/components/modals/AddBoardModal"
 import { useDarkMode } from "@/contexts/DarkModeProvider"
+import BoardsList from "@/components/app-elements/BoardsList"
+import { truncate } from "@/lib/utils"
+import {
+    MAX_SIDEBAR_BOARD_TITLE_LENGTH,
+    NUM_TRUNCATION_ELLIPSIS,
+} from "@/lib/config"
 
 type Props = {
     selectedBoardIndex: number
@@ -32,25 +38,18 @@ export default function ModalSideBar({
 
     const numBoards = isPending ? 0 : boards.length
 
-    const boardsList = isPending
+    const boardTitles = isPending
         ? []
-        : boards.map((board, index) => {
-              const isSelected = index === selectedBoardIndex
-
-              const normalStyles = "bg-[url('../public/board-icon.svg')]"
-              const selectedStyles =
-                  "bg-purple-600 text-neutral-300 rounded-r-full block bg-[url('../public/board-icon-white.svg')]"
-
-              return (
-                  <li
-                      key={board.id}
-                      className={`py-3 pl-[3.4rem] mr-6 bg-no-repeat bg-[center_left_1.5rem] ${
-                          isSelected ? selectedStyles : normalStyles
-                      }`}
-                  >
-                      {board.title}
-                  </li>
-              )
+        : boards &&
+          boards.map((board) => {
+              return {
+                  id: board.id,
+                  title: truncate(
+                      board.title,
+                      MAX_SIDEBAR_BOARD_TITLE_LENGTH,
+                      NUM_TRUNCATION_ELLIPSIS
+                  ),
+              }
           })
 
     return (
@@ -73,7 +72,11 @@ export default function ModalSideBar({
                     mb-4 pl-6"
                     >{`All Boards (${numBoards})`}</h2>
                     <ul className="text-neutral-500 font-bold flex flex-col mb-4">
-                        {boardsList}
+                        <BoardsList
+                            boardTitles={boardTitles}
+                            isPending={isPending}
+                            selectedBoardIndex={selectedBoardIndex}
+                        />
                         <li
                             onClick={(e) => {
                                 setIsModalOpen(true)

@@ -11,3 +11,6 @@ export const columnColors = [
 ]
 
 export const NUM_SKELETON_COLS = 3
+export const NUM_SKELETON_BOARD_TITLES = 3
+export const MAX_SIDEBAR_BOARD_TITLE_LENGTH = 23
+export const NUM_TRUNCATION_ELLIPSIS = 3

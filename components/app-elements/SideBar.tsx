@@ -1,15 +1,18 @@
 "use client"
 
-import Link from "next/link"
 import StyleToggle from "@/components/ui-elements/StyleToggle"
 import Modal from "@/components/modals/Modal"
-import ItemSkeleton from "@/components/loading/ItemSkeleton"
 import { useModal } from "@/hooks/useModal"
 import { useNewBoardCreated } from "@/hooks/useNewBoardCreated"
 import { Board } from "@/types"
 import AddBoardModal from "@/components/modals/AddBoardModal"
 import { truncate } from "@/lib/utils"
 import { useDarkMode } from "@/contexts/DarkModeProvider"
+import BoardsList from "@/components/app-elements/BoardsList"
+import {
+    MAX_SIDEBAR_BOARD_TITLE_LENGTH,
+    NUM_TRUNCATION_ELLIPSIS,
+} from "@/lib/config"
 
 type Props = {
     handleHideSideBar: Function
@@ -35,9 +38,6 @@ export default function SideBar({
 
     const { isDarkMode, toggleDarkMode } = useDarkMode()
 
-    const NUM_SKELETON_ITEMS = 3
-    const MAX_TITLE_LENGTH = 23
-
     const numBoards = isPending ? 0 : boards.length
 
     const boardTitles = isPending
@@ -46,46 +46,12 @@ export default function SideBar({
           boards.map((board) => {
               return {
                   id: board.id,
-                  title: truncate(board.title, MAX_TITLE_LENGTH, 3),
+                  title: truncate(
+                      board.title,
+                      MAX_SIDEBAR_BOARD_TITLE_LENGTH,
+                      NUM_TRUNCATION_ELLIPSIS
+                  ),
               }
-          })
-
-    const boardsList = isPending
-        ? Array(NUM_SKELETON_ITEMS)
-              .fill("")
-              .map((item, index) => {
-                  return (
-                      <ItemSkeleton
-                          key={index}
-                          width="full"
-                          height="large"
-                          bgColor="bg-neutral-400 dark:bg-neutral-800"
-                          opacity={"opacity-100"}
-                          margins={"ml-[1.4rem] mr-8 mb-3"}
-                      />
-                  )
-              })
-        : boardTitles.map((boardTitle, index) => {
-              const isSelected = index === selectedBoardIndex
-
-              const normalStyles = "bg-[url('../public/board-icon.svg')]"
-              const selectedStyles =
-                  "bg-purple-600 text-neutral-300 rounded-r-full block bg-[url('../public/board-icon-white.svg')]"
-
-              return (
-                  <Link
-                      href={`?board=${index}`}
-                      key={boardTitle.id}
-                  >
-                      <li
-                          className={`py-3 pl-[3.4rem] mr-6 bg-no-repeat bg-[center_left_1.5rem] ${
-                              isSelected ? selectedStyles : normalStyles
-                          }`}
-                      >
-                          {boardTitle.title}
-                      </li>
-                  </Link>
-              )
           })
 
     return (
@@ -102,7 +68,11 @@ export default function SideBar({
                         {`All Boards (${numBoards})`}
                     </h2>
                     <ul className="text-neutral-500 font-bold flex flex-col mb-4 gap-1">
-                        {boardsList}
+                        <BoardsList
+                            boardTitles={boardTitles}
+                            isPending={isPending}
+                            selectedBoardIndex={selectedBoardIndex}
+                        />
                         <button
                             onClick={(e) => {
                                 handleShowSideBar(e)
