@@ -79,8 +79,7 @@ export default function DeleteModal({
         setDisplayError(false)
     }
 
-    //TODO: does this need to be an async function?
-    async function handleDelete() {
+    function handleDelete() {
         if (itemToDelete !== null) {
             if (isBoard) {
                 deleteBoardMutation.mutate(itemToDelete.id)
