@@ -10,6 +10,7 @@ import { useDarkMode } from "@/contexts/DarkModeProvider"
 import BoardsList from "@/components/app-elements/BoardsList"
 import { truncate } from "@/lib/utils"
 import {
+    BUTTON_TEXT_NEW_BOARD,
     MAX_SIDEBAR_BOARD_TITLE_LENGTH,
     NUM_TRUNCATION_ELLIPSIS,
 } from "@/lib/config"
@@ -72,7 +73,7 @@ export default function ModalSideBar({
                     mb-4 pl-6"
                     >{`All Boards (${numBoards})`}</h2>
                     <ul className="text-neutral-500 font-bold flex flex-col mb-4">
-                        <div className="flex flex-col gap-1 overflow-y-scroll max-h-[18rem]">
+                        <div className="flex flex-col gap-1 overflow-y-auto max-h-[18rem]">
                             <BoardsList
                                 boardTitles={boardTitles}
                                 isPending={isPending}
@@ -89,7 +90,7 @@ export default function ModalSideBar({
                             font-bold py-3 pl-[3.2rem] mr-6 text-purple-600 
                             bg-[url('../public/board-icon-purple.svg')] bg-no-repeat bg-[center_left_1.5rem]"
                         >
-                            + Create New Board
+                            {BUTTON_TEXT_NEW_BOARD}
                         </li>
                     </ul>
                     <div className="bg-neutral-200 dark:bg-neutral-800 rounded mx-3 flex flex-row justify-center py-4">
