@@ -96,12 +96,12 @@ export default function TaskCard({
                     <div
                         {...attributes}
                         {...listeners}
-                        className={`opacity-40 h-1/2 px-2 pt-1 pb-3 ${
+                        className={`h-1/2 px-2 pt-1 pb-3 ${
                             dragDisabled ? "cursor-default" : "cursor-grab"
                         }`}
                     >
                         <GrabIcon
-                            fill={isDarkMode ? "#FFFFFF" : "#000000"}
+                            fill={isDarkMode ? "#828FA3" : "#000000"}
                             scale={0.1}
                             isLoading={dragDisabled}
                         />

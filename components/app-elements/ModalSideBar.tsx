@@ -58,7 +58,7 @@ export default function ModalSideBar({
                 onClick={(e) => setShowModalSideBar(false)}
                 className="
                 bg-neutral-900/50 dark:bg-neutral-900/70 fixed flex flex-col 
-                items-center inset-0 pt-[5rem] md:hidden"
+                items-center inset-0 pt-[5rem] z-10 md:hidden"
             >
                 <div
                     onClick={(e) => e.stopPropagation()}
