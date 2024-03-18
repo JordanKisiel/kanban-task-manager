@@ -10,6 +10,7 @@ import { editBoard } from "@/lib/dataUtils"
 import { editBoardReducer } from "@/reducers/formReducers"
 import { Board } from "@/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { BUTTON_TEXT_EDIT_BOARD } from "@/lib/config"
 
 type Props = {
     selectedBoardIndex: number
@@ -182,7 +183,7 @@ export default function EditBoardModal({
                         isDisabled={isSubmitted}
                         isLoading={isSubmitted}
                     >
-                        Save Board Changes
+                        {BUTTON_TEXT_EDIT_BOARD}
                     </ActionButton>
                 </div>
             </form>

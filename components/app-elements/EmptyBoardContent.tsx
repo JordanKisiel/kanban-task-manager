@@ -2,6 +2,7 @@ import Image from "next/image"
 import ActionButton from "@/components/ui-elements/ActionButton"
 import addIconDark from "@/public/plus-icon.svg"
 import addIconLight from "@/public/plus-icon-gray.svg"
+import { EMPTY_BOARD_MESSAGE, BUTTON_TEXT_NEW_COLUMN } from "@/lib/config"
 
 type Props = {
     setIsModalOpen: Function
@@ -18,7 +19,7 @@ export default function EmptyBoardContent({
         <div className="flex flex-col grow items-center min-h-fit justify-center w-full h-full">
             <div className="flex flex-col items-center">
                 <p className="text-neutral-500 text-center w-[80%] text-lg font-bold leading-6 mb-6 -mt-12">
-                    This board is empty. Create a new column to get started.
+                    {EMPTY_BOARD_MESSAGE}
                 </p>
                 <ActionButton
                     isWidthFull={false}
@@ -38,7 +39,7 @@ export default function EmptyBoardContent({
                         width={12}
                         height={12}
                     />
-                    <span>Add New Column</span>
+                    <span>{BUTTON_TEXT_NEW_COLUMN}</span>
                 </ActionButton>
             </div>
         </div>

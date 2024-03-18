@@ -1,6 +1,7 @@
 import Image from "next/image"
 import addIconDark from "@/public/plus-icon.svg"
 import addIconLight from "@/public/plus-icon-gray.svg"
+import { COMPONENT_TEXT_NEW_COLUMN } from "@/lib/config"
 
 type Props = {
     setIsModalOpen: Function
@@ -32,7 +33,7 @@ export default function NewColumn({
                     width={12}
                     height={12}
                 />
-                New Column
+                {COMPONENT_TEXT_NEW_COLUMN}
             </button>
         </div>
     )

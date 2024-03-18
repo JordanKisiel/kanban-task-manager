@@ -2,6 +2,7 @@ import Image from "next/image"
 import ActionButton from "@/components/ui-elements/ActionButton"
 import addIconDark from "@/public/plus-icon.svg"
 import addIconLight from "@/public/plus-icon-gray.svg"
+import { BUTTON_TEXT_CREATE_BOARD } from "@/lib/config"
 
 type Props = {
     setIsModalOpen: Function
@@ -38,7 +39,7 @@ export default function NewUserBoardContent({
                         width={12}
                         height={12}
                     />
-                    <span>Create New Board</span>
+                    <span>{BUTTON_TEXT_CREATE_BOARD}</span>
                 </ActionButton>
             </div>
         </div>

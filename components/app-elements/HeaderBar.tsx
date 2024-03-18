@@ -17,6 +17,7 @@ import Image from "next/image"
 import addIcon from "@/public/plus-icon.svg"
 import { redirect } from "next/navigation"
 import {
+    BUTTON_TEXT_NEW_TASK,
     MAX_DESKTOP_HEADER_BOARD_TITLE_LENGTH,
     MAX_LAPTOP_HEADER_BOARD_TITLE_LENGTH,
     MAX_MOBILE_HEADER_BOARD_TITLE_LENGTH,
@@ -179,7 +180,7 @@ export default function HeaderBar({
                             height={12}
                         />
                         <span className="hidden md:inline-block">
-                            Add New Task
+                            {BUTTON_TEXT_NEW_TASK}
                         </span>
                     </ActionButton>
                     <MenuButton actions={menuOptions} />

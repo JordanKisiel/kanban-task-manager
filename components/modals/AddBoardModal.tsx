@@ -12,6 +12,7 @@ import DynamicInputList from "@/components/ui-elements/DynamicInputList"
 import { addBoardReducer } from "@/reducers/formReducers"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
+import { BUTTON_TEXT_CREATE_BOARD } from "@/lib/config"
 
 type Props = {
     selectedBoardIndex: number
@@ -166,7 +167,7 @@ export default function AddBoardModal({
                     isDisabled={isSubmitted}
                     isLoading={isSubmitted}
                 >
-                    Create New Board
+                    {BUTTON_TEXT_CREATE_BOARD}
                 </ActionButton>
             </div>
         </form>

@@ -1,5 +1,6 @@
 import { useState } from "react"
 import ActionButton from "@/components/ui-elements/ActionButton"
+import { ERROR_MESSAGE_BOARDS } from "@/lib/config"
 
 type Props = {
     refetch: Function
@@ -19,7 +20,7 @@ export default function ErrorModal({ refetch, setIsModalOpen }: Props) {
     return (
         <div className="flex flex-col gap-6 bg-neutral-100 dark:bg-neutral-700">
             <h4 className="font-bold text-red-300 text-lg">
-                There was an error retrieving your boards!
+                {ERROR_MESSAGE_BOARDS}
             </h4>
             <div className="flex flex-col gap-4 md:flex-row">
                 <ActionButton

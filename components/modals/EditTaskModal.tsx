@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { editTaskReducer } from "@/reducers/formReducers"
 import { Column, Task } from "@/types"
+import { BUTTON_TEXT_EDIT_TASK } from "@/lib/config"
 
 type Props = {
     selectedBoardIndex: number
@@ -270,7 +271,7 @@ export default function EditTaskModal({
                     isDisabled={isSubmitted}
                     isLoading={isSubmitted}
                 >
-                    Save Task Changes
+                    {BUTTON_TEXT_EDIT_TASK}
                 </ActionButton>
             </form>
         </div>

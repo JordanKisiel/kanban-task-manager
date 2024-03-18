@@ -4,6 +4,7 @@ import { tasksByColumnOptions } from "@/lib/queries"
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { useDroppable } from "@dnd-kit/core"
 import { truncate } from "@/lib/utils"
+import { MAX_COLUMN_TITLE_LENGTH, NUM_TRUNCATION_ELLIPSIS } from "@/lib/config"
 
 type Props = {
     selectedBoardIndex: number
@@ -30,9 +31,6 @@ export default function TaskColumn({
         isError,
         isSuccess,
     } = useQuery(tasksByColumnOptions(columnId, taskOrdering))
-
-    const MAX_TITLE_LENGTH = 20
-    const NUM_ELLIPSIS = 3
 
     const { setNodeRef } = useDroppable({
         id: columnId,
@@ -67,8 +65,8 @@ export default function TaskColumn({
                 >
                     {`${truncate(
                         columnTitle,
-                        MAX_TITLE_LENGTH,
-                        NUM_ELLIPSIS
+                        MAX_COLUMN_TITLE_LENGTH,
+                        NUM_TRUNCATION_ELLIPSIS
                     )} (${isSuccess ? tasks.length : 0})`}
                 </h3>
             </div>

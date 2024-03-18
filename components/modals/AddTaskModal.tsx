@@ -10,6 +10,7 @@ import { addTaskReducer } from "@/reducers/formReducers"
 import { Column } from "@/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import ErrorMessage from "../ui-elements/ErrorMessage"
+import { BUTTON_TEXT_CREATE_TASK } from "@/lib/config"
 
 type Props = {
     selectedBoardIndex: number
@@ -224,7 +225,7 @@ export default function AddTaskModal({
                     isDisabled={isSubmitted}
                     isLoading={isSubmitted}
                 >
-                    Create Task
+                    {BUTTON_TEXT_CREATE_TASK}
                 </ActionButton>
             </form>
         </div>
