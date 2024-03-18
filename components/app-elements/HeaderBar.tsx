@@ -52,15 +52,12 @@ export default function HeaderBar({
     const { windowWidth } = useWindow()
     let maxTitleLength = MAX_DESKTOP_HEADER_BOARD_TITLE_LENGTH
     if (windowWidth < 1920) {
-        console.log("laptop")
         maxTitleLength = MAX_LAPTOP_HEADER_BOARD_TITLE_LENGTH
     }
     if (windowWidth < 1024) {
-        console.log("tablet")
         maxTitleLength = MAX_TABLET_HEADER_BOARD_TITLE_LENGTH
     }
     if (windowWidth < 768) {
-        console.log("mobile")
         maxTitleLength = MAX_MOBILE_HEADER_BOARD_TITLE_LENGTH
     }
 
