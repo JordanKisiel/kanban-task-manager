@@ -7,8 +7,6 @@ export default async function Home() {
     const session = await getServerSession(authOptions)
     const sessionEmail = session?.user?.email
 
-    console.log(sessionEmail)
-
     if (sessionEmail === null || sessionEmail === undefined) {
         //theoretically a user with a session from google or github
         //should have an email associated with their account

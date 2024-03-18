@@ -16,7 +16,6 @@ export default function ErrorModal({ refetch, setIsModalOpen }: Props) {
         setIsModalOpen(false)
     }
 
-    console.log("error modal")
     return (
         <div className="flex flex-col gap-6 bg-neutral-100 dark:bg-neutral-700">
             <h4 className="font-bold text-red-300 text-lg">

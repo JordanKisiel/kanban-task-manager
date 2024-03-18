@@ -161,7 +161,6 @@ export default function ViewTaskModal({
     ]
 
     function handleCheck(inputIndex: number) {
-        console.log("handle check")
         editTaskMutation.mutate({
             taskId: task.id,
             title: task.title,
@@ -185,7 +184,6 @@ export default function ViewTaskModal({
     }
 
     function handleStatusChange(event: React.ChangeEvent<HTMLSelectElement>) {
-        console.log("handle status called")
         const selectedOptionIndex = event.target.options.selectedIndex
 
         editTaskMutation.mutate({

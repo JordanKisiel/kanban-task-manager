@@ -1,6 +1,6 @@
 import axios from "axios"
 import { config } from "./baseURL"
-import { Board, Task, Column } from "@/types"
+import { Board, Task } from "@/types"
 import prisma from "@/lib/prisma"
 
 const DELAY_TIME = 3000
@@ -29,8 +29,6 @@ export async function getUserIdByEmail(sessionEmail: string) {
 
     //user will be null if not found
     //in which case, create new user
-    //TODO: maybe split this off into its
-    //own function
     let newUser
     if (user === null) {
         newUser = await prisma.user.create({
@@ -127,8 +125,6 @@ export async function addTask(formData: {
     selectedIndex: number
     status: number
 }) {
-    //await delay(DELAY_TIME)
-
     const task = {
         title: formData.title,
         description: formData.description,
@@ -153,8 +149,6 @@ export async function addTask(formData: {
 }
 
 export async function deleteBoard(boardId: number) {
-    //await delay(DELAY_TIME)
-
     try {
         await axios.delete(`${BASE_URL}/api/boards/${boardId}`)
     } catch (error) {
@@ -163,8 +157,6 @@ export async function deleteBoard(boardId: number) {
 }
 
 export async function deleteTask(taskId: number) {
-    //await delay(DELAY_TIME)
-
     try {
         await axios.delete(`${BASE_URL}/api/tasks/${taskId}`)
     } catch (error) {
@@ -186,8 +178,6 @@ export async function editBoard(boardData: {
         }[]
     }
 }) {
-    //await delay(DELAY_TIME)
-
     let response
 
     try {
@@ -222,8 +212,6 @@ export async function editTask(taskData: {
     }
     columnId: number | null
 }) {
-    //await delay(DELAY_TIME)
-
     let response
 
     try {

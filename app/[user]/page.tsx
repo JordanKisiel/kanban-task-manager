@@ -117,7 +117,6 @@ export default function Home({ params }: { params: { user: string } }) {
     }
 
     function changeSelectedBoardIndex(index: number) {
-        console.log("change?")
         router.push(`?board=${index}`)
     }
 
