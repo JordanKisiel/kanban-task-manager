@@ -219,7 +219,9 @@ export default function ViewTaskModal({
                     })`}
                 </span>
 
-                <ul className="flex flex-col gap-2">{subTaskCards}</ul>
+                <ul className="flex flex-col gap-2 overflow-y-auto max-h-[20rem]">
+                    {subTaskCards}
+                </ul>
             </div>
             <div>
                 <ModalLabel htmlFor="status-select">Current Status</ModalLabel>

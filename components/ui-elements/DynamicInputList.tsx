@@ -42,7 +42,9 @@ export default function DynamicInputList({
             <h4 className="text-neutral-500 dark:text-neutral-100 text-xs block font-bold">
                 {title}
             </h4>
-            {inputList}
+            <div className="flex flex-col gap-2 overflow-y-auto max-h-[15rem] pr-4">
+                {inputList}
+            </div>
             <ActionButton
                 isWidthFull={true}
                 bgColor="bg-neutral-300 dark:bg-neutral-100"
