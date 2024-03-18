@@ -23,7 +23,7 @@ export default function NewColumn({
                 }}
                 className="
                         flex flex-row text-neutral-500 dark:text-neutral-400 bg-neutral-300/50 
-                        dark:bg-neutral-700/20 text-2xl font-bold items-center gap-2 w-full h-full 
+                        dark:bg-neutral-600/20 text-2xl font-bold items-center gap-2 w-full h-full 
                         justify-center rounded"
             >
                 <Image
