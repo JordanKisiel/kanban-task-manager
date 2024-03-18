@@ -72,11 +72,13 @@ export default function ModalSideBar({
                     mb-4 pl-6"
                     >{`All Boards (${numBoards})`}</h2>
                     <ul className="text-neutral-500 font-bold flex flex-col mb-4">
-                        <BoardsList
-                            boardTitles={boardTitles}
-                            isPending={isPending}
-                            selectedBoardIndex={selectedBoardIndex}
-                        />
+                        <div className="flex flex-col gap-1 overflow-y-scroll max-h-[18rem]">
+                            <BoardsList
+                                boardTitles={boardTitles}
+                                isPending={isPending}
+                                selectedBoardIndex={selectedBoardIndex}
+                            />
+                        </div>
                         <li
                             onClick={(e) => {
                                 setIsModalOpen(true)

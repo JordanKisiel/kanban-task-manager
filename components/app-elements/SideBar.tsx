@@ -68,11 +68,13 @@ export default function SideBar({
                         {`All Boards (${numBoards})`}
                     </h2>
                     <ul className="text-neutral-500 font-bold flex flex-col mb-4 gap-1">
-                        <BoardsList
-                            boardTitles={boardTitles}
-                            isPending={isPending}
-                            selectedBoardIndex={selectedBoardIndex}
-                        />
+                        <div className="flex flex-col gap-1 overflow-y-scroll max-h-[30rem]">
+                            <BoardsList
+                                boardTitles={boardTitles}
+                                isPending={isPending}
+                                selectedBoardIndex={selectedBoardIndex}
+                            />
+                        </div>
                         <button
                             onClick={(e) => {
                                 handleShowSideBar(e)
