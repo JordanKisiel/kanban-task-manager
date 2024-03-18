@@ -14,8 +14,6 @@ export default function Modal({
 }: Props) {
     const router = useRouter()
 
-    const [clickTarget, setClickTarget] = useState<EventTarget | null>(null)
-
     return (
         <div
             onMouseDown={() => {
