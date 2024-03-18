@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 
 type Props = {
@@ -13,16 +14,18 @@ export default function Modal({
 }: Props) {
     const router = useRouter()
 
+    const [clickTarget, setClickTarget] = useState<EventTarget | null>(null)
+
     return (
         <div
-            onClick={() => {
+            onMouseDown={() => {
                 setIsModalOpen(false)
                 router.push(`?board=${selectedBoardIndex}`)
             }}
             className="bg-neutral-900/50 dark:bg-neutral-900/90 fixed flex flex-col items-center inset-0 justify-center px-4 py-12 z-10"
         >
             <div
-                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
                 className="
                     bg-neutral-100 dark:bg-neutral-700 
                     px-6 pt-6 pb-7 
