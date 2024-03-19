@@ -73,7 +73,9 @@ export default function TaskColumn({
             <div
                 ref={setNodeRef}
                 className={`h-full rounded border border-dashed ${
-                    isDragging ? "border-neutral-600" : "border-neutral-800"
+                    isDragging
+                        ? "border-neutral-400 dark:border-neutral-600"
+                        : "border-neutral-200 dark:border-neutral-800"
                 }`}
             >
                 <div className="flex flex-col gap-6">
