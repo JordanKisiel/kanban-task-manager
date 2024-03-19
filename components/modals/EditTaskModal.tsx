@@ -11,6 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { editTaskReducer } from "@/reducers/formReducers"
 import { Column, Task } from "@/types"
 import { BUTTON_TEXT_EDIT_TASK } from "@/lib/config"
+import TitleInput from "../ui-elements/TitleInput"
 
 type Props = {
     selectedBoardIndex: number
@@ -205,18 +206,11 @@ export default function EditTaskModal({
                     <MenuButton actions={menuOptions} />
                 </div>
                 <div>
-                    <ModalLabel htmlFor="title-input">Title</ModalLabel>
-                    <input
-                        onChange={(e) => handleTitleChange(e)}
-                        type="text"
-                        id="title-input"
-                        className="
-                            w-full bg-neutral-100 dark:bg-neutral-700 border-[1px] border-neutral-300 
-                            dark:border-neutral-600 rounded text-sm text-neutral-900 dark:text-neutral-100 
-                            px-4 py-3 focus:outline-none focus:border-purple-600 focus:dark:border-purple-600 
-                            placeholder:text-neutral-500 dark:placeholder:opacity-50"
-                        placeholder={TITLE_PLACEHOLDER}
-                        value={formData.title}
+                    <TitleInput
+                        handleTitleChange={handleTitleChange}
+                        titlePlaceholder={TITLE_PLACEHOLDER}
+                        titleValue={formData.title}
+                        labelText="Title"
                     />
                 </div>
                 <div>

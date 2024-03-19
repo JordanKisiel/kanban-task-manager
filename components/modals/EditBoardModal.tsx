@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation"
 import ActionButton from "@/components/ui-elements/ActionButton"
 import MenuButton from "@/components/ui-elements/MenuButton"
 import ModalHeader from "@/components/modals/ModalHeader"
-import ModalLabel from "@/components/modals/ModalLabel"
 import DynamicInputList from "@/components/ui-elements/DynamicInputList"
 import ErrorMessage from "@/components/ui-elements/ErrorMessage"
 import { editBoard } from "@/lib/dataUtils"
@@ -11,6 +10,7 @@ import { editBoardReducer } from "@/reducers/formReducers"
 import { Board } from "@/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { BUTTON_TEXT_EDIT_BOARD } from "@/lib/config"
+import TitleInput from "@/components/ui-elements/TitleInput"
 
 type Props = {
     selectedBoardIndex: number
@@ -149,18 +149,11 @@ export default function EditBoardModal({
                     <MenuButton actions={menuOptions} />
                 </div>
                 <div>
-                    <ModalLabel htmlFor="title-input">Board Name</ModalLabel>
-                    <input
-                        onChange={(e) => handleTitleChange(e)}
-                        type="text"
-                        id="title-input"
-                        className="
-                        w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 
-                        rounded text-sm dark:text-neutral-100 px-4 py-3 focus:outline-none 
-                        focus:border-purple-600 focus:dark:border-purple-600 
-                        placeholder-dark:text-neutral-500 placeholder-dark:opacity-50"
-                        placeholder={TITLE_PLACEHOLDER}
-                        value={formData.title}
+                    <TitleInput
+                        handleTitleChange={handleTitleChange}
+                        titlePlaceholder={TITLE_PLACEHOLDER}
+                        titleValue={formData.title}
+                        labelText="Board Name"
                     />
                 </div>
                 <DynamicInputList
