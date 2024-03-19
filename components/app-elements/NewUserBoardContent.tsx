@@ -2,7 +2,7 @@ import Image from "next/image"
 import ActionButton from "@/components/ui-elements/ActionButton"
 import addIconDark from "@/public/plus-icon.svg"
 import addIconLight from "@/public/plus-icon-gray.svg"
-import { BUTTON_TEXT_CREATE_BOARD } from "@/lib/config"
+import { BUTTON_TEXT_CREATE_BOARD, NO_BOARDS_MESSAGE } from "@/lib/config"
 
 type Props = {
     setIsModalOpen: Function
@@ -19,7 +19,7 @@ export default function NewUserBoardContent({
         <div className="flex flex-col grow items-center min-h-fit justify-center w-full h-full">
             <div className="flex flex-col items-center">
                 <p className="text-neutral-500 text-center w-[80%] text-lg font-bold leading-6 mb-6 -mt-12">
-                    You don't seem to have any boards. Try creating one!
+                    {NO_BOARDS_MESSAGE}
                 </p>
                 <ActionButton
                     isWidthFull={false}

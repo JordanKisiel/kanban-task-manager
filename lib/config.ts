@@ -20,6 +20,8 @@ export const MAX_LAPTOP_HEADER_BOARD_TITLE_LENGTH = 50
 export const MAX_TABLET_HEADER_BOARD_TITLE_LENGTH = 28
 export const MAX_MOBILE_HEADER_BOARD_TITLE_LENGTH = 21
 
+export const NO_BOARDS_MESSAGE =
+    "You don't seem to have any boards. Try creating one!"
 export const EMPTY_BOARD_MESSAGE =
     "This board is empty. Create a new column to get started."
 export const ERROR_MESSAGE_BOARDS = "There was an error retrieving your boards!"
