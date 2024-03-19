@@ -1,6 +1,6 @@
 //change this once deployed
 const production = {
-    url: "https://jordan-kisiell-kanban.vercel.app",
+    url: "https://jordan-kisiel-kanban.vercel.app",
 }
 
 const development = {
