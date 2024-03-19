@@ -6,7 +6,6 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import ActionButton from "@/components/ui-elements/ActionButton"
-import googleIcon from "@/public/google-icon.svg"
 import githubIcon from "@/public/github-mark.svg"
 import kanbanLogo from "@/public/kanban-app-logo-full.svg"
 
@@ -36,24 +35,6 @@ export default function Login() {
                 <p className="text-neutral-900 dark:text-neutral-100 font-bold text-lg leading-6">
                     Signin
                 </p>
-                <ActionButton
-                    isWidthFull={true}
-                    bgColor="bg-purple-600"
-                    bgHoverColor="hover:bg-purple-300"
-                    textColor="text-neutral-100"
-                    textSize="text-base"
-                    handler={() => {
-                        signIn("google")
-                    }}
-                >
-                    <Image
-                        src={googleIcon}
-                        alt="Google icon"
-                        width={16}
-                        height={16}
-                    />
-                    <span className="ml-2">Google</span>
-                </ActionButton>
                 <ActionButton
                     isWidthFull={true}
                     bgColor="bg-purple-600"
