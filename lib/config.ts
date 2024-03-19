@@ -12,7 +12,7 @@ export const columnColors = [
 
 export const NUM_SKELETON_COLS = 3
 export const NUM_SKELETON_BOARD_TITLES = 3
-export const MAX_SIDEBAR_BOARD_TITLE_LENGTH = 23
+export const MAX_SIDEBAR_BOARD_TITLE_LENGTH = 21
 export const MAX_COLUMN_TITLE_LENGTH = 20
 export const NUM_TRUNCATION_ELLIPSIS = 3
 export const MAX_DESKTOP_HEADER_BOARD_TITLE_LENGTH = 100
