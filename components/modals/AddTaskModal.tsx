@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import ErrorMessage from "../ui-elements/ErrorMessage"
 import { BUTTON_TEXT_CREATE_TASK } from "@/lib/config"
 import TitleInput from "@/components/ui-elements/TitleInput"
+import DescriptionInput from "@/components/ui-elements/DescriptionInput"
 
 type Props = {
     selectedBoardIndex: number
@@ -168,21 +169,13 @@ export default function AddTaskModal({
                     />
                 </div>
                 <div>
-                    <ModalLabel htmlFor="description-input">
-                        Description
-                    </ModalLabel>
-                    <textarea
-                        onChange={(e) => handleDescriptionChange(e)}
-                        id="description-input"
-                        className="
-                            w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 
-                            rounded text-sm dark:text-neutral-100 px-4 py-3 focus:outline-none 
-                            focus:border-purple-600 focus:dark:border-purple-600 
-                            placeholder-dark:text-neutral-500 placeholder-dark:opacity-50"
-                        rows={4}
-                        placeholder={DESCRIPTION_PLACEHOLDER}
-                        value={formData.description}
-                    ></textarea>
+                    <DescriptionInput
+                        handleDescriptionChange={handleDescriptionChange}
+                        descriptionPlaceholder={DESCRIPTION_PLACEHOLDER}
+                        descriptionValue={formData.description}
+                        descriptionContent=""
+                        labelText="Description"
+                    />
                 </div>
                 <DynamicInputList
                     values={formData.subTasks}

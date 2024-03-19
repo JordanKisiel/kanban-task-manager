@@ -12,6 +12,7 @@ import { editTaskReducer } from "@/reducers/formReducers"
 import { Column, Task } from "@/types"
 import { BUTTON_TEXT_EDIT_TASK } from "@/lib/config"
 import TitleInput from "../ui-elements/TitleInput"
+import DescriptionInput from "../ui-elements/DescriptionInput"
 
 type Props = {
     selectedBoardIndex: number
@@ -214,22 +215,13 @@ export default function EditTaskModal({
                     />
                 </div>
                 <div>
-                    <ModalLabel htmlFor="description-input">
-                        Description
-                    </ModalLabel>
-                    <textarea
-                        onChange={(e) => handleDescriptionChange(e)}
-                        id="description-input"
-                        className="
-                            w-full dark:bg-neutral-700 border-[1px] dark:border-neutral-600 rounded 
-                            text-sm dark:text-neutral-100 px-4 py-3 focus:outline-none focus:border-purple-600 
-                            focus:dark:border-purple-600 placeholder-dark:text-neutral-500 placeholder-dark:opacity-50"
-                        rows={4}
-                        placeholder={DESCRIPTION_PLACEHOLDER}
-                        value={formData.description}
-                    >
-                        {task ? task.description : "No task selected"}
-                    </textarea>
+                    <DescriptionInput
+                        handleDescriptionChange={handleDescriptionChange}
+                        descriptionPlaceholder={DESCRIPTION_PLACEHOLDER}
+                        descriptionValue={formData.description}
+                        descriptionContent={task ? task.description : ""}
+                        labelText="Description"
+                    />
                 </div>
                 <DynamicInputList
                     title="Subtasks"
