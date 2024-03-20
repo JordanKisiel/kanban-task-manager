@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     //algorithm is N^2 and should be changed at scale
     let response: Task[]
     if (col?.taskOrdering) {
-        response = tasks.toSorted((a, b) => {
+        response = tasks.sort((a, b) => {
             return (
                 col?.taskOrdering.indexOf(a.id) -
                 col?.taskOrdering.indexOf(b.id)
