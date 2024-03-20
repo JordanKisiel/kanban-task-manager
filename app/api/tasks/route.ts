@@ -9,8 +9,6 @@ export async function GET(request: NextRequest) {
 
     const colId = Number(colParam)
 
-    console.log(`column Id: ${colId}`)
-
     //get task associated with given taskId
     const tasks = await prisma.task.findMany({
         where: {
@@ -24,17 +22,11 @@ export async function GET(request: NextRequest) {
         },
     })
 
-    console.log("tasks")
-    console.log(JSON.stringify(tasks))
-
     const col = await prisma.column.findUnique({
         where: {
             id: colId,
         },
     })
-
-    console.log("column")
-    console.log(JSON.stringify(col))
 
     //sort tasks by taskOrdering
     //algorithm is N^2 and should be changed at scale
@@ -49,9 +41,6 @@ export async function GET(request: NextRequest) {
     } else {
         response = []
     }
-
-    console.log("response")
-    console.log(JSON.stringify(response))
 
     return NextResponse.json(response)
 }
