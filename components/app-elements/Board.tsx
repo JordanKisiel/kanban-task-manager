@@ -135,6 +135,9 @@ export default function Board({
             />
         )
     } else {
+        console.log("board")
+        console.log(JSON.stringify(board))
+        console.log("columns")
         console.log(JSON.stringify(board?.columns))
         content = (
             <DefaultBoardContent
