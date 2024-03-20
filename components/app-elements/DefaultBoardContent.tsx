@@ -41,7 +41,7 @@ export default function DefaultBoardContent({
     isDarkMode,
 }: Props) {
     const taskColumns =
-        board !== null
+        board !== null && board.columns
             ? board.columns.map((column, index) => {
                   return (
                       <TaskColumn
