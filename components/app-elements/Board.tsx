@@ -116,7 +116,7 @@ export default function Board({
     }
 
     let content: React.ReactNode
-    if (isPending) {
+    if (isPending || board === undefined) {
         content = <BoardSkeleton numColumns={NUM_SKELETON_COLS} />
     } else if (numBoards === 0) {
         content = (
