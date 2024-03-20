@@ -14,7 +14,7 @@ import { Board, Task } from "@/types"
 import { columnColors } from "@/lib/config"
 
 type Props = {
-    board: Board | null
+    board: Board | null | undefined
     selectedBoardIndex: number
     onDragStart: (event: DragStartEvent) => Promise<void>
     onDragOver: (event: DragOverEvent) => void
@@ -40,26 +40,25 @@ export default function DefaultBoardContent({
     setModalMode,
     isDarkMode,
 }: Props) {
-    const taskColumns =
-        board !== null && board.columns !== undefined
-            ? board.columns.map((column, index) => {
-                  return (
-                      <TaskColumn
-                          key={column.id}
-                          selectedBoardIndex={selectedBoardIndex}
-                          columnId={column.id}
-                          columnTitle={column.title}
-                          taskOrdering={column.taskOrdering}
-                          columnColor={
-                              //mod the index so it loops back around to first color
-                              columnColors[index % columnColors.length]
-                          }
-                          dragDisabled={dragDisabled}
-                          isDragging={isDragging}
-                      />
-                  )
-              })
-            : []
+    const taskColumns = board
+        ? board.columns.map((column, index) => {
+              return (
+                  <TaskColumn
+                      key={column.id}
+                      selectedBoardIndex={selectedBoardIndex}
+                      columnId={column.id}
+                      columnTitle={column.title}
+                      taskOrdering={column.taskOrdering}
+                      columnColor={
+                          //mod the index so it loops back around to first color
+                          columnColors[index % columnColors.length]
+                      }
+                      dragDisabled={dragDisabled}
+                      isDragging={isDragging}
+                  />
+              )
+          })
+        : []
 
     return (
         <div className="grid grid-flow-col auto-cols-[16rem] px-6 py-20 gap-6 overflow-auto md:pt-5 md:pb-20">
