@@ -127,7 +127,10 @@ export default function DeleteModal({
                     bgColor="bg-neutral-300 dark:bg-neutral-100"
                     textColor="text-purple-600"
                     textSize="text-sm"
-                    handler={() => setIsModalOpen()}
+                    handler={() => {
+                        setIsModalOpen(false)
+                        router.push(`?board=${selectedBoardIndex}`)
+                    }}
                     isDisabled={isSubmitted}
                 >
                     Cancel
