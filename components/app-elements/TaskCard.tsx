@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation"
 import GrabIcon from "@/components/icons/GrabIcon"
 import { useDarkMode } from "@/contexts/DarkModeProvider"
 import { Task } from "@/types"
+import Image from "next/image"
+import dragPadDark from "@/public/drag-pad-dark.svg"
 
 type Props = {
     task: Task
@@ -74,41 +76,40 @@ export default function TaskCard({
     }
 
     return (
-        <>
-            <Link
-                ref={setNodeRef}
-                style={style}
-                href={taskCardHref}
-            >
-                <div
-                    className="
-                        flex flex-row justify-between bg-neutral-100 dark:bg-neutral-700 rounded py-5 px-4 
+        <div
+            ref={setNodeRef}
+            style={style}
+            className="
+                        flex flex-row justify-between bg-neutral-100 dark:bg-neutral-700 rounded
                         shadow-[0_4px_6px_0_rgba(54,78,126,0.10)] dark:shadow-none hover:bg-neutral-200 
                       dark:hover:bg-neutral-600"
-                >
-                    <div>
-                        <h4 className="font-bold dark:text-neutral-100">
-                            {task.title}
-                        </h4>
-                        <span className="text-xs font-bold text-neutral-500">
-                            {`${completedSubTasks} of ${task.subTasks.length} subtasks`}
-                        </span>
-                    </div>
-                    <div
-                        {...attributes}
-                        {...listeners}
-                        className={`h-1/2 px-2 pt-1 pb-3 ${
-                            dragDisabled ? "cursor-default" : "cursor-grab"
-                        }`}
-                    >
-                        <GrabIcon
-                            fill={isDarkMode ? "#828FA3" : "#000000"}
-                            scale={0.1}
-                            isLoading={dragDisabled}
-                        />
-                    </div>
+        >
+            <Link
+                href={taskCardHref}
+                className="w-[80%] py-5 px-5"
+            >
+                <div>
+                    <h4 className="font-bold dark:text-neutral-100">
+                        {task.title}
+                    </h4>
+                    <span className="text-xs font-bold text-neutral-500">
+                        {`${completedSubTasks} of ${task.subTasks.length} subtasks`}
+                    </span>
                 </div>
             </Link>
-        </>
+            <div
+                {...attributes}
+                {...listeners}
+                className={`flex flex-col justify-center items-center px-3 ${
+                    dragDisabled ? "cursor-default" : "cursor-grab"
+                }`}
+            >
+                <Image
+                    src={dragPadDark}
+                    alt="drag pad"
+                    width={30}
+                />
+            </div>
+        </div>
     )
 }
