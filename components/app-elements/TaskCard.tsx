@@ -103,7 +103,7 @@ export default function TaskCard({
                 {...listeners}
                 className={`flex flex-col justify-center items-center px-3 ${
                     dragDisabled ? "cursor-default" : "cursor-grab"
-                }`}
+                } touch-none`}
             >
                 {isDarkMode ? (
                     <Image
