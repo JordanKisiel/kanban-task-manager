@@ -5,6 +5,7 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { useDroppable } from "@dnd-kit/core"
 import { truncate } from "@/lib/utils"
 import { MAX_COLUMN_TITLE_LENGTH, NUM_TRUNCATION_ELLIPSIS } from "@/lib/config"
+import ColumnSkeleton from "@/components/loading/ColumnSkeleton"
 
 type Props = {
     selectedBoardIndex: number
@@ -52,6 +53,10 @@ export default function TaskColumn({
               )
           })
         : []
+
+    if (isPending) {
+        return <ColumnSkeleton numTaskCardSkeletons={3} />
+    }
 
     return (
         <div>
