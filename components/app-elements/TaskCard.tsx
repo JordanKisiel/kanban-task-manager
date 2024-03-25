@@ -9,6 +9,7 @@ import { useDarkMode } from "@/contexts/DarkModeProvider"
 import { Task } from "@/types"
 import Image from "next/image"
 import dragPadDark from "@/public/drag-pad-dark.svg"
+import dragPadLight from "@/public/drag-pad-light.svg"
 
 type Props = {
     task: Task
@@ -104,11 +105,19 @@ export default function TaskCard({
                     dragDisabled ? "cursor-default" : "cursor-grab"
                 }`}
             >
-                <Image
-                    src={dragPadDark}
-                    alt="drag pad"
-                    width={30}
-                />
+                {isDarkMode ? (
+                    <Image
+                        src={dragPadDark}
+                        alt="drag pad"
+                        width={30}
+                    />
+                ) : (
+                    <Image
+                        src={dragPadLight}
+                        alt="drag pad"
+                        width={30}
+                    />
+                )}
             </div>
         </div>
     )
