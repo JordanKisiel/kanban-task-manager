@@ -3,7 +3,7 @@
 import Modal from "@/components/modals/Modal"
 import { useModal } from "@/hooks/useModal"
 import EditBoardModal from "@/components/modals/EditBoardModal"
-import { Board } from "@/types"
+import { type Board } from "@/types"
 import AddBoardModal from "@/components/modals/AddBoardModal"
 import DefaultBoardContent from "@/components/app-elements/DefaultBoardContent"
 import EmptyBoardContent from "@/components/app-elements/EmptyBoardContent"
