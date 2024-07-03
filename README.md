@@ -5,11 +5,10 @@ My web app implementation of a Kanban board. The app supports CRUD operations fo
 ## Table of contents
 
 -   [Overview](#overview)
-    -   [Links](#links)
--   [My process](#my-process)
-    -   [Built with](#built-with)
-    -   [What I learned](#what-i-learned)
-    -   [Continued development](#continued-development)
+-   [Links](#links)
+-   [Built with](#built-with)
+-   [What I learned](#what-i-learned)
+-   [Continued development](#continued-development)
 -   [Author](#author)
 
 ![](./promo-image.gif)
